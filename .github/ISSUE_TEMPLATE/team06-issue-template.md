@@ -1,7 +1,7 @@
 ---
 name: team06 issue template
 about: team06의 이슈 템플릿입니다
-title: ''
+title: "[feat | bug | refactor | docs] 간단한 설명"
 labels: ''
 assignees: ''
 
