@@ -7,8 +7,12 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
 
 @Entity
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(
 	name = "code",
 	uniqueConstraints = {
@@ -31,4 +35,10 @@ public class Code {
 	@Column(nullable = false)
 	private String name;
 
+	@Builder
+	public Code(String groupCode, String code, String name) {
+		this.groupCode = groupCode;
+		this.code = code;
+		this.name = name;
+	}
 }
