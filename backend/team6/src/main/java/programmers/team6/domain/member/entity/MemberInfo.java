@@ -1,5 +1,6 @@
 package programmers.team6.domain.member.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
@@ -11,17 +12,18 @@ import programmers.team6.global.entity.BaseEntity;
 public class MemberInfo extends BaseEntity {
 
 	@Id
-	private Long memberId;
-
-	@OneToOne
 	@MapsId
+	@OneToOne
 	@JoinColumn(name = "member_id")
 	private Member member;
 
+	@Column(nullable = false)
 	private int birth;
 
+	@Column(nullable = false)
 	private String email;
 
+	@Column(nullable = false)
 	private String password;
 
 }
