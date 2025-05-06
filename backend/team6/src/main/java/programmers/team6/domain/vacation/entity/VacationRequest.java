@@ -11,9 +11,12 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Version;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import programmers.team6.domain.member.entity.Code;
 
 @Entity
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class VacationRequest {
 
 	@Id

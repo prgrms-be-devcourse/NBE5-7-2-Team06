@@ -7,8 +7,11 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 @Entity
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Dept {
 	@Id
 	@Column(name = "dept_id")

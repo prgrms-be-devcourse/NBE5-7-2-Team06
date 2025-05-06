@@ -10,10 +10,13 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import programmers.team6.domain.member.enums.Role;
 import programmers.team6.global.entity.BaseEntity;
 
 @Entity
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Member extends BaseEntity {
 
 	@Id
