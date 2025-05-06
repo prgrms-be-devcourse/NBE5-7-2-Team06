@@ -21,18 +21,20 @@ public class VacationRequest {
 	@Column(name = "vacation_request_id")
 	private Long id;
 
+	@Column(name = "from_date", nullable = false)
 	private LocalDateTime from;
 
+	@Column(name = "to_date", nullable = false)
 	private LocalDateTime to;
 
 	private String reason;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "code", nullable = false)
+	@JoinColumn(name = "type_code", nullable = false)
 	private Code type;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "code", nullable = false)
+	@JoinColumn(name = "status_code", nullable = false)
 	private Code status;
 
 	@Version
