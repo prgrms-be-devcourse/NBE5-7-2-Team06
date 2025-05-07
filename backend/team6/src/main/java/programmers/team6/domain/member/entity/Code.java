@@ -10,6 +10,7 @@ import jakarta.persistence.UniqueConstraint;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
+import programmers.team6.global.entity.BaseEntity;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -19,7 +20,7 @@ import lombok.NoArgsConstructor;
 		@UniqueConstraint(columnNames = {"group_code", "code"})
 	}
 )
-public class Code {
+public class Code extends BaseEntity {
 
 	@Id
 	@Column(name = "code_id")

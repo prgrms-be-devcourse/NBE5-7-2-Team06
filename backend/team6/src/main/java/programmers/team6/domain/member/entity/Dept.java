@@ -9,10 +9,11 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import programmers.team6.global.entity.BaseEntity;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Dept {
+public class Dept extends BaseEntity {
 	@Id
 	@Column(name = "dept_id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
