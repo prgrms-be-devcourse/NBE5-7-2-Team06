@@ -8,12 +8,12 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.NoArgsConstructor;
+import programmers.team6.global.entity.BaseEntity;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Dept {
+public class Dept extends BaseEntity {
 	@Id
 	@Column(name = "dept_id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,12 +23,7 @@ public class Dept {
 	private String deptName;
 
 	@OneToOne
-	@JoinColumn(name = "dept_leader_id")
+	@JoinColumn(name = "dept_leader_id", nullable = false)
 	private Member deptLeader;
 
-	@Builder
-	public Dept(String deptName, Member deptLeader) {
-		this.deptName = deptName;
-		this.deptLeader = deptLeader;
-	}
 }
