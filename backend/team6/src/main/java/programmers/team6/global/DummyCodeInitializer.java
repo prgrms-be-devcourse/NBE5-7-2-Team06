@@ -5,7 +5,9 @@ import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
 import programmers.team6.domain.member.entity.Code;
+import programmers.team6.domain.member.entity.Dept;
 import programmers.team6.domain.member.repository.CodeRepository;
+import programmers.team6.domain.member.repository.DeptRepository;
 
 @Component
 @RequiredArgsConstructor
@@ -13,19 +15,21 @@ public class DummyCodeInitializer implements CommandLineRunner {
 
 	private final CodeRepository codeRepository;
 
+	private final DeptRepository deptRepository;
+
 	@Override
 	public void run(String... args) {
-		insert("DEPT", "01", "인사팀");
-		insert("DEPT", "02", "개발팀");
-		insert("DEPT", "03", "영업팀");
+		insertDept("인사팀");
+		insertDept("개발팀");
+		insertDept("영업팀");
 
-		insert("POSITION", "01", "사원");
-		insert("POSITION", "02", "대리");
-		insert("POSITION", "03", "과장");
-		insert("POSITION", "04", "부장");
+		insertCode("POSITION", "01", "사원");
+		insertCode("POSITION", "02", "대리");
+		insertCode("POSITION", "03", "과장");
+		insertCode("POSITION", "04", "부장");
 	}
 
-	private void insert(String groupCode, String code, String name) {
+	private void insertCode(String groupCode, String code, String name) {
 
 		codeRepository.save(Code.builder()
 			.groupCode(groupCode)
@@ -34,5 +38,9 @@ public class DummyCodeInitializer implements CommandLineRunner {
 			.build()
 		);
 
+	}
+
+	private void insertDept(String deptName) {
+		deptRepository.save(Dept.builder().deptName(deptName).build());
 	}
 }
