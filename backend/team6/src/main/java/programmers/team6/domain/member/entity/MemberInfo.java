@@ -18,6 +18,7 @@ import programmers.team6.global.entity.BaseEntity;
 public class MemberInfo extends BaseEntity {
 
 	@Id
+	@Column(name = "member_info_id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 

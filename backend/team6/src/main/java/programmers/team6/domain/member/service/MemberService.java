@@ -9,6 +9,7 @@ import programmers.team6.domain.member.entity.Dept;
 import programmers.team6.domain.member.entity.Member;
 import programmers.team6.domain.member.repository.CodeRepository;
 import programmers.team6.domain.member.repository.DeptRepository;
+import programmers.team6.domain.member.repository.MemberInfoRepository;
 import programmers.team6.domain.member.repository.MemberRepository;
 import programmers.team6.domain.member.util.mapper.MemberMapper;
 
@@ -17,9 +18,8 @@ import programmers.team6.domain.member.util.mapper.MemberMapper;
 public class MemberService {
 
 	private final MemberRepository memberRepository;
-
+	private final MemberInfoRepository memberInfoRepository;
 	private final DeptRepository deptRepository;
-
 	private final CodeRepository codeRepository;
 
 	public Member saveMember(MemberCreateRequest memberCreateRequest) {
@@ -38,5 +38,9 @@ public class MemberService {
 		Member member = MemberMapper.MemberCreateRequestToEntity(memberCreateRequest, dept, position, encodedPassword);
 
 		return memberRepository.save(member);
+	}
+
+	public boolean isEmailDuplicated(String email) {
+		return memberInfoRepository.existsByEmail(email);
 	}
 }
