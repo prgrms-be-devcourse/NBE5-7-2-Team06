@@ -36,4 +36,6 @@ public class ApprovalStep {
 	@Enumerated(EnumType.STRING)
 	private ApprovalStatus status;
 
+	private String reason;
+
 }
