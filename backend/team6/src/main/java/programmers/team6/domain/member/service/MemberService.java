@@ -22,7 +22,7 @@ public class MemberService {
 	private final DeptRepository deptRepository;
 	private final CodeRepository codeRepository;
 
-	public Member saveMember(MemberCreateRequest memberCreateRequest) {
+	public void saveMember(MemberCreateRequest memberCreateRequest) {
 
 		Dept dept = deptRepository.findById(memberCreateRequest.getDept()).orElseThrow(
 			() -> new IllegalArgumentException("해당 부서를 찾을 수 없습니다.")
@@ -37,7 +37,7 @@ public class MemberService {
 		//todo spring security 적용 후 암호화
 		Member member = MemberMapper.MemberCreateRequestToEntity(memberCreateRequest, dept, position, encodedPassword);
 
-		return memberRepository.save(member);
+		memberRepository.save(member);
 	}
 
 	public boolean isEmailDuplicated(String email) {
