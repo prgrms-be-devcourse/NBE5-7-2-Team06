@@ -23,6 +23,9 @@ public class VacationInfo {
 
 	private String vacationType;
 
-	private Long memberId;
+    private Long memberId;
+
+    @Version
+    private Integer version;
 
 }
