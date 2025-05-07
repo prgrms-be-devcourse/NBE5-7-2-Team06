@@ -50,7 +50,7 @@ public class Member extends BaseEntity {
 	private Role role;
 
 	@JoinColumn(name = "member_info_id")
-	@OneToOne(fetch = FetchType.LAZY, orphanRemoval = true, cascade = CascadeType.ALL)
+	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	private MemberInfo memberInfo;
 
 	public void setMemberInfo(MemberInfo info) {
