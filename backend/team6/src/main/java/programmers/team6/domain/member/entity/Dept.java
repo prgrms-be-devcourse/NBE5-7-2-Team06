@@ -26,4 +26,11 @@ public class Dept extends BaseEntity {
 	@JoinColumn(name = "dept_leader_id", nullable = false)
 	private Member deptLeader;
 
+	public Dept(String deptName) {
+		this.deptName = deptName;
+	}
+
+	public void setDeptLeader(Member deptLeader) {
+		this.deptLeader = deptLeader;
+	}
 }
