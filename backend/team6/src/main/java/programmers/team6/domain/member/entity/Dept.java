@@ -24,7 +24,7 @@ public class Dept extends BaseEntity {
 	private String deptName;
 
 	@OneToOne
-	@JoinColumn(name = "dept_leader_id", nullable = false)
+	@JoinColumn(name = "dept_leader_id")
 	private Member deptLeader;
 
 	@Builder
