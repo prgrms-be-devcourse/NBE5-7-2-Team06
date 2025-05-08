@@ -10,7 +10,7 @@
     를 가정하여 작성하였습니다 만약 code가 변경된다면 수정해야 합니다.
     추후 계산로직을 어플리케이션단에서 하는 식으로 변경해야 할 수 있음
      -->
-    <named-native-query name="VacationRequest.getMonthlyVacationSummary" result-set-mapping="VacationMonthlySummaryResponseMapping">
+    <named-native-query name="VacationRequest.getMonthlyVacationStatistics" result-set-mapping="VacationMonthlyStatisticsResponseMapping">
         <query><![CDATA[
         WITH preprocessed AS (
             SELECT
@@ -387,8 +387,8 @@
         offset :offset
         ]]></query>
     </named-native-query>
-    <sql-result-set-mapping name="VacationMonthlySummaryResponseMapping">
-        <constructor-result target-class="programmers.team6.domain.vacation.dto.VacationMonthlySummaryResponse">
+    <sql-result-set-mapping name="VacationMonthlyStatisticsResponseMapping">
+        <constructor-result target-class="programmers.team6.domain.vacation.dto.VacationMonthlyStatisticsResponse">
             <column name="memberId" />
             <column name="userName" />
             <column name="totalCount" class="java.lang.Long"/>

@@ -1,6 +1,6 @@
 package programmers.team6.domain.vacation.dto;
 
-public record VacationMonthlySummaryResponse(
+public record VacationMonthlyStatisticsResponse(
         Long memberId,
         String userName,
         Long totalCount,

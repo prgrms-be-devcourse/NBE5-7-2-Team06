@@ -1,11 +1,9 @@
 package programmers.team6.domain.vacation.repository;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import programmers.team6.domain.vacation.dto.VacationMonthlySummaryResponse;
+import programmers.team6.domain.vacation.dto.VacationMonthlyStatisticsResponse;
 import programmers.team6.domain.vacation.entity.VacationRequest;
 
 import java.util.List;
@@ -18,5 +16,5 @@ public interface VacationRequestRepository extends JpaRepository<VacationRequest
      * @author JiHun
      */
     @Query(nativeQuery = true)
-    List<VacationMonthlySummaryResponse> getMonthlyVacationSummary(@Param("target_year") Integer targetYear, @Param("limit") int limit, @Param("offset") int offset);
+    List<VacationMonthlyStatisticsResponse> getMonthlyVacationStatistics(@Param("target_year") Integer targetYear, @Param("limit") int limit, @Param("offset") int offset);
 }
