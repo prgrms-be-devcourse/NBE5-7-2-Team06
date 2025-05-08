@@ -10,11 +10,13 @@ import programmers.team6.domain.vacation.entity.VacationRequest;
 
 import java.util.List;
 
-public interface VacationRequestRepository extends JpaRepository<VacationRequest,Long> {
+public interface VacationRequestRepository extends JpaRepository<VacationRequest, Long> {
 
     /**
-    * 해당 함수는
-    * */
+     * 사용자별로 월단위 휴가사용 개수를 조회해오는 기능입니다.
+     * 해당 쿼리를 보고 싶다면 resource의 vacation.xml를 확인하세요
+     * @author JiHun
+     */
     @Query(nativeQuery = true)
-    List<VacationMonthlySummaryResponse> getMonthlyVacationSummary(@Param("target_year") Integer targetYear,  @Param("limit") int limit, @Param("offset") int offset);
+    List<VacationMonthlySummaryResponse> getMonthlyVacationSummary(@Param("target_year") Integer targetYear, @Param("limit") int limit, @Param("offset") int offset);
 }

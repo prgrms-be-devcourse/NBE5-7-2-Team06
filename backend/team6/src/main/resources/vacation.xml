@@ -4,6 +4,11 @@
                  xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence/orm
 					http://xmlns.jcp.org/xml/ns/persistence/orm_2_2.xsd" version="2.2">
 
+    <!--
+    type_code: 1=연차, 2=병가, 3=반차
+    status_code: 1=대기, 2=승인, 3=반려
+    를 가정하여 작성하였습니다 만약 code가 변경된다면 수정해야 합니다.
+     -->
     <named-native-query name="VacationRequest.getMonthlyVacationSummary" result-set-mapping="VacationMonthlySummaryResponseMapping">
         <query><![CDATA[
         WITH preprocessed AS (
