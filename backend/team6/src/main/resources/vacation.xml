@@ -343,6 +343,8 @@
                 preprocessed
             GROUP BY
                 member_id
+            limit :limit
+            offset :offset
         ),vacation_info_preprocessed AS(
             SELECT
                 member_id,
@@ -383,8 +385,6 @@
             vacation_info_preprocessed vi
         ON
             m.member_id = vs.member_id and vi.member_id = m.member_id
-        limit :limit
-        offset :offset
         ]]></query>
     </named-native-query>
     <sql-result-set-mapping name="VacationMonthlyStatisticsResponseMapping">
