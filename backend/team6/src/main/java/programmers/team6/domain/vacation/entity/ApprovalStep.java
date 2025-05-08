@@ -21,6 +21,7 @@ import programmers.team6.global.entity.BaseEntity;
 public class ApprovalStep extends BaseEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "approval_step_id")
 	private Long id;
 
 	@ManyToOne(fetch = FetchType.LAZY)

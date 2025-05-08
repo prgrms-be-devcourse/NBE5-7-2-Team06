@@ -1,5 +1,7 @@
 package programmers.team6.domain.vacation.service;
 
+import java.util.NoSuchElementException;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -35,7 +37,7 @@ public class ApprovalStepService {
 
 	public void validateMember(Long memberId) {
 		if (!approvalStepRepository.existsByMemberId(memberId)) {
-			throw new IllegalArgumentException("결재 목록 데이터가 없습니다.");
+			throw new NoSuchElementException("결재 목록 데이터가 없습니다.");
 		}
 	}
 
