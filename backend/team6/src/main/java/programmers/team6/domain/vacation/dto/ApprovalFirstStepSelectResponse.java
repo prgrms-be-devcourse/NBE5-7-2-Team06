@@ -8,7 +8,7 @@ import programmers.team6.domain.vacation.enums.ApprovalStatus;
 
 @Getter
 @AllArgsConstructor
-public class ApprovalStepSelectResponse {
+public class ApprovalFirstStepSelectResponse {
 	private Long approvalStepId;
 	private String type;
 	private LocalDateTime from;
