@@ -18,6 +18,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import programmers.team6.domain.member.enums.Role;
 import programmers.team6.global.entity.BaseEntity;
 
@@ -49,16 +50,10 @@ public class Member extends BaseEntity {
 	@Enumerated(EnumType.STRING)
 	private Role role;
 
+	@Setter
 	@JoinColumn(name = "member_info_id")
 	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	private MemberInfo memberInfo;
-
-	public void setMemberInfo(MemberInfo info) {
-		this.memberInfo = info;
-		if (info.getMember() != this) {
-			info.setMember(this);
-		}
-	}
 
 	@Builder
 	public Member(String name, Dept dept, Code position, LocalDateTime joinDate, Role role) {

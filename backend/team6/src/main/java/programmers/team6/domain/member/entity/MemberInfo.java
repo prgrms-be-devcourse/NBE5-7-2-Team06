@@ -5,7 +5,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToOne;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -22,9 +21,6 @@ public class MemberInfo extends BaseEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@OneToOne(mappedBy = "memberInfo")
-	private Member member;
-
 	@Column(nullable = false)
 	private String birth;
 
@@ -33,13 +29,6 @@ public class MemberInfo extends BaseEntity {
 
 	@Column(nullable = false)
 	private String password;
-
-	public void setMember(Member member) {
-		this.member = member;
-		if (member.getMemberInfo() != this) {
-			member.setMemberInfo(this);
-		}
-	}
 
 	@Builder
 	public MemberInfo(String birth, String email, String password) {
