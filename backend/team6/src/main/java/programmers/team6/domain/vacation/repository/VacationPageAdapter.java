@@ -11,7 +11,7 @@ import java.util.List;
 
 @Repository
 @RequiredArgsConstructor
-public class VacationPageAdapter implements VacationSummeryRepository{
+public class VacationPageAdapter implements VacationSummeryRepository {
 
     private final VacationRequestRepository vacationRequestRepository;
     private final VacationInfoRepository vacationInfoRepository;
