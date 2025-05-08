@@ -8,6 +8,7 @@
     type_code: 1=연차, 2=병가, 3=반차
     status_code: 1=대기, 2=승인, 3=반려
     를 가정하여 작성하였습니다 만약 code가 변경된다면 수정해야 합니다.
+    추후 계산로직을 어플리케이션단에서 하는 식으로 변경해야 할 수 있음
      -->
     <named-native-query name="VacationRequest.getMonthlyVacationSummary" result-set-mapping="VacationMonthlySummaryResponseMapping">
         <query><![CDATA[
@@ -350,6 +351,8 @@
                 SUM(remain_count) as remain_count
             FROM
                 vacation_info
+            WHERE
+                member_id in (select member_id from vacation_summary)
             GROUP BY
                 member_id
         )
