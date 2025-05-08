@@ -14,7 +14,7 @@ public class ApprovalFirstStepSelectResponse {
 	private LocalDateTime from;
 	private LocalDateTime to;
 	private String name;
-	private String dept;
-	private String position;
+	private String deptName;
+	private String positionName;
 	private ApprovalStatus status;
 }

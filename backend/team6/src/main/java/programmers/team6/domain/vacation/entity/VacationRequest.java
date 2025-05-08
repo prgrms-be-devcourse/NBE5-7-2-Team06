@@ -14,6 +14,7 @@ import jakarta.persistence.Version;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import programmers.team6.domain.member.entity.Code;
+import programmers.team6.domain.member.entity.Member;
 import programmers.team6.global.entity.BaseEntity;
 
 @Entity
@@ -41,6 +42,9 @@ public class VacationRequest extends BaseEntity {
 	@JoinColumn(name = "status_code", nullable = false)
 	private Code status;
 
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "member_id")
+	private Member member;
 	@Version
 	private Integer version;
 }

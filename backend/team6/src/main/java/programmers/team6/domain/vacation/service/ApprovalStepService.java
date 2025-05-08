@@ -1,7 +1,7 @@
 package programmers.team6.domain.vacation.service;
 
-import java.util.List;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,14 +20,23 @@ public class ApprovalStepService {
 	private final ApprovalStepRepository approvalStepRepository;
 
 	@Transactional(readOnly = true)
-	public List<ApprovalFirstStepSelectResponse> findFirstStep(ApprovalStepSelectRequest request) {
-		return approvalStepRepository.findFirstStepByMemberId(request.getMemberId(), STEP1);
+	public Page<ApprovalFirstStepSelectResponse> findFirstStep(ApprovalStepSelectRequest request, Pageable pageable) {
+		validateMember(request.getMemberId());
+		return approvalStepRepository.findFirstStepByMemberId(request.getMemberId(), STEP1, pageable);
 	}
 
 	@Transactional(readOnly = true)
-	public List<ApprovalFirstStepSelectResponse> findFirstStepByFilter(ApprovalStepFilterRequest request) {
+	public Page<ApprovalFirstStepSelectResponse> findFirstStepByFilter(ApprovalStepFilterRequest request,
+		Pageable pageable) {
+		validateMember(request.getMemberId());
 		return approvalStepRepository.findFirstStepByFilter(request.getMemberId(), request.getTypeId(),
-			request.getName(), request.getFrom(), request.getTo(), request.getStatus(), STEP1);
+			request.getName(), request.getFrom(), request.getTo(), request.getStatus(), STEP1, pageable);
+	}
+
+	public void validateMember(Long memberId) {
+		if (!approvalStepRepository.existsByMemberId(memberId)) {
+			throw new IllegalArgumentException("결재 목록 데이터가 없습니다.");
+		}
 	}
 
 }
