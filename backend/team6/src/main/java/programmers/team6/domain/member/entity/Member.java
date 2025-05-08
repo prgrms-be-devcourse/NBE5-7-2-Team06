@@ -1,5 +1,8 @@
 package programmers.team6.domain.member.entity;
 
+import java.time.LocalDateTime;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -10,11 +13,16 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import programmers.team6.domain.member.enums.Role;
 import programmers.team6.global.entity.BaseEntity;
 
+@Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Member extends BaseEntity {
@@ -36,6 +44,23 @@ public class Member extends BaseEntity {
 	private Code position;
 
 	@Column(nullable = false)
+	private LocalDateTime joinDate;
+
+	@Column(nullable = false)
 	@Enumerated(EnumType.STRING)
 	private Role role;
+
+	@Setter
+	@JoinColumn(name = "member_info_id")
+	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	private MemberInfo memberInfo;
+
+	@Builder
+	public Member(String name, Dept dept, Code position, LocalDateTime joinDate, Role role) {
+		this.name = name;
+		this.dept = dept;
+		this.position = position;
+		this.joinDate = joinDate;
+		this.role = role;
+	}
 }
