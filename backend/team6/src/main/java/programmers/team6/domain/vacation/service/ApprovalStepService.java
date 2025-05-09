@@ -8,9 +8,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
+import programmers.team6.domain.vacation.dto.ApprovalFirstStepDetailResponse;
 import programmers.team6.domain.vacation.dto.ApprovalFirstStepSelectResponse;
 import programmers.team6.domain.vacation.dto.ApprovalStepSelectRequest;
+import programmers.team6.domain.vacation.entity.ApprovalStep;
 import programmers.team6.domain.vacation.repository.ApprovalStepRepository;
+import programmers.team6.domain.vacation.util.mapper.ApprovalStepMapper;
 
 @Service
 @RequiredArgsConstructor
@@ -21,7 +24,7 @@ public class ApprovalStepService {
 	private final ApprovalStepRepository approvalStepRepository;
 
 	@Transactional(readOnly = true)
-	public Page<ApprovalFirstStepSelectResponse> findFirstStep(Long memberId, Pageable pageable) {
+	public Page<ApprovalFirstStepSelectResponse> findFirstStepByMemberId(Long memberId, Pageable pageable) {
 		validateMember(memberId);
 		return approvalStepRepository.findFirstStepByMemberId(memberId, STEP1, pageable);
 	}
@@ -38,6 +41,13 @@ public class ApprovalStepService {
 		if (!approvalStepRepository.existsByMemberId(memberId)) {
 			throw new NoSuchElementException("결재 목록 데이터가 없습니다.");
 		}
+	}
+
+	@Transactional(readOnly = true)
+	public ApprovalFirstStepDetailResponse findFirstStepDetailById(Long approvalStepId, Long memberId) {
+		ApprovalStep findApprovalStep = approvalStepRepository.findByIdAndMemberId(approvalStepId, memberId)
+			.orElseThrow(() -> new IllegalArgumentException("해당 결재 목록이 없습니다."));
+		return ApprovalStepMapper.fromEntity(findApprovalStep);
 	}
 
 }

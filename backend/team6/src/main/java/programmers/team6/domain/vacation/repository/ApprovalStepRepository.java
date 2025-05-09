@@ -1,6 +1,7 @@
 package programmers.team6.domain.vacation.repository;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -41,4 +42,5 @@ public interface ApprovalStepRepository extends JpaRepository<ApprovalStep, Long
 	Page<ApprovalFirstStepSelectResponse> findFirstStepByFilter(Long memberId, Long typeId, String name,
 		LocalDateTime from, LocalDateTime to, ApprovalStatus status, int step, Pageable pageable);
 
+	Optional<ApprovalStep> findByIdAndMemberId(Long id, Long memberId);
 }
