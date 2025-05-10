@@ -1,0 +1,78 @@
+package programmers.team6.domain.vacation.utils;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.From;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.metamodel.SingularAttribute;
+
+/**
+ * 필터링을 위한 Predicate 리스트 빌드
+ * @author gunwoong
+ */
+public class CriteriaCustomPredicateBuilder<T> {
+	private final CriteriaBuilder cb;
+	private final List<Predicate> predicates;
+
+	private CriteriaCustomPredicateBuilder(CriteriaBuilder cb) {
+		this.cb = cb;
+		this.predicates = new ArrayList<>();
+	}
+
+	public static <T> CriteriaCustomPredicateBuilder<T> builder(CriteriaBuilder cb) {
+		return new CriteriaCustomPredicateBuilder<>(cb);
+	}
+
+	public <R> CriteriaCustomPredicateBuilder<T> applyDateRangeFilter(From<T, R> root,
+		SingularAttribute<? super R, LocalDate> mappedFromField,
+		SingularAttribute<? super R, LocalDate> mappedToField,
+		LocalDate from, LocalDate to) {
+		if (isProvided(from) && isProvided(to)) {
+			this.predicates.add(cb.greaterThanOrEqualTo(root.get(mappedToField), from));
+			this.predicates.add(cb.lessThanOrEqualTo(root.get(mappedFromField), to));
+		}
+		return this;
+	}
+
+	public <R> CriteriaCustomPredicateBuilder<T> applyDateRangeFilter(From<T, R> root,
+		SingularAttribute<? super R, LocalDate> mappedFromField,
+		SingularAttribute<? super R, LocalDate> mappedToField,
+		Optional<LocalDate> from, Optional<LocalDate> to) {
+		return applyDateRangeFilter(root, mappedFromField, mappedToField, from.orElse(null), to.orElse(null));
+	}
+
+	public CriteriaCustomPredicateBuilder<T> applyEqualFilter(From<T, ?> root, Object conditionValue,
+		SingularAttribute<?, ?>... mappedFields) {
+		if (isProvided(conditionValue)) {
+			this.predicates.add(cb.equal(CriteriaUtils.searchPath(root, mappedFields), conditionValue));
+		}
+		return this;
+	}
+
+	public <X, A, B> CriteriaCustomPredicateBuilder<T> applyEqualFilter(From<X, A> root,
+		SingularAttribute<? super A, ?> mappedField,
+		From<X, B> anotherRoot, SingularAttribute<? super B, ?> mappedAnotherField) {
+		this.predicates.add(cb.equal(root.get(mappedField), anotherRoot.get(mappedAnotherField)));
+		return this;
+	}
+
+	public CriteriaCustomPredicateBuilder<T> applyLikeFilter(From<T, ?> root, String conditionValue,
+		SingularAttribute<?, ?>... mappedFields) {
+		if (isProvided(conditionValue)) {
+			this.predicates.add(cb.like(CriteriaUtils.searchPath(root, mappedFields), "%" + conditionValue + "%"));
+		}
+		return this;
+	}
+
+	public List<Predicate> build() {
+		return predicates;
+	}
+
+	private boolean isProvided(Object value) {
+		return value != null;
+	}
+}

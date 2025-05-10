@@ -14,7 +14,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
 import programmers.team6.domain.member.entity.Member;
-import programmers.team6.domain.vacation.dto.ApprovalStatus;
+import programmers.team6.domain.vacation.enums.ApprovalStatus;
 import programmers.team6.global.entity.BaseEntity;
 
 @Entity

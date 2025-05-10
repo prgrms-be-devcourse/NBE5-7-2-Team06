@@ -13,14 +13,13 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Version;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import programmers.team6.domain.member.entity.Code;
 import programmers.team6.domain.member.entity.Member;
-import programmers.team6.domain.vacation.dto.VacationRequestStatus;
+import programmers.team6.domain.vacation.enums.VacationRequestStatus;
 import programmers.team6.global.entity.BaseEntity;
 
 @Entity
@@ -52,9 +51,6 @@ public class VacationRequest extends BaseEntity {
 	@ManyToOne(cascade = CascadeType.PERSIST)
 	@JoinColumn(name = "member_id")
 	private Member member;
-
-	@Version
-	private Integer version;
 
 	@Builder
 	public VacationRequest(LocalDate from, LocalDate to, String reason, Code type,

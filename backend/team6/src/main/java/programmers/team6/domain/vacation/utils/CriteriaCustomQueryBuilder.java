@@ -1,0 +1,50 @@
+package programmers.team6.domain.vacation.utils;
+
+import java.util.List;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.Predicate;
+
+/**
+ * 주어진 필터(Predicates)를 기반으로 쿼리 생성 및 projection
+ * @param <T>
+ * @author gunwoong
+ */
+public class CriteriaCustomQueryBuilder<T> {
+	private CriteriaQuery<T> cq;
+	private CriteriaBuilder cb;
+	private TypedQuery<T> typedQuery;
+
+	private CriteriaCustomQueryBuilder(CriteriaQuery<T> cq, CriteriaBuilder cb) {
+		this.cq = cq;
+		this.cb = cb;
+	}
+
+	public static <T> CriteriaCustomQueryBuilder<T> builder(CriteriaQuery<T> cq, CriteriaBuilder cb) {
+		return new CriteriaCustomQueryBuilder<>(cq, cb);
+	}
+
+	public CriteriaCustomQueryBuilder<T> applyDynamicPredicates(List<Predicate> predicates) {
+		cq.where(cb.and(predicates.toArray(new Predicate[0])));
+		return this;
+	}
+
+	public CriteriaCustomQueryBuilder<T> projection(Class<T> projectionClass, Expression... projectionFields) {
+		cq.select(cb.construct(projectionClass, projectionFields));
+		return this;
+	}
+
+	public CriteriaCustomQueryBuilder<T> createQuery(EntityManager entityManager) {
+		this.typedQuery = entityManager.createQuery(cq);
+		return this;
+	}
+
+	public TypedQuery<T> build() {
+		return typedQuery;
+	}
+
+}

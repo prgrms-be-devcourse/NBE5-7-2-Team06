@@ -1,125 +1,103 @@
 package programmers.team6.domain.vacation.dto;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.From;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
-import jakarta.persistence.criteria.Path;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import lombok.RequiredArgsConstructor;
+import programmers.team6.domain.member.entity.Code_;
+import programmers.team6.domain.member.entity.Dept_;
+import programmers.team6.domain.member.entity.Member_;
 import programmers.team6.domain.vacation.entity.ApprovalStep;
+import programmers.team6.domain.vacation.entity.ApprovalStep_;
 import programmers.team6.domain.vacation.entity.VacationRequest;
+import programmers.team6.domain.vacation.entity.VacationRequest_;
+import programmers.team6.domain.vacation.enums.Quarter;
 import programmers.team6.domain.vacation.repository.VacationRequestRepository;
+import programmers.team6.domain.vacation.utils.CriteriaCustomPredicateBuilder;
+import programmers.team6.domain.vacation.utils.CriteriaCustomQueryBuilder;
+import programmers.team6.domain.vacation.utils.QueryUtils;
 
 @Repository
 @RequiredArgsConstructor
 public class VacationRequestSearchCustom {
 	private final VacationRequestRepository vacationRequestRepository;
 	private final EntityManager entityManager;
-	private CriteriaBuilder cb;
-	private List<Predicate> predicates;
 
 	/**
 	 * ApprovalStep와 VacationRequest를 join하고 AdminVacationSearchCondition의 변수들을 통해 다중 필터 구현
+	 * From<A,B> = 'from 엔티티'에서 엔티티 부분 , A타입의 객체부터 B타입의 속성을 탐색 (그래서 Root<A,A>이고 Join<A,B>임, Root와 Join 둘다 From 상속)
+	 * SingularAttribute<C,D> = 메타모델에서 사용하는 단일 속성 타입 정보 , C = 특정 엔티티, D = C 엔티티의 필드 타입
+	 * Path<X> = 메타모델 경로 혹은 루트로부터 탐색된 속성(특정 속성의 경로) , X = 속성 타입, 해당 path가 가르키는 최종 필드 타입
 	 * @param searchCondition
 	 * @param pageable
 	 * @return
 	 */
 	public Page<VacationRequestReadResponse> search(AdminVacationSearchCondition searchCondition, Pageable pageable) {
-		this.cb = entityManager.getCriteriaBuilder();
+		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
 		CriteriaQuery<VacationRequestReadResponse> cq = cb.createQuery(VacationRequestReadResponse.class);
 
 		Root<ApprovalStep> as = cq.from(ApprovalStep.class);
 		Join<ApprovalStep, VacationRequest> vr = as.join("vacationRequest", JoinType.INNER);
-		this.predicates = new ArrayList<>();
-		this.predicates.add(cb.equal(as.get("step"), vr.get("lastApprovalStep")));
 
-		// 휴가 신청 범위
-		addPredicateBetweenDates(vr, Optional.ofNullable(searchCondition.getStart()),
-			Optional.ofNullable(searchCondition.getEnd()));
-		// 특정 분기 (1,2,3,4,상,하반기)
-		addPredicateBetweenDates(vr, Quarter.getStartDate(searchCondition.getYear(), searchCondition.getQuarter()),
-			Quarter.getEndDate(searchCondition.getYear(), searchCondition.getQuarter()));
-		// 휴가 신청자 이름
-		addPredicateLike(vr, new String[] {"member", "name"}, searchCondition.getApplicantName());
-		// 부서 이름
-		addPredicateLike(vr, new String[]{"member", "dept","deptName"}, searchCondition.getDeptName());
-		// code id를 활용
-		if (searchCondition.getCodeId() != null) {
-			// 휴가 종류
-			Predicate vacationRequestType = cb.equal(vr.get("type").get("id"), searchCondition.getCodeId());
-			// 휴가 신청자 포지션
-			Predicate vacationRequestMemberPosition = cb.equal(vr.get("member").get("position").get("id"), searchCondition.getCodeId());
-			// 결재자 포지션
-			Predicate approvalStepMemberPosition = cb.equal(as.get("member").get("position").get("id"), searchCondition.getCodeId());
-			predicates.add(cb.or(vacationRequestType, vacationRequestMemberPosition, approvalStepMemberPosition));
-		}
-		// 휴가 신청 상태
-		addPredicateEqual(vr, new String[] {"status"}, searchCondition.getVacationRequestStatus());
-		// 휴가 결재자 이름
-		addPredicateLike(as, new String[] {"member", "name"}, searchCondition.getApproverName());
+		/**
+		 * 1. 각 휴가 신청서마다 최종 결제자 기준으로 조회
+		 * 2. 휴가 신청 범위
+		 * 3. 특정 년도 혹은 특정 분기 (1,2,3,4,상,하반기)
+		 * 4. 휴가 신청자 이름
+		 * 5. 부서 이름
+		 * 6. 휴가 종류
+		 * 7. 휴가 신청자 포지션
+		 * 8. 결재자 포지션
+		 * 9. 휴가 신청 상태
+		 * 10. 휴가 결재자이름
+		 */
+		List<Predicate> predicates = CriteriaCustomPredicateBuilder.<ApprovalStep>builder(cb)
+			.applyEqualFilter(as, ApprovalStep_.step, vr, VacationRequest_.lastApprovalStep)
+			.applyDateRangeFilter(vr, VacationRequest_.from, VacationRequest_.to,
+				searchCondition.dateRange().start(), searchCondition.dateRange().end())
+			.applyDateRangeFilter(vr, VacationRequest_.from, VacationRequest_.to, Quarter.getStart(
+				searchCondition.dateRange().year(), searchCondition.dateRange().quarter()), Quarter.getEnd(
+				searchCondition.dateRange().year(), searchCondition.dateRange().quarter()))
+			.applyLikeFilter(vr, searchCondition.applicant().name(), VacationRequest_.member, Member_.name)
+			.applyLikeFilter(vr, searchCondition.applicant().deptName(), VacationRequest_.member, Member_.dept,
+				Dept_.deptName)
+			.applyEqualFilter(vr, searchCondition.applicant().vacationTypeCodeId(), VacationRequest_.type, Code_.id)
+			.applyEqualFilter(vr, searchCondition.applicant().positionCodeId(), VacationRequest_.member,
+				Member_.position, Code_.id)
+			.applyEqualFilter(as, searchCondition.approver().positionCodeId(), VacationRequest_.member,
+				Member_.position, Code_.id)
+			.applyEqualFilter(vr, searchCondition.vacationRequestStatus(), VacationRequest_.status)
+			.applyLikeFilter(as, searchCondition.approver().name(), ApprovalStep_.member, Member_.name)
+			.build();
 
-		cq.where(cb.and(predicates.toArray(new Predicate[0])));
+		/**
+		 * Predicates들을 기반을 Query 생성
+		 */
+		TypedQuery<VacationRequestReadResponse> query = CriteriaCustomQueryBuilder.builder(
+				cq, cb)
+			.applyDynamicPredicates(predicates)
+			.projection(VacationRequestReadResponse.class, vr.get(VacationRequest_.type),
+				vr.get(VacationRequest_.from),
+				vr.get(VacationRequest_.to),
+				vr.get(VacationRequest_.member).get(Member_.name),
+				as.get(ApprovalStep_.member).get(Member_.name),
+				vr.get(VacationRequest_.member).get(Member_.dept).get(Dept_.deptName),
+				vr.get(VacationRequest_.status))
+			.createQuery(entityManager)
+			.build();
 
-		// projection
-		cq.select(cb.construct(VacationRequestReadResponse.class,
-			vr.get("type"),
-			vr.get("from"),
-			vr.get("to"),
-			vr.get("member").get("name"),
-			as.get("member").get("name"),
-			vr.get("member").get("dept").get("deptName"),
-			vr.get("status")
-		));
-
-		// pageable
-		List<VacationRequestReadResponse> result = entityManager.createQuery(cq)
-			.setFirstResult((int)pageable.getOffset())
-			.setMaxResults(pageable.getPageSize())
-			.getResultList();
-
-		Long totalCount = vacationRequestRepository.count();
-		return new PageImpl<>(result, pageable, totalCount);
-	}
-
-	private void addPredicateBetweenDates(From root, Optional<LocalDate> start,
-		Optional<LocalDate> end) {
-		if (start.isPresent() && end.isPresent()) {
-			predicates.add(cb.lessThanOrEqualTo(root.get("from"), end.get()));
-			predicates.add(cb.greaterThanOrEqualTo(root.get("to"), start.get()));
-		}
-	}
-
-	private <T> void addPredicateEqual(Join root, String[] targetFieldNames, T conditionValue) {
-		if (conditionValue != null) {
-			Path path = root.get(targetFieldNames[0]);
-			for (int i = 1; i < targetFieldNames.length; i++) {
-				path = path.get(targetFieldNames[i]);
-			}
-			predicates.add(cb.equal(path, conditionValue));
-		}
-	}
-
-	private <T> void addPredicateLike(From root, String[] targetFieldNames, T conditionValue) {
-		if (conditionValue != null) {
-			Path path = root.get(targetFieldNames[0]);
-			for (int i = 1; i < targetFieldNames.length; i++) {
-				path = path.get(targetFieldNames[i]);
-			}
-			predicates.add(cb.like(path, "%" + conditionValue + "%"));
-		}
+		return QueryUtils.makeQueryToPageable(query, pageable,
+			vacationRequestRepository.count());
 	}
 }

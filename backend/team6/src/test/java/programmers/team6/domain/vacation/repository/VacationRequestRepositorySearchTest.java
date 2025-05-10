@@ -87,59 +87,76 @@ class VacationRequestRepositorySearchTest {
 	//
 	// @Test
 	// void testDefault() {
-	// 	Page<VacationRequestReadResponse> result1 = vacationRequestSearchCustom.search(
-	// 		new AdminVacationSearchCondition(null, null, null, null, null, null,
-	// 			null, null, null),
-	// 		PageRequest.of(0, Integer.MAX_VALUE)
-	// 	);
+	// 	// given
+	// 	AdminVacationSearchCondition defaultCondition = new AdminVacationSearchCondition(
+	// 		new AdminVacationSearchCondition.DateRangeCondition(null, null, null, null),
+	// 		new AdminVacationSearchCondition.ApplicantCondition(null, null, null, null),
+	// 		new AdminVacationSearchCondition.ApproverCondition(null, null), null);
 	//
-	// 	Assertions.assertThat(result1).hasSize(3 * 4 * 3 * 3);
+	// 	// when
+	// 	Page<VacationRequestReadResponse> result1 = vacationRequestSearchCustom.search(defaultCondition,
+	// 		PageRequest.of(0, Integer.MAX_VALUE));
+	// 	Page<VacationRequestReadResponse> result2 = vacationRequestSearchCustom.search(defaultCondition,
+	// 		PageRequest.of(0, 3));
 	//
-	// 	Page<VacationRequestReadResponse> result2 = vacationRequestSearchCustom.search(
-	// 		new AdminVacationSearchCondition(null, null, null, null, null, null,
-	// 			null, null, null),
-	// 		PageRequest.of(0, 3)
-	// 	);
+	// 	// then
+	// 	assertThat(result1).hasSize(3 * 4 * 3 * 3);
+	// 	assertThat(result2).hasSize(3);
 	//
-	// 	Assertions.assertThat(result2).hasSize(3);
+	// 	for (VacationRequestReadResponse vacationRequestReadResponse : result2) {
+	// 		assertThat(vacationRequestReadResponse.getType()).isNotNull();
+	// 		assertThat(vacationRequestReadResponse.getFrom()).isNotNull();
+	// 		assertThat(vacationRequestReadResponse.getTo()).isNotNull();
+	// 		assertThat(vacationRequestReadResponse.getApplicantName()).isNotNull();
+	// 		assertThat(vacationRequestReadResponse.getApproverName()).isNotNull();
+	// 		assertThat(vacationRequestReadResponse.getDeptName()).isNotNull();
+	// 		assertThat(vacationRequestReadResponse.getStatus()).isNotNull();
+	// 	}
 	// }
 	//
 	// @Test
 	// void testDate() {
-	// 	Page<VacationRequestReadResponse> result = vacationRequestSearchCustom.search(
-	// 		new AdminVacationSearchCondition(LocalDate.of(2025, 1, 1), LocalDate.of(2026, 1, 1), null, null, null, null,
-	// 			null, null, null),
-	// 		PageRequest.of(0, Integer.MAX_VALUE)
-	// 	);
+	// 	// given
+	// 	AdminVacationSearchCondition dateCondition = new AdminVacationSearchCondition(
+	// 		new AdminVacationSearchCondition.DateRangeCondition(LocalDate.of(2025, 1, 1), LocalDate.of(2026, 1, 1),
+	// 			null, null), new AdminVacationSearchCondition.ApplicantCondition(null, null, null, null),
+	// 		new AdminVacationSearchCondition.ApproverCondition(null, null), null);
+	// 	AdminVacationSearchCondition yearCondition = new AdminVacationSearchCondition(
+	// 		new AdminVacationSearchCondition.DateRangeCondition(null, null, 2025, null),
+	// 		new AdminVacationSearchCondition.ApplicantCondition(null, null, null, null),
+	// 		new AdminVacationSearchCondition.ApproverCondition(null, null), null);
+	// 	AdminVacationSearchCondition yearAndQuarterCondition = new AdminVacationSearchCondition(
+	// 		new AdminVacationSearchCondition.DateRangeCondition(null, null, 2025, Quarter.Q1),
+	// 		new AdminVacationSearchCondition.ApplicantCondition(null, null, null, null),
+	// 		new AdminVacationSearchCondition.ApproverCondition(null, null), null);
 	//
-	// 	assertThat(result).hasSize(3 * 4 * 3);
-	// }
+	// 	// when
+	// 	Page<VacationRequestReadResponse> dateResult = vacationRequestSearchCustom.search(dateCondition,
+	// 		PageRequest.of(0, Integer.MAX_VALUE));
+	// 	Page<VacationRequestReadResponse> yearResult = vacationRequestSearchCustom.search(yearCondition,
+	// 		PageRequest.of(0, Integer.MAX_VALUE));
+	// 	Page<VacationRequestReadResponse> yearAndQuarterResult = vacationRequestSearchCustom.search(
+	// 		yearAndQuarterCondition, PageRequest.of(0, Integer.MAX_VALUE));
 	//
-	// @Test
-	// void testQuarter() {
-	// 	// Page<VacationRequestReadResponse> result = vacationRequestSearchCustom.search(
-	// 	// 	new AdminVacationSearchCondition(null, null, 2025, Quarter.Q1, null, null,
-	// 	// 		null, null, null, null),
-	// 	// 	PageRequest.of(0, Integer.MAX_VALUE)
-	// 	// );
-	// 	// assertThat(result).hasSize(19 * 2 * 3);
-	// 	//
-	// 	// Page<VacationRequestReadResponse> result2 = vacationRequestSearchCustom.search(
-	// 	// 	new AdminVacationSearchCondition(null, null, 2025, Quarter.H1, null, null,
-	// 	// 		null, null, null, null),
-	// 	// 	PageRequest.of(0, Integer.MAX_VALUE)
-	// 	// );
-	// 	// assertThat(result2).hasSize(19 * 3 * 3);
+	// 	// then
+	// 	assertThat(dateResult).hasSize(3 * 4 * 3);
+	// 	assertThat(yearResult).hasSize(3 * 4 * 3);
+	// 	assertThat(yearAndQuarterResult).hasSize(3 * 3 * 3);
 	// }
 	//
 	// @Test
 	// void testApplicantName() {
-	// 	Page<VacationRequestReadResponse> result = vacationRequestSearchCustom.search(
-	// 		new AdminVacationSearchCondition(null, null, null, null, "0", null,
-	// 			null, null, null),
-	// 		PageRequest.of(0, Integer.MAX_VALUE)
-	// 	);
+	// 	// given
+	// 	AdminVacationSearchCondition applicantNameCondition = new AdminVacationSearchCondition(
+	// 		new AdminVacationSearchCondition.DateRangeCondition(null, null, null, null),
+	// 		new AdminVacationSearchCondition.ApplicantCondition("0", null, null, null),
+	// 		new AdminVacationSearchCondition.ApproverCondition(null, null), null);
 	//
+	// 	// when
+	// 	Page<VacationRequestReadResponse> result = vacationRequestSearchCustom.search(applicantNameCondition,
+	// 		PageRequest.of(0, Integer.MAX_VALUE));
+	//
+	// 	// then
 	// 	for (VacationRequestReadResponse vacationRequestReadResponse : result) {
 	// 		assertThat(vacationRequestReadResponse.getApplicantName()).contains("0");
 	// 	}
@@ -148,11 +165,14 @@ class VacationRequestRepositorySearchTest {
 	//
 	// @Test
 	// void testDeptName() {
-	// 	Page<VacationRequestReadResponse> result = vacationRequestSearchCustom.search(
-	// 		new AdminVacationSearchCondition(null, null, null, null, null, "0",
-	// 			null, null, null),
-	// 		PageRequest.of(0, Integer.MAX_VALUE)
-	// 	);
+	// 	// given
+	// 	AdminVacationSearchCondition deptNameCondition = new AdminVacationSearchCondition(
+	// 		new AdminVacationSearchCondition.DateRangeCondition(null, null, null, null),
+	// 		new AdminVacationSearchCondition.ApplicantCondition(null, "0", null, null),
+	// 		new AdminVacationSearchCondition.ApproverCondition(null, null), null);
+	//
+	// 	Page<VacationRequestReadResponse> result = vacationRequestSearchCustom.search(deptNameCondition,
+	// 		PageRequest.of(0, Integer.MAX_VALUE));
 	//
 	// 	for (VacationRequestReadResponse vacationRequestReadResponse : result) {
 	// 		assertThat(vacationRequestReadResponse.getDeptName()).contains("0");
@@ -162,66 +182,79 @@ class VacationRequestRepositorySearchTest {
 	//
 	// @Test
 	// void testCodeId() {
-	// 	// 휴가 종류
-	// 	Page<VacationRequestReadResponse> result1 = vacationRequestSearchCustom.search(
-	// 		new AdminVacationSearchCondition(null, null, null, null, null, null,
-	// 			3L, null, null),
-	// 		PageRequest.of(0, Integer.MAX_VALUE)
-	// 	);
+	// 	// given
+	// 	AdminVacationSearchCondition applicantVacationTypeCodeIdCondition = new AdminVacationSearchCondition(
+	// 		new AdminVacationSearchCondition.DateRangeCondition(null, null, null, null),
+	// 		new AdminVacationSearchCondition.ApplicantCondition(null, null, null, 3L),
+	// 		new AdminVacationSearchCondition.ApproverCondition(null, null), null);
+	// 	AdminVacationSearchCondition applicantPositionCodeIdCondition = new AdminVacationSearchCondition(
+	// 		new AdminVacationSearchCondition.DateRangeCondition(null, null, null, null),
+	// 		new AdminVacationSearchCondition.ApplicantCondition(null, null, 1L, null),
+	// 		new AdminVacationSearchCondition.ApproverCondition(null, null), null);
+	// 	AdminVacationSearchCondition approverPositionCodeIdCondition = new AdminVacationSearchCondition(
+	// 		new AdminVacationSearchCondition.DateRangeCondition(null, null, null, null),
+	// 		new AdminVacationSearchCondition.ApplicantCondition(null, null, null, null),
+	// 		new AdminVacationSearchCondition.ApproverCondition(null, 2L), null);
 	//
-	// 	for (VacationRequestReadResponse vacationRequestReadResponse : result1) {
+	// 	// when
+	// 	Page<VacationRequestReadResponse> applicantVacationTypeCodeIdResult = vacationRequestSearchCustom.search(
+	// 		applicantVacationTypeCodeIdCondition, PageRequest.of(0, Integer.MAX_VALUE));
+	// 	Page<VacationRequestReadResponse> applicantPositionCodeIdResult = vacationRequestSearchCustom.search(
+	// 		applicantPositionCodeIdCondition, PageRequest.of(0, Integer.MAX_VALUE));
+	// 	Page<VacationRequestReadResponse> approverPositionCodeIdResult = vacationRequestSearchCustom.search(
+	// 		approverPositionCodeIdCondition, PageRequest.of(0, Integer.MAX_VALUE));
+	//
+	// 	// then
+	// 	assertThat(applicantVacationTypeCodeIdResult).hasSize(3 * 4 * 3);
+	// 	for (VacationRequestReadResponse vacationRequestReadResponse : applicantVacationTypeCodeIdResult) {
 	// 		assertThat(vacationRequestReadResponse.getApplicantName()).isEqualTo("member 0");
 	// 	}
-	// 	assertThat(result1).hasSize(3 * 4 * 3);
-	//
-	// 	// 휴가 신청자 포지션
-	// 	Page<VacationRequestReadResponse> result2 = vacationRequestSearchCustom.search(
-	// 		new AdminVacationSearchCondition(null, null, null, null, null, null,
-	// 			1L, null, null),
-	// 		PageRequest.of(0, Integer.MAX_VALUE)
-	// 	);
-	//
-	// 	for (VacationRequestReadResponse vacationRequestReadResponse : result2) {
+	// 	assertThat(applicantPositionCodeIdResult).hasSize(3 * 4 * 3 * 3);
+	// 	for (VacationRequestReadResponse vacationRequestReadResponse : applicantPositionCodeIdResult) {
 	// 		assertThat(vacationRequestReadResponse.getApplicantName()).startsWith("member");
 	// 	}
-	// 	assertThat(result2).hasSize(3 * 4 * 3 * 3);
-	//
-	// 	// 결재자 포지션
-	// 	Page<VacationRequestReadResponse> result = vacationRequestSearchCustom.search(
-	// 		new AdminVacationSearchCondition(null, null, null, null, null, null,
-	// 			2L, null, null),
-	// 		PageRequest.of(0, Integer.MAX_VALUE)
-	// 	);
-	//
-	// 	for (VacationRequestReadResponse vacationRequestReadResponse : result) {
+	// 	assertThat(approverPositionCodeIdResult).hasSize((3 - 1) * 4 * 3);
+	// 	for (VacationRequestReadResponse vacationRequestReadResponse : approverPositionCodeIdResult) {
 	// 		assertThat(vacationRequestReadResponse.getApproverName()).isEqualTo("approver 0 0");
 	// 	}
-	// 	assertThat(result).hasSize((3 - 1) * 4 * 3);
 	// }
 	//
 	// @Test
 	// void testVacationRequestStatus() {
-	// 	Page<VacationRequestReadResponse> result2 = vacationRequestSearchCustom.search(
-	// 		new AdminVacationSearchCondition(null, null, null, null, null, null, null,
-	// 			VacationRequestStatus.APPROVED, null),
-	// 		PageRequest.of(0, Integer.MAX_VALUE)
-	// 	);
-	// 	for (VacationRequestReadResponse vacationRequestReadResponse : result2) {
+	// 	// given
+	// 	AdminVacationSearchCondition vacationRequestStatusCondition = new AdminVacationSearchCondition(
+	// 		new AdminVacationSearchCondition.DateRangeCondition(null, null, null, null),
+	// 		new AdminVacationSearchCondition.ApplicantCondition(null, null, null, null),
+	// 		new AdminVacationSearchCondition.ApproverCondition(null, null), VacationRequestStatus.APPROVED);
+	//
+	// 	// when
+	// 	Page<VacationRequestReadResponse> vacationRequestStatusResult = vacationRequestSearchCustom.search(
+	// 		vacationRequestStatusCondition, PageRequest.of(0, Integer.MAX_VALUE));
+	//
+	// 	// then
+	// 	assertThat(vacationRequestStatusResult).hasSize(4 * 3 * 3);
+	// 	for (VacationRequestReadResponse vacationRequestReadResponse : vacationRequestStatusResult) {
 	// 		assertThat(vacationRequestReadResponse.getStatus()).isEqualTo(VacationRequestStatus.APPROVED);
 	// 	}
-	// 	assertThat(result2).hasSize(4 * 3 * 3);
 	// }
 	//
 	// @Test
 	// void testApproverName() {
-	// 	Page<VacationRequestReadResponse> result2 = vacationRequestSearchCustom.search(
-	// 		new AdminVacationSearchCondition(null, null, null, null, null, null, null,
-	// 			null, "approver 0"),
-	// 		PageRequest.of(0, Integer.MAX_VALUE)
-	// 	);
-	// 	for (VacationRequestReadResponse vacationRequestReadResponse : result2) {
+	// 	// given
+	// 	AdminVacationSearchCondition approverNameCondition = new AdminVacationSearchCondition(
+	// 		new AdminVacationSearchCondition.DateRangeCondition(null, null, null, null),
+	// 		new AdminVacationSearchCondition.ApplicantCondition(null, null, null, null),
+	// 		new AdminVacationSearchCondition.ApproverCondition("approver 0", null), null);
+	//
+	// 	// when
+	// 	Page<VacationRequestReadResponse> approverNameResult = vacationRequestSearchCustom.search(approverNameCondition,
+	// 		PageRequest.of(0, Integer.MAX_VALUE));
+	//
+	// 	// then
+	// 	assertThat(approverNameResult).hasSize(3 * 4 * 3);
+	// 	for (VacationRequestReadResponse vacationRequestReadResponse : approverNameResult) {
 	// 		assertThat(vacationRequestReadResponse.getApproverName()).startsWith("approver 0");
 	// 	}
-	// 	assertThat(result2).hasSize(3 * 4 * 3);
 	// }
+
 }
