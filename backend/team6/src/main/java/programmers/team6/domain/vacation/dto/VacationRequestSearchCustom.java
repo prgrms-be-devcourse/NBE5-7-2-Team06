@@ -94,6 +94,7 @@ public class VacationRequestSearchCustom {
 				as.get(ApprovalStep_.member).get(Member_.name),
 				vr.get(VacationRequest_.member).get(Member_.dept).get(Dept_.deptName),
 				vr.get(VacationRequest_.status))
+			.orderByLatest(vr, VacationRequest_.createdAt)
 			.createQuery(entityManager)
 			.build();
 

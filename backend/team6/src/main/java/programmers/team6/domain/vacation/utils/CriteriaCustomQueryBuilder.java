@@ -7,7 +7,9 @@ import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.From;
 import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.metamodel.SingularAttribute;
 
 /**
  * 주어진 필터(Predicates)를 기반으로 쿼리 생성 및 projection
@@ -35,6 +37,11 @@ public class CriteriaCustomQueryBuilder<T> {
 
 	public CriteriaCustomQueryBuilder<T> projection(Class<T> projectionClass, Expression... projectionFields) {
 		cq.select(cb.construct(projectionClass, projectionFields));
+		return this;
+	}
+
+	public CriteriaCustomQueryBuilder orderByLatest(From root, SingularAttribute mappedField) {
+		cq.orderBy(cb.desc(CriteriaUtils.searchPath(root, mappedField)));
 		return this;
 	}
 
