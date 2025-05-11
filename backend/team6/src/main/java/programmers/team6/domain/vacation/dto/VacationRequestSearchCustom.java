@@ -27,6 +27,7 @@ import programmers.team6.domain.vacation.repository.VacationRequestRepository;
 import programmers.team6.domain.vacation.utils.CriteriaCustomPredicateBuilder;
 import programmers.team6.domain.vacation.utils.CriteriaCustomQueryBuilder;
 import programmers.team6.domain.vacation.utils.QueryUtils;
+import programmers.team6.global.entity.BaseEntity_;
 
 @Repository
 @RequiredArgsConstructor
@@ -89,7 +90,7 @@ public class VacationRequestSearchCustom {
 				cb.function("GROUP_CONCAT", String.class, as.get(ApprovalStep_.member).get(Member_.name)),
 				vr.get(VacationRequest_.member).get(Member_.dept).get(Dept_.deptName), vr.get(VacationRequest_.status))
 			.groupBy(vr.get(VacationRequest_.id))
-			.orderByLatest(vr, VacationRequest_.createdAt)
+			.orderByLatest(vr, BaseEntity_.createdAt)
 			.createQuery(entityManager)
 			.build();
 

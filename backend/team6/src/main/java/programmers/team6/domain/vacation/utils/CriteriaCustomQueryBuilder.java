@@ -45,7 +45,7 @@ public class CriteriaCustomQueryBuilder<T> {
 		return this;
 	}
 
-	public CriteriaCustomQueryBuilder orderByLatest(From root, SingularAttribute mappedField) {
+	public <X> CriteriaCustomQueryBuilder<T> orderByLatest(From<?, ?> root, SingularAttribute<X, ?> mappedField) {
 		cq.orderBy(cb.desc(CriteriaUtils.searchPath(root, mappedField)));
 		return this;
 	}
