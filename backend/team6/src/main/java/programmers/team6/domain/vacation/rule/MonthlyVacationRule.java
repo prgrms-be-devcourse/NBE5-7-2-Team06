@@ -10,7 +10,8 @@ public final class MonthlyVacationRule {
 	private final Positive grantDays;
 
 	public VacationGrantInfo toGrantInfo(VacationGrantEligibility vacationGrantEligibility) {
-		return new VacationGrantInfo(vacationGrantEligibility.id(), grantDays.toInt() + vacationGrantEligibility.vacationCount(),
+		return new VacationGrantInfo(vacationGrantEligibility.id(),
+			grantDays.toInt() + vacationGrantEligibility.vacationCount(),
 			vacationGrantEligibility.version());
 	}
 }

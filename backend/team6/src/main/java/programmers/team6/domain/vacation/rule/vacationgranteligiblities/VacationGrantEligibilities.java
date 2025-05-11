@@ -9,7 +9,8 @@ public final class VacationGrantEligibilities {
 	private final List<VacationGrantEligibility> eligibility;
 	private final VacationEligibilityCriteria criteria;
 
-	public VacationGrantEligibilities(List<VacationGrantEligibility> eligibility, VacationEligibilityCriteria criteria) {
+	public VacationGrantEligibilities(List<VacationGrantEligibility> eligibility,
+		VacationEligibilityCriteria criteria) {
 		this.eligibility = new ArrayList<>(eligibility);
 		this.criteria = criteria;
 	}

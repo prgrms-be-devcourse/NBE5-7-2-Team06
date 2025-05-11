@@ -1,7 +1,6 @@
 package programmers.team6.domain.vacation.repository;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -16,16 +15,18 @@ public interface VacationInfoRepository extends JpaRepository<VacationInfo, Long
 	@Query(value = "SELECT COUNT(DISTINCT vi.memberId) FROM VacationInfo vi")
 	long countAllMemberIds();
 
-	@Query("SELECT new programmers.team6.domain.vacation.rule.vacationgranteligiblities.VacationGrantEligibility(" +
-		"vi.vacationId, m.joinDate, vi.totalCount, vi.version) " +
-		"FROM VacationInfo vi " +
-		"JOIN Member m ON vi.memberId = m.id " +
-		"WHERE (FUNCTION('date', m.joinDate) > :startJoinDate AND FUNCTION('day', m.joinDate) = FUNCTION('day', :currentDate)) " +
-		"   OR (FUNCTION('date', m.joinDate) > :startJoinDate AND FUNCTION('day', m.joinDate) > FUNCTION('day', FUNCTION('last_day', :currentDate)) "
-		+
-		"       AND FUNCTION('day', :currentDate) = FUNCTION('day', FUNCTION('last_day', :currentDate))) " +
-		"   OR (FUNCTION('date', m.joinDate) <= :startJoinDate AND FUNCTION('day', m.joinDate) = FUNCTION('day', :currentDate) " +
-		"       AND FUNCTION('month', m.joinDate) = FUNCTION('month', :currentDate))")
+	@Query("SELECT new programmers.team6.domain.vacation.rule.vacationgranteligiblities.VacationGrantEligibility("
+		+ "vi.vacationId, m.joinDate, vi.totalCount, vi.version) "
+		+ "FROM VacationInfo vi "
+		+ "JOIN Member m ON vi.memberId = m.id "
+		+ "WHERE (FUNCTION('date', m.joinDate) > :startJoinDate "
+		+ "AND FUNCTION('day', m.joinDate) = FUNCTION('day', :currentDate)) "
+		+ "   OR (FUNCTION('date', m.joinDate) > :startJoinDate "
+		+ "AND FUNCTION('day', m.joinDate) > FUNCTION('day', FUNCTION('last_day', :currentDate)) "
+		+ "       AND FUNCTION('day', :currentDate) = FUNCTION('day', FUNCTION('last_day', :currentDate))) "
+		+ "   OR (FUNCTION('date', m.joinDate) <= :startJoinDate "
+		+ "AND FUNCTION('day', m.joinDate) = FUNCTION('day', :currentDate) "
+		+ "       AND FUNCTION('month', m.joinDate) = FUNCTION('month', :currentDate))")
 	List<VacationGrantEligibility> findEligibilities(@Param("startJoinDate") LocalDate startJoinDate,
 		@Param("currentDate") LocalDate currentDate);
 }
