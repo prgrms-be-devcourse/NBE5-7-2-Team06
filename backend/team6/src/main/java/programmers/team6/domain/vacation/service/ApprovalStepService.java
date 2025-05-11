@@ -1,5 +1,6 @@
 package programmers.team6.domain.vacation.service;
 
+import java.time.temporal.ChronoUnit;
 import java.util.NoSuchElementException;
 
 import org.springframework.data.domain.Page;
@@ -8,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import programmers.team6.domain.member.entity.Member;
 import programmers.team6.domain.member.repository.MemberRepository;
 import programmers.team6.domain.vacation.dto.ApprovalFirstStepDetailResponse;
@@ -23,6 +25,7 @@ import programmers.team6.domain.vacation.enums.VacationRequestStatus;
 import programmers.team6.domain.vacation.repository.ApprovalStepRepository;
 import programmers.team6.domain.vacation.util.mapper.ApprovalStepMapper;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ApprovalStepService {
@@ -133,8 +136,10 @@ public class ApprovalStepService {
 
 		findApprovalStep.getVacationRequest().updateStatus(VacationRequestStatus.APPROVED);
 
-		// todo: 연차 계산 후 차감 로직
-
+		// todo: 멤버 연차 차감. vacationRequest->member->memberInfo 로 접근해서 차감.
+		long days = ChronoUnit.DAYS.between(findApprovalStep.getVacationRequest().getFrom().toLocalDate(),
+			findApprovalStep.getVacationRequest().getTo().toLocalDate()) + 1;
+		log.info("days = {}", days);
 	}
 
 	@Transactional
