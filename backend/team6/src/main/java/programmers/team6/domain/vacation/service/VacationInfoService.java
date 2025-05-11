@@ -7,8 +7,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
-import programmers.team6.domain.vacation.repository.dto.UpdatedResults;
 import programmers.team6.domain.vacation.repository.VacationEligibilitiesRepository;
+import programmers.team6.domain.vacation.repository.dto.UpdatedResults;
 import programmers.team6.domain.vacation.rule.AnnualVacationGrantRule;
 import programmers.team6.domain.vacation.rule.vacationgranteligiblities.VacationGrantEligibilities;
 import programmers.team6.domain.vacation.rule.vacationgranteligiblities.VacationGrantEligibilitiesFactory;
