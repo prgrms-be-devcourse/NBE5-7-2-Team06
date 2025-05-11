@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -17,6 +18,8 @@ import programmers.team6.domain.vacation.dto.VacationCreateResponseDto;
 import programmers.team6.domain.vacation.dto.VacationInfoSelectResponseDto;
 import programmers.team6.domain.vacation.dto.VacationListResponseDto;
 import programmers.team6.domain.vacation.dto.VacationListResponsePageDto;
+import programmers.team6.domain.vacation.dto.VacationUpdateRequestDto;
+import programmers.team6.domain.vacation.dto.VacationUpdateResponseDto;
 import programmers.team6.domain.vacation.service.VacationService;
 
 @RestController
@@ -61,6 +64,16 @@ public class VacationController {
 		@RequestParam(defaultValue = "0") int page) {
 
 		VacationListResponsePageDto response = vacationService.getVacationRequestListPaging(memberId, page);
+		return ResponseEntity.ok(response);
+	}
+
+	// 휴가 신청 수정
+	@PutMapping("/update")
+	public ResponseEntity<VacationUpdateResponseDto> updateVacationRequest(
+		@Validated @RequestBody VacationUpdateRequestDto requestDto,
+		@RequestParam Long memberId) {
+
+		VacationUpdateResponseDto response = vacationService.updateVacationRequest(memberId, requestDto);
 		return ResponseEntity.ok(response);
 	}
 }

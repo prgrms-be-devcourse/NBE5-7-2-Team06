@@ -20,6 +20,8 @@ import programmers.team6.domain.vacation.dto.VacationCreateResponseDto;
 import programmers.team6.domain.vacation.dto.VacationInfoSelectResponseDto;
 import programmers.team6.domain.vacation.dto.VacationListResponseDto;
 import programmers.team6.domain.vacation.dto.VacationListResponsePageDto;
+import programmers.team6.domain.vacation.dto.VacationUpdateRequestDto;
+import programmers.team6.domain.vacation.dto.VacationUpdateResponseDto;
 import programmers.team6.domain.vacation.entity.ApprovalStep;
 import programmers.team6.domain.vacation.entity.VacationInfo;
 import programmers.team6.domain.vacation.entity.VacationRequest;
@@ -161,4 +163,38 @@ public class VacationService {
 			.build();
 	}
 
+	// 휴가 신청 수정
+	@Transactional
+	public VacationUpdateResponseDto updateVacationRequest(Long memberId, VacationUpdateRequestDto requestDto) {
+		// 요청자 확인
+		Member requester = memberRepository.findById(memberId)
+			.orElseThrow(() -> new RuntimeException("멤버 정보를 찾을 수 없습니다."));
+
+		// 휴가 신청 조회
+		VacationRequest vacationRequest = vacationRequestRepository.findById(requestDto.getRequestId())
+			.orElseThrow(() -> new RuntimeException("휴가 신청 정보를 찾을 수 없습니다."));
+
+		// 수정 권한 확인 (본인이 신청한 휴가만 수정 가능)
+		if (!vacationRequest.canUpdate(memberId)) {
+			throw new RuntimeException("수정 권한이 없습니다.");
+		}
+
+		// 휴가 유형 코드 조회
+		Code vacationType = codeRepository.findByGroupCodeAndCode("VACATION_TYPE", requestDto.getVacationType())
+			.orElseThrow(() -> new RuntimeException("잘못된 휴가 유형입니다."));
+
+		// 휴가 신청 수정
+		vacationRequest.update(requestDto.getFrom(), requestDto.getTo(), requestDto.getReason(), vacationType);
+
+		// 결재자 정보 조회
+		ApprovalStep approvalStep = approvalStepRepository.findFirstByVacationRequestOrderByStepAsc(vacationRequest)
+			.orElseThrow(() -> new RuntimeException("결재 단계 정보를 찾을 수 없습니다."));
+
+		// 응답 DTO 생성
+		return vacationMapper.toVacationUpdateResponseDto(
+			vacationRequest,
+			vacationType.getName(),
+			approvalStep.getMember().getName()
+		);
+	}
 }

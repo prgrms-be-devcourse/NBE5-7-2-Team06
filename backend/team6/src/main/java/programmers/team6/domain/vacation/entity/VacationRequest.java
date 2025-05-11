@@ -70,4 +70,22 @@ public class VacationRequest extends BaseEntity {
 		this.status = status;
 		this.requester = requester;
 	}
+
+	// 휴가 요청 정보 수정
+	public void update(LocalDateTime from, LocalDateTime to, String reason, Code type) {
+		// 대기 중인 상태만 수정 가능
+		if (this.status != ApprovalStatus.PENDING) {
+			throw new IllegalStateException("대기 중인 휴가 요청만 수정할 수 있습니다.");
+		}
+
+		this.from = from;
+		this.to = to;
+		this.reason = reason;
+		this.type = type;
+	}
+
+	// 현재 요청자가 수정 권한을 가지고 있는지 확인
+	public boolean canUpdate(Long memberId) {
+		return this.requester.getId().equals(memberId) && this.status == ApprovalStatus.PENDING;
+	}
 }

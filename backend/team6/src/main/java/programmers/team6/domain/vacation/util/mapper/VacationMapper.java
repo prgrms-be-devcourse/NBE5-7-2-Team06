@@ -8,6 +8,7 @@ import programmers.team6.domain.vacation.dto.VacationCreateRequestDto;
 import programmers.team6.domain.vacation.dto.VacationCreateResponseDto;
 import programmers.team6.domain.vacation.dto.VacationInfoSelectResponseDto;
 import programmers.team6.domain.vacation.dto.VacationListResponseDto;
+import programmers.team6.domain.vacation.dto.VacationUpdateResponseDto;
 import programmers.team6.domain.vacation.entity.ApprovalStep;
 import programmers.team6.domain.vacation.entity.VacationInfo;
 import programmers.team6.domain.vacation.entity.VacationRequest;
@@ -77,4 +78,20 @@ public class VacationMapper {
 			.build();
 	}
 
+	// 휴가 요청 수정 후 응답 DTO 생성
+	public VacationUpdateResponseDto toVacationUpdateResponseDto(
+		VacationRequest vacationRequest,
+		String vacationTypeName,
+		String approverName) {
+		return VacationUpdateResponseDto.builder()
+			.requestId(vacationRequest.getId())
+			.from(vacationRequest.getFrom())
+			.to(vacationRequest.getTo())
+			.reason(vacationRequest.getReason())
+			.vacationType(vacationTypeName)
+			.approvalStatus(vacationRequest.getStatus().name())
+			.approverName(approverName)
+			.updatedAt(vacationRequest.getUpdatedAt())
+			.build();
+	}
 }
