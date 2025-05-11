@@ -12,13 +12,13 @@ public final class MonthlyVacationRule {
 
 	private final Positive grantDays;
 
+	public static MonthlyVacationRule statutory() {
+		return new MonthlyVacationRule(STATUTORY_GRANT_DAYS);
+	}
+
 	public VacationGrantInfo toGrantInfo(VacationGrantEligibility vacationGrantEligibility) {
 		return new VacationGrantInfo(vacationGrantEligibility.id(),
 			grantDays.toInt() + vacationGrantEligibility.vacationCount(),
 			vacationGrantEligibility.version());
-	}
-
-	public static MonthlyVacationRule statutory() {
-		return new MonthlyVacationRule(STATUTORY_GRANT_DAYS);
 	}
 }

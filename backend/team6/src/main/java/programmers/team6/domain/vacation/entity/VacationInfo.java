@@ -7,6 +7,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Version;
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import programmers.team6.global.entity.BaseEntity;
 
@@ -16,16 +17,20 @@ public class VacationInfo extends BaseEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Getter
 	private int vacationId;
 
+	@Getter
 	private int totalCount;
 
+	@Getter
 	private int useCount;
 
 	private String vacationType;
 
 	private Long memberId;
 
+	@Getter
 	@Version
 	private int version;
 

@@ -24,6 +24,11 @@ public final class AnnualVacationRule {
 	private final Positive initialGrantDays;
 	private final Positive maxGrantDays;
 
+	public static AnnualVacationRule statutory() {
+		return new AnnualVacationRule(STATUTORY_BOUNDARY_YEAR, STATUTORY_INCREASE_YEAR, STATUTORY_INCREASE_DAYS,
+			STATUTORY_INITIAL_GRANT_DAYS, STATUTORY_MAX_GRANT_DAYS);
+	}
+
 	public LocalDate getAnnualVacationStartJoinDateFrom(LocalDate date) {
 		return date.minusYears(boundaryYear.toInt());
 	}
@@ -38,11 +43,6 @@ public final class AnnualVacationRule {
 		return new VacationGrantInfo(vacationGrantEligibility.id(),
 			vacationGrantEligibility.vacationCount() + calcIncreaseDays(yearsOfService),
 			vacationGrantEligibility.version());
-	}
-
-	public static AnnualVacationRule statutory() {
-		return new AnnualVacationRule(STATUTORY_BOUNDARY_YEAR, STATUTORY_INCREASE_YEAR, STATUTORY_INCREASE_DAYS,
-			STATUTORY_INITIAL_GRANT_DAYS, STATUTORY_MAX_GRANT_DAYS);
 	}
 
 	private int calcIncreaseDays(int yearsOfService) {

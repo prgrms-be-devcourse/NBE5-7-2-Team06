@@ -12,6 +12,10 @@ public final class AnnualVacationGrantRule {
 	private final AnnualVacationRule annualVacationRule;
 	private final MonthlyVacationRule monthlyVacationRule;
 
+	public static AnnualVacationGrantRule statutory() {
+		return new AnnualVacationGrantRule(AnnualVacationRule.statutory(), MonthlyVacationRule.statutory());
+	}
+
 	public LocalDate getAnnualVacationStartJoinDateFrom(LocalDate date) {
 		return annualVacationRule.getAnnualVacationStartJoinDateFrom(date);
 	}
@@ -29,9 +33,5 @@ public final class AnnualVacationGrantRule {
 			return annualVacationRule.toGrantInfo(now, vacationGrantEligibility);
 		}
 		return monthlyVacationRule.toGrantInfo(vacationGrantEligibility);
-	}
-
-	public static AnnualVacationGrantRule statutory() {
-		return new AnnualVacationGrantRule(AnnualVacationRule.statutory(), MonthlyVacationRule.statutory());
 	}
 }

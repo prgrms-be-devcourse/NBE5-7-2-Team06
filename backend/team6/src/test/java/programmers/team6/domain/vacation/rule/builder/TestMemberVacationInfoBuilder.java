@@ -1,4 +1,4 @@
-package programmers.team6.domain.vacation.rule;
+package programmers.team6.domain.vacation.rule.builder;
 
 import java.time.LocalDateTime;
 
@@ -6,10 +6,9 @@ import programmers.team6.domain.vacation.rule.vacationgranteligiblities.Vacation
 
 public class TestMemberVacationInfoBuilder {
 	public static final Integer DEFAULT_ID = 1;
-	public static final LocalDateTime DEFAULT_JOIN_DATE = LocalDateTime.of(2024, 10, 18,0,0,0);
+	public static final LocalDateTime DEFAULT_JOIN_DATE = LocalDateTime.of(2024, 10, 18, 0, 0, 0);
 	public static final Integer DEFAULT_VACATION_COUNT = 3;
 	public static final Integer DEFAULT_VERSION = 0;
-
 
 	private Integer id = DEFAULT_ID;
 	private LocalDateTime joinDate = DEFAULT_JOIN_DATE;

@@ -12,6 +12,10 @@ import programmers.team6.global.entity.Positive;
 
 class MonthlyVacationRuleTest {
 
+	private static VacationGrantEligibility createTestMemberVacationInfo() {
+		return new VacationGrantEligibility(1, LocalDateTime.of(2024, 10, 18, 0, 0, 0), 3, 0);
+	}
+
 	@Test
 	void 지급정보생성() {
 		int grantDays = 2;
@@ -22,9 +26,5 @@ class MonthlyVacationRuleTest {
 		assertThat(grantInfo).isEqualTo(
 			new VacationGrantInfo(vacationGrantEligibility.id(), grantDays + vacationGrantEligibility.vacationCount(),
 				vacationGrantEligibility.version()));
-	}
-
-	private static VacationGrantEligibility createTestMemberVacationInfo() {
-		return new VacationGrantEligibility(1, LocalDateTime.of(2024, 10, 18,0,0,0), 3, 0);
 	}
 }
