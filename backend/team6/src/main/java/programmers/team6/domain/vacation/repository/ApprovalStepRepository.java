@@ -18,7 +18,7 @@ public interface ApprovalStepRepository extends JpaRepository<ApprovalStep, Long
 	@Query("""
 		select new programmers.team6.domain.vacation.dto.ApprovalFirstStepSelectResponse(
 					a.id, vr.type.name, vr.from, vr.to, vr.member.name,
-					vr.member.dept.deptName, vr.member.position.name, a.status
+					vr.member.dept.deptName, vr.member.position.name, a.approvalStatus
 				)
 		from ApprovalStep a join a.member m join a.vacationRequest vr
 		where m.id = :memberId and a.step = :step
@@ -29,18 +29,20 @@ public interface ApprovalStepRepository extends JpaRepository<ApprovalStep, Long
 	@Query("""
 		select new programmers.team6.domain.vacation.dto.ApprovalFirstStepSelectResponse(
 					a.id, vr.type.name, vr.from, vr.to, vr.member.name,
-					vr.member.dept.deptName, vr.member.position.name, a.status
+					vr.member.dept.deptName, vr.member.position.name, a.approvalStatus
 				)
 		from ApprovalStep a join a.member m join a.vacationRequest vr
 		where m.id = :memberId and a.step = :step
 				and (:typeId is null or vr.type.id = :typeId)
 				and (:name is null or vr.member.name = :name)
 				and (:from is null or :to is null or (vr.from <= :to and  vr.to >= :from))
-				and (:status is null or a.status = :status)
+				and (:status is null or a.approvalStatus = :status)
 		order by a.id desc
 		""")
 	Page<ApprovalFirstStepSelectResponse> findFirstStepByFilter(Long memberId, Long typeId, String name,
 		LocalDateTime from, LocalDateTime to, ApprovalStatus status, int step, Pageable pageable);
 
 	Optional<ApprovalStep> findByIdAndMemberId(Long id, Long memberId);
+
+	Optional<ApprovalStep> findByVacationRequestIdAndStep(Long vacationRequestId, int step);
 }

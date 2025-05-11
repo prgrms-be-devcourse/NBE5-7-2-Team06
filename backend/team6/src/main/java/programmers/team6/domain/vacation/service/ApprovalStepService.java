@@ -8,10 +8,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
+import programmers.team6.domain.member.entity.Member;
+import programmers.team6.domain.member.repository.MemberRepository;
 import programmers.team6.domain.vacation.dto.ApprovalFirstStepDetailResponse;
 import programmers.team6.domain.vacation.dto.ApprovalFirstStepSelectResponse;
+import programmers.team6.domain.vacation.dto.ApprovalStepRejectRequest;
 import programmers.team6.domain.vacation.dto.ApprovalStepSelectRequest;
 import programmers.team6.domain.vacation.entity.ApprovalStep;
+import programmers.team6.domain.vacation.entity.VacationRequest;
+import programmers.team6.domain.vacation.enums.ApprovalStatus;
+import programmers.team6.domain.vacation.enums.VacationRequestStatus;
 import programmers.team6.domain.vacation.repository.ApprovalStepRepository;
 import programmers.team6.domain.vacation.util.mapper.ApprovalStepMapper;
 
@@ -22,6 +28,7 @@ public class ApprovalStepService {
 	private static final int STEP2 = 2;
 
 	private final ApprovalStepRepository approvalStepRepository;
+	private final MemberRepository memberRepository;
 
 	@Transactional(readOnly = true)
 	public Page<ApprovalFirstStepSelectResponse> findFirstStepByMemberId(Long memberId, Pageable pageable) {
@@ -48,6 +55,51 @@ public class ApprovalStepService {
 		ApprovalStep findApprovalStep = approvalStepRepository.findByIdAndMemberId(approvalStepId, memberId)
 			.orElseThrow(() -> new IllegalArgumentException("해당 결재 목록이 없습니다."));
 		return ApprovalStepMapper.fromEntity(findApprovalStep);
+	}
+
+	@Transactional
+	public void approveFirstStep(Long approvalStepId, Long memberId) {
+		ApprovalStep findApprovalStep1 = approvalStepRepository.findByIdAndMemberId(approvalStepId, memberId)
+			.orElseThrow(() -> new IllegalArgumentException("해당 요청을 결재할 수 없습니다."));
+		ApprovalStep findApprovalStep2 = approvalStepRepository.findByVacationRequestIdAndStep(
+				findApprovalStep1.getVacationRequest().getId(), STEP2)
+			.orElseThrow(() -> new IllegalArgumentException("해당 결재 목록이 없습니다."));
+
+		updateApprovalStepStatus(findApprovalStep1, ApprovalStatus.APPROVED, null);
+		updateApprovalStepStatus(findApprovalStep2, ApprovalStatus.IN_PROGRESS, null);
+
+	}
+
+	@Transactional
+	public void rejectFirstStep(Long approvalStepId, Long memberId, ApprovalStepRejectRequest request) {
+		ApprovalStep findApprovalStep1 = approvalStepRepository.findByIdAndMemberId(approvalStepId, memberId)
+			.orElseThrow(() -> new IllegalArgumentException("해당 요청을 결재할 수 없습니다."));
+		ApprovalStep findApprovalStep2 = approvalStepRepository.findByVacationRequestIdAndStep(
+				findApprovalStep1.getVacationRequest().getId(), STEP2)
+			.orElseThrow(() -> new IllegalArgumentException("해당 결재 목록이 없습니다."));
+
+		updateApprovalStepStatus(findApprovalStep1, ApprovalStatus.REJECTED, request.reason());
+		updateApprovalStepStatus(findApprovalStep2, ApprovalStatus.REJECTED, null);
+
+		findApprovalStep1.getVacationRequest().updateStatus(VacationRequestStatus.REJECTED);
+
+	}
+
+	private void updateApprovalStepStatus(ApprovalStep approvalStep, ApprovalStatus approvalStatus,
+		String reason) {
+
+		if (reason == null) {
+			approvalStep.apply(approvalStatus);
+		} else {
+			approvalStep.apply(approvalStatus, reason);
+		}
+	}
+
+	// 서비스 계층 전용 메서드
+	public void saveApprovalStep(Long memberId, VacationRequest vacationRequest, int step) {
+		Member findMember = memberRepository.findById(memberId)
+			.orElseThrow(() -> new IllegalArgumentException("해당 멤버가 존재하지 않습니다."));
+		approvalStepRepository.save(ApprovalStepMapper.toEntity(findMember, vacationRequest, step));
 	}
 
 }

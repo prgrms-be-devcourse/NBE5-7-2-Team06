@@ -4,6 +4,8 @@ import java.time.LocalDateTime;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -16,6 +18,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import programmers.team6.domain.member.entity.Code;
 import programmers.team6.domain.member.entity.Member;
+import programmers.team6.domain.vacation.enums.VacationRequestStatus;
 import programmers.team6.global.entity.BaseEntity;
 
 @Entity
@@ -40,13 +43,17 @@ public class VacationRequest extends BaseEntity {
 	@JoinColumn(name = "type_code", nullable = false)
 	private Code type;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "status_code", nullable = false)
-	private Code status;
+	@Enumerated(value = EnumType.STRING)
+	private VacationRequestStatus status;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "member_id")
 	private Member member;
 	@Version
 	private Integer version;
+
+	public void updateStatus(VacationRequestStatus vacationRequestStatus) {
+		this.status = vacationRequestStatus;
+	}
+
 }

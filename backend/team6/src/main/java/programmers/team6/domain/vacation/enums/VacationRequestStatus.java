@@ -1,9 +1,7 @@
 package programmers.team6.domain.vacation.enums;
 
-public enum ApprovalStatus {
+public enum VacationRequestStatus {
 	IN_PROGRESS,
-	WAITING,
-	DRAFT,
 	APPROVED,
 	REJECTED
 }
