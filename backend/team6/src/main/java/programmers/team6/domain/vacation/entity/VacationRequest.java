@@ -4,6 +4,8 @@ import java.time.LocalDateTime;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -12,11 +14,16 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Version;
 import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import programmers.team6.domain.member.entity.Code;
+import programmers.team6.domain.member.entity.Member;
+import programmers.team6.domain.vacation.enums.ApprovalStatus;
 import programmers.team6.global.entity.BaseEntity;
 
 @Entity
+@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class VacationRequest extends BaseEntity {
 
@@ -37,10 +44,30 @@ public class VacationRequest extends BaseEntity {
 	@JoinColumn(name = "type_code", nullable = false)
 	private Code type;
 
+	// @ManyToOne(fetch = FetchType.LAZY)
+	// @JoinColumn(name = "status_code", nullable = false)
+	// private Code status;
+
+	@Column(name = "status", nullable = false)
+	@Enumerated(EnumType.STRING)
+	private ApprovalStatus status;
+
+	// 추가: 휴가 신청자
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "status_code", nullable = false)
-	private Code status;
+	@JoinColumn(name = "requester_id", nullable = false)
+	private Member requester;
 
 	@Version
 	private Integer version;
+
+	@Builder
+	public VacationRequest(LocalDateTime from, LocalDateTime to, String reason, Code type, ApprovalStatus status,
+		Member requester) {
+		this.from = from;
+		this.to = to;
+		this.reason = reason;
+		this.type = type;
+		this.status = status;
+		this.requester = requester;
+	}
 }

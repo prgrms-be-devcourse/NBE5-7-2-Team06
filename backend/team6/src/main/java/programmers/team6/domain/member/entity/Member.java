@@ -11,12 +11,15 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import programmers.team6.domain.member.enums.Role;
 import programmers.team6.global.entity.BaseEntity;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter
 public class Member extends BaseEntity {
 
 	@Id
@@ -38,4 +41,16 @@ public class Member extends BaseEntity {
 	@Column(nullable = false)
 	@Enumerated(EnumType.STRING)
 	private Role role;
+
+	@Builder
+	public Member(String name, Dept dept, Code position, Role role) {
+		this.name = name;
+		this.dept = dept;
+		this.position = position;
+		this.role = role;
+	}
+
+	public void setDept(Dept dept) {
+		this.dept = dept;
+	}
 }

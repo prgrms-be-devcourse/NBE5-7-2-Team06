@@ -11,11 +11,14 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import programmers.team6.domain.member.entity.Member;
 import programmers.team6.domain.vacation.enums.ApprovalStatus;
 
 @Entity
+@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ApprovalStep {
 	@Id
@@ -38,4 +41,13 @@ public class ApprovalStep {
 
 	private String reason;
 
+	@Builder
+	public ApprovalStep(Member member, VacationRequest vacationRequest, int step,
+		ApprovalStatus status, String reason) {
+		this.member = member;
+		this.vacationRequest = vacationRequest;
+		this.step = step;
+		this.status = status;
+		this.reason = reason;
+	}
 }
