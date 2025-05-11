@@ -1,12 +1,13 @@
 package programmers.team6.domain.vacation.rule;
 
-import static programmers.team6.domain.vacation.rule.DateUtil.*;
+import static programmers.team6.global.util.DateUtil.*;
 
 import java.time.LocalDate;
 
 import lombok.RequiredArgsConstructor;
 import programmers.team6.domain.vacation.rule.vacationgranteligiblities.VacationGrantEligibility;
 import programmers.team6.domain.vacation.rule.vacationgranteligiblities.VacationGrantInfo;
+import programmers.team6.global.entity.Positive;
 
 @RequiredArgsConstructor
 public final class AnnualVacationRule {

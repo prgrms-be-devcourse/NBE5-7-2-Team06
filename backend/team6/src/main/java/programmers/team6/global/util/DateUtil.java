@@ -1,5 +1,5 @@
 
-package programmers.team6.domain.vacation.rule;
+package programmers.team6.global.util;
 
 import java.time.LocalDate;
 import java.time.Period;

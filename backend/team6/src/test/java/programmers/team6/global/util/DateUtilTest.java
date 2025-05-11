@@ -1,4 +1,4 @@
-package programmers.team6.domain.vacation.rule;
+package programmers.team6.global.util;
 
 import static org.assertj.core.api.Assertions.*;
 

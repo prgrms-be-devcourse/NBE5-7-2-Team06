@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 
 import programmers.team6.domain.vacation.rule.vacationgranteligiblities.VacationGrantEligibility;
 import programmers.team6.domain.vacation.rule.vacationgranteligiblities.VacationGrantInfo;
+import programmers.team6.global.entity.Positive;
 
 class MonthlyVacationRuleTest {
 

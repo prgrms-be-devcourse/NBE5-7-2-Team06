@@ -2,7 +2,7 @@ package programmers.team6.domain.vacation.rule.grantconfig;
 
 import lombok.RequiredArgsConstructor;
 import programmers.team6.domain.vacation.rule.MonthlyVacationRule;
-import programmers.team6.domain.vacation.rule.Positive;
+import programmers.team6.global.entity.Positive;
 
 @RequiredArgsConstructor
 public class MonthlyVacationGrantConfig {
