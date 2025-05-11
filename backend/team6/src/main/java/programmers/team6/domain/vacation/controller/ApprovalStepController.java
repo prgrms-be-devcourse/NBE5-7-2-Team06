@@ -14,14 +14,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import programmers.team6.domain.vacation.dto.ApprovalFirstStepDetailResponse;
 import programmers.team6.domain.vacation.dto.ApprovalFirstStepSelectResponse;
 import programmers.team6.domain.vacation.dto.ApprovalStepRejectRequest;
 import programmers.team6.domain.vacation.dto.ApprovalStepSelectRequest;
 import programmers.team6.domain.vacation.service.ApprovalStepService;
 
-@Slf4j
 @RestController
 @RequestMapping("/approval-steps")
 @RequiredArgsConstructor
@@ -67,7 +65,6 @@ public class ApprovalStepController {
 		@Valid @RequestBody ApprovalStepRejectRequest request) {
 		// todo : jwt 에서 memberId 꺼내야함
 		Long memberId = 2L;
-		log.info("request.reason() = {}", request.reason());
 		approvalStepService.rejectFirstStep(approvalStepId, memberId, request);
 	}
 
