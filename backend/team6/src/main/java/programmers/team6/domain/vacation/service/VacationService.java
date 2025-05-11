@@ -1,5 +1,8 @@
 package programmers.team6.domain.vacation.service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.stereotype.Service;
 
 import jakarta.transaction.Transactional;
@@ -12,6 +15,7 @@ import programmers.team6.domain.member.repository.MemberRepository;
 import programmers.team6.domain.vacation.dto.VacationCreateRequestDto;
 import programmers.team6.domain.vacation.dto.VacationCreateResponseDto;
 import programmers.team6.domain.vacation.dto.VacationInfoSelectResponseDto;
+import programmers.team6.domain.vacation.dto.VacationListResponseDto;
 import programmers.team6.domain.vacation.entity.ApprovalStep;
 import programmers.team6.domain.vacation.entity.VacationInfo;
 import programmers.team6.domain.vacation.entity.VacationRequest;
@@ -77,4 +81,35 @@ public class VacationService {
 			approver.getName()
 		);
 	}
+
+	// 휴가 신청 내역 확인
+	@Transactional
+	public List<VacationListResponseDto> getVacationRequestList(Long memberId) {
+		// 사용자 존재 여부 확인
+		memberRepository.findById(memberId)
+			.orElseThrow(() -> new RuntimeException("멤버 정보를 찾을 수 없습니다."));
+
+		// 휴가 신청 내역 조회
+		List<VacationRequest> vacationRequests = vacationRequestRepository.findByRequesterId(memberId);
+
+		// DTO로 변환하여 반환
+		return vacationRequests.stream()
+			.map(request -> {
+				// 결재 단계 정보 조회 (첫 번째 결재자 정보만 가져옴)
+				ApprovalStep approvalStep = approvalStepRepository.findFirstByVacationRequestOrderByStepAsc(request)
+					.orElseThrow(() -> new RuntimeException("결재 단계 정보를 찾을 수 없습니다."));
+
+				// 휴가 유형 이름 조회
+				String vacationTypeName = request.getType().getName();
+
+				return vacationMapper.toVacationRequestListResponseDto(
+					request,
+					vacationTypeName,
+					request.getStatus().name(),
+					approvalStep.getMember().getName()
+				);
+			})
+			.collect(Collectors.toList());
+	}
+
 }

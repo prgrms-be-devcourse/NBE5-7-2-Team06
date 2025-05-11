@@ -7,6 +7,7 @@ import programmers.team6.domain.member.entity.Member;
 import programmers.team6.domain.vacation.dto.VacationCreateRequestDto;
 import programmers.team6.domain.vacation.dto.VacationCreateResponseDto;
 import programmers.team6.domain.vacation.dto.VacationInfoSelectResponseDto;
+import programmers.team6.domain.vacation.dto.VacationListResponseDto;
 import programmers.team6.domain.vacation.entity.ApprovalStep;
 import programmers.team6.domain.vacation.entity.VacationInfo;
 import programmers.team6.domain.vacation.entity.VacationRequest;
@@ -56,6 +57,23 @@ public class VacationMapper {
 			.vacationType(vacationTypeName)
 			.approvalStatus(approvalStatus.name())
 			.approverName(approverName)
+			.build();
+	}
+
+	public VacationListResponseDto toVacationRequestListResponseDto(
+		VacationRequest vacationRequest,
+		String vacationTypeName,
+		String approvalStatus,
+		String approverName) {
+		return VacationListResponseDto.builder()
+			.requestId(vacationRequest.getId())
+			.from(vacationRequest.getFrom())
+			.to(vacationRequest.getTo())
+			.reason(vacationRequest.getReason())
+			.vacationType(vacationTypeName)
+			.approvalStatus(approvalStatus)
+			.approverName(approverName)
+			.createdAt(vacationRequest.getCreatedAt())
 			.build();
 	}
 
