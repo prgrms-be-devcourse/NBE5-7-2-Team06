@@ -21,10 +21,10 @@ public class VacationInfoService {
 	private final VacationGrantEligibilitiesFactory eligibilitiesFactory;
 
 	public VacationGrantEligibilities selectEligiblitiesFrom(LocalDate date) {
-		AnnualVacationGrantRule annualVacationGrantRule = VacationGrantConfig.statutoryRule();
-		List<VacationGrantEligibility> vacationGrantEligibilities = vacationInfoRepository.findEligibilities(
-			annualVacationGrantRule.getAnnualVacationStartJoinDateFrom(date), date);
-		return eligibilitiesFactory.create(date, vacationGrantEligibilities, annualVacationGrantRule);
+		AnnualVacationGrantRule vacationGrantRule = VacationGrantConfig.statutoryRule();
+		List<VacationGrantEligibility> eligibilities = vacationInfoRepository.findEligibilities(
+			vacationGrantRule.getAnnualVacationStartJoinDateFrom(date), date);
+		return eligibilitiesFactory.create(date, eligibilities, vacationGrantRule);
 	}
 
 }
