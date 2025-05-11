@@ -41,9 +41,7 @@ public record AdminVacationSearchCondition(
 	// 휴가 결재자
 	public record ApproverCondition(
 		// 이름
-		String name,
-		// 직책 codeId
-		Long positionCodeId
+		String name
 	) {
 	}
 }

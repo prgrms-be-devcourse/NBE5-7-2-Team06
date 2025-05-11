@@ -50,32 +50,28 @@ public class VacationRequestSearchCustom {
 		Root<ApprovalStep> as = cq.from(ApprovalStep.class);
 		Join<ApprovalStep, VacationRequest> vr = as.join("vacationRequest", JoinType.INNER);
 
-		/**
-		 * 1. 각 휴가 신청서마다 최종 결제자 기준으로 조회
-		 * 2. 휴가 신청 범위
-		 * 3. 특정 년도 혹은 특정 분기 (1,2,3,4,상,하반기)
-		 * 4. 휴가 신청자 이름
-		 * 5. 부서 이름
-		 * 6. 휴가 종류
-		 * 7. 휴가 신청자 포지션
-		 * 8. 결재자 포지션
-		 * 9. 휴가 신청 상태
-		 * 10. 휴가 결재자이름
+		/** 필터링
+		 * 1. 휴가 신청 범위
+		 * 2. 특정 년도 혹은 특정 분기 (1,2,3,4,상,하반기)
+		 * 3. 휴가 신청자 이름
+		 * 4. 부서 이름
+		 * 5. 휴가 종류
+		 * 6. 휴가 신청자 포지션
+		 * 7. 휴가 신청 상태
+		 * 8. 휴가 결재자이름
 		 */
+
 		List<Predicate> predicates = CriteriaCustomPredicateBuilder.<ApprovalStep>builder(cb)
-			.applyEqualFilter(as, ApprovalStep_.step, vr, VacationRequest_.lastApprovalStep)
+			.applyDateRangeFilter(vr, VacationRequest_.from, VacationRequest_.to, searchCondition.dateRange().start(),
+				searchCondition.dateRange().end())
 			.applyDateRangeFilter(vr, VacationRequest_.from, VacationRequest_.to,
-				searchCondition.dateRange().start(), searchCondition.dateRange().end())
-			.applyDateRangeFilter(vr, VacationRequest_.from, VacationRequest_.to, Quarter.getStart(
-				searchCondition.dateRange().year(), searchCondition.dateRange().quarter()), Quarter.getEnd(
-				searchCondition.dateRange().year(), searchCondition.dateRange().quarter()))
+				Quarter.getStart(searchCondition.dateRange().year(), searchCondition.dateRange().quarter()),
+				Quarter.getEnd(searchCondition.dateRange().year(), searchCondition.dateRange().quarter()))
 			.applyLikeFilter(vr, searchCondition.applicant().name(), VacationRequest_.member, Member_.name)
 			.applyLikeFilter(vr, searchCondition.applicant().deptName(), VacationRequest_.member, Member_.dept,
 				Dept_.deptName)
 			.applyEqualFilter(vr, searchCondition.applicant().vacationTypeCodeId(), VacationRequest_.type, Code_.id)
 			.applyEqualFilter(vr, searchCondition.applicant().positionCodeId(), VacationRequest_.member,
-				Member_.position, Code_.id)
-			.applyEqualFilter(as, searchCondition.approver().positionCodeId(), VacationRequest_.member,
 				Member_.position, Code_.id)
 			.applyEqualFilter(vr, searchCondition.vacationRequestStatus(), VacationRequest_.status)
 			.applyLikeFilter(as, searchCondition.approver().name(), ApprovalStep_.member, Member_.name)
@@ -84,21 +80,19 @@ public class VacationRequestSearchCustom {
 		/**
 		 * Predicates들을 기반을 Query 생성
 		 */
-		TypedQuery<VacationRequestReadResponse> query = CriteriaCustomQueryBuilder.builder(
-				cq, cb)
+
+		TypedQuery<VacationRequestReadResponse> query = CriteriaCustomQueryBuilder.builder(cq, cb)
 			.applyDynamicPredicates(predicates)
-			.projection(VacationRequestReadResponse.class, vr.get(VacationRequest_.type),
-				vr.get(VacationRequest_.from),
-				vr.get(VacationRequest_.to),
+			.projection(VacationRequestReadResponse.class, vr.get(VacationRequest_.type).get(Code_.name),
+				vr.get(VacationRequest_.from), vr.get(VacationRequest_.to),
 				vr.get(VacationRequest_.member).get(Member_.name),
-				as.get(ApprovalStep_.member).get(Member_.name),
-				vr.get(VacationRequest_.member).get(Member_.dept).get(Dept_.deptName),
-				vr.get(VacationRequest_.status))
+				cb.function("GROUP_CONCAT", String.class, as.get(ApprovalStep_.member).get(Member_.name)),
+				vr.get(VacationRequest_.member).get(Member_.dept).get(Dept_.deptName), vr.get(VacationRequest_.status))
+			.groupBy(vr.get(VacationRequest_.id))
 			.orderByLatest(vr, VacationRequest_.createdAt)
 			.createQuery(entityManager)
 			.build();
 
-		return QueryUtils.makeQueryToPageable(query, pageable,
-			vacationRequestRepository.count());
+		return QueryUtils.makeQueryToPageable(query, pageable, vacationRequestRepository.count());
 	}
 }

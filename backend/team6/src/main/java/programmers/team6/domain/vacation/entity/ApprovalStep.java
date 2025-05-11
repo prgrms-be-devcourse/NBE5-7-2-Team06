@@ -1,6 +1,5 @@
 package programmers.team6.domain.vacation.entity;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -30,23 +29,27 @@ public class ApprovalStep extends BaseEntity {
 	@Enumerated(value = EnumType.STRING)
 	private ApprovalStatus approvalStatus;
 
-	@ManyToOne(cascade = CascadeType.PERSIST)
+	@ManyToOne
 	@JoinColumn(name = "member_id")
 	private Member member;
 
-	@ManyToOne(cascade = CascadeType.PERSIST)
+	@ManyToOne
 	@JoinColumn(name = "vacation_request_id")
 	private VacationRequest vacationRequest;
 
+	private String reason;
+
 	@Builder
-	public ApprovalStep(int step, ApprovalStatus approvalStatus, Member member, VacationRequest vacationRequest) {
+	public ApprovalStep(int step, ApprovalStatus approvalStatus, Member member, VacationRequest vacationRequest,
+		String reason) {
 		this.step = step;
 		this.approvalStatus = approvalStatus;
 		this.member = member;
 		this.vacationRequest = vacationRequest;
+		this.reason = reason;
 	}
 
-	public void apply(ApprovalStatus approvalStatus) {
-		this.approvalStatus = approvalStatus;
+	public void update(String reason) {
+		this.reason = reason;
 	}
 }

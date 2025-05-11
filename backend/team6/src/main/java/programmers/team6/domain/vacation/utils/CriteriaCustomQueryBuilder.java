@@ -40,6 +40,11 @@ public class CriteriaCustomQueryBuilder<T> {
 		return this;
 	}
 
+	public CriteriaCustomQueryBuilder<T> groupBy(Expression... groupFields) {
+		cq.groupBy(groupFields);
+		return this;
+	}
+
 	public CriteriaCustomQueryBuilder orderByLatest(From root, SingularAttribute mappedField) {
 		cq.orderBy(cb.desc(CriteriaUtils.searchPath(root, mappedField)));
 		return this;

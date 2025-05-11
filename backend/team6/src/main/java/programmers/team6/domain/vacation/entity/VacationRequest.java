@@ -2,7 +2,6 @@ package programmers.team6.domain.vacation.entity;
 
 import java.time.LocalDate;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -39,16 +38,15 @@ public class VacationRequest extends BaseEntity {
 	private LocalDate to;
 
 	private String reason;
-	private int lastApprovalStep;
 
-	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "type_code")
 	private Code type;
 
 	@Enumerated(value = EnumType.STRING)
 	private VacationRequestStatus status;
 
-	@ManyToOne(cascade = CascadeType.PERSIST)
+	@ManyToOne
 	@JoinColumn(name = "member_id")
 	private Member member;
 
@@ -58,19 +56,16 @@ public class VacationRequest extends BaseEntity {
 		this.from = from;
 		this.to = to;
 		this.reason = reason;
-		this.lastApprovalStep = 0;
 		this.type = type;
 		this.status = VacationRequestStatus.IN_PROGRESS;
 		this.member = member;
 	}
 
-	public void updateStatus(VacationRequestStatus vacationRequestStatus) {
-		this.status = vacationRequestStatus;
-	}
-
-	public void processVacationRequest(int lastApprovalStepIdx) {
-		if (this.lastApprovalStep < lastApprovalStepIdx) {
-			this.lastApprovalStep++;
-		}
+	public void update(Code type, LocalDate from, LocalDate to, VacationRequestStatus status, String reason) {
+		this.type = type;
+		this.from = from;
+		this.to = to;
+		this.status = status;
+		this.reason = reason;
 	}
 }

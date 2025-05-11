@@ -5,6 +5,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import programmers.team6.domain.member.repository.CodeRepository;
+import programmers.team6.domain.member.repository.DeptRepository;
 import programmers.team6.domain.member.repository.MemberRepository;
 import programmers.team6.domain.vacation.dto.VacationRequestSearchCustom;
 
@@ -16,16 +17,18 @@ import programmers.team6.domain.vacation.dto.VacationRequestSearchCustom;
 	 * 조회시 검색 기능을 테스트하기 위해 테스트마다 데이터를 추가 생성하기엔 시간이 많이 걸려 로컬 환경에서 임의로 데이터 생성하고 테스트 진행
 	 */
 class VacationRequestRepositorySearchTest {
-	@Autowired
-	private VacationRequestRepository vacationRequestRepository;
-	@Autowired
-	private ApprovalStepRepository approvalStepRepository;
-	@Autowired
-	private CodeRepository codeRepository;
-	@Autowired
-	private MemberRepository memberRepository;
-	@Autowired
-	VacationRequestSearchCustom vacationRequestSearchCustom;
+	// @Autowired
+	// private VacationRequestRepository vacationRequestRepository;
+	// @Autowired
+	// private ApprovalStepRepository approvalStepRepository;
+	// @Autowired
+	// private CodeRepository codeRepository;
+	// @Autowired
+	// private MemberRepository memberRepository;
+	// @Autowired
+	// private DeptRepository deptRepository;
+	// @Autowired
+	// VacationRequestSearchCustom vacationRequestSearchCustom;
 
 	// @Test
 	// @Rollback(value = false)
@@ -35,22 +38,23 @@ class VacationRequestRepositorySearchTest {
 	// 	codeRepository.deleteAll();
 	// 	memberRepository.deleteAll();
 	// }
-	//
+
 	// @Test
 	// @Rollback(value = false)
 	// void init(@Autowired EntityManager entityManager) {
 	// 	Code positionCode = codeRepository.save(new Code("POSITION", "pos", "posName"));
 	//
 	// 	for (int i = 0; i < 3; i++) {
-	// 		Dept dept = new Dept("dept " + i);
-	// 		Member member = new Member("member " + i, dept, positionCode);
+	// 		Dept dept = deptRepository.save(new Dept("dept " + i));
+	// 		Member member = memberRepository.save(new Member("member " + i, dept, positionCode));
 	// 		List<Member> approvers = new ArrayList<>();
 	// 		for (int j = 0; j < 5; j++) {
 	// 			approvers.add(new Member(String.format("approver %d %d", i, j), dept,
 	// 				new Code("POSITION", "pos " + (10 * i + j + 1), "posName " + (10 * i + j))));
 	// 		}
+	// 		memberRepository.saveAll(approvers);
 	//
-	// 		Code code = new Code("VACATION" + i, "vac " + i, "vacName " + i);
+	// 		Code code = codeRepository.save(new Code("VACATION", "vac " + i, "vacName " + i));
 	//
 	// 		// 2023 , 2024 , 2025
 	// 		for (int year = 2023; year < 2026; year++) {
@@ -64,15 +68,16 @@ class VacationRequestRepositorySearchTest {
 	// 						.member(member)
 	// 						.type(code)
 	// 						.build();
+	// 					vacationRequestRepository.save(vr);
 	// 					List<ApprovalStep> approvalSteps = new ArrayList<>();
 	// 					for (int j = 0; j < 3; j++) {
-	// 						approvalSteps.add(new ApprovalStep(j, ApprovalStatus.IN_PROGRESS, approvers.get(j), vr));
-	// 					}
-	// 					if (day == 1) {
-	// 						approvalSteps.get(2).apply(ApprovalStatus.APPROVED);
-	// 						vr.updateStatus(VacationRequestStatus.APPROVED);
-	// 						for (int j = 0; j < 2; j++) {
-	// 							vr.processVacationRequest(approvalSteps.size() - 1);
+	// 						if (day == 1) {
+	// 							approvalSteps.add(
+	// 								new ApprovalStep(j, ApprovalStatus.APPROVED, approvers.get(j), vr, null));
+	// 							vr.update(vr.getType(), vr.getFrom(), vr.getTo(), VacationRequestStatus.APPROVED, null);
+	// 						} else {
+	// 							approvalSteps.add(
+	// 								new ApprovalStep(j, ApprovalStatus.IN_PROGRESS, approvers.get(j), vr, null));
 	// 						}
 	// 					}
 	// 					approvalStepRepository.saveAll(approvalSteps);
@@ -91,12 +96,12 @@ class VacationRequestRepositorySearchTest {
 	// 	AdminVacationSearchCondition defaultCondition = new AdminVacationSearchCondition(
 	// 		new AdminVacationSearchCondition.DateRangeCondition(null, null, null, null),
 	// 		new AdminVacationSearchCondition.ApplicantCondition(null, null, null, null),
-	// 		new AdminVacationSearchCondition.ApproverCondition(null, null), null);
+	// 		new AdminVacationSearchCondition.ApproverCondition(null), null);
 	//
 	// 	AdminVacationSearchCondition latestCondition = new AdminVacationSearchCondition(
 	// 		new AdminVacationSearchCondition.DateRangeCondition(null, null, null, null),
 	// 		new AdminVacationSearchCondition.ApplicantCondition("member 0", null, null, null),
-	// 		new AdminVacationSearchCondition.ApproverCondition(null, null), null);
+	// 		new AdminVacationSearchCondition.ApproverCondition(null), null);
 	//
 	// 	// when
 	// 	Page<VacationRequestReadResponse> defaultResult = vacationRequestSearchCustom.search(defaultCondition,
@@ -115,13 +120,13 @@ class VacationRequestRepositorySearchTest {
 	// 		assertThat(vacationRequestReadResponse.from()).isNotNull();
 	// 		assertThat(vacationRequestReadResponse.to()).isNotNull();
 	// 		assertThat(vacationRequestReadResponse.applicantName()).isNotNull();
-	// 		assertThat(vacationRequestReadResponse.approverName()).isNotNull();
+	// 		assertThat(vacationRequestReadResponse.approverNames()).isNotNull();
 	// 		assertThat(vacationRequestReadResponse.deptName()).isNotNull();
 	// 		assertThat(vacationRequestReadResponse.status()).isNotNull();
 	// 	}
 	//
 	// 	List<VacationRequestReadResponse> content = latestResult.getContent();
-	// 	for (int i = 0; i < content.size()-1; i++) {
+	// 	for (int i = 0; i < content.size() - 1; i++) {
 	// 		assertThat(content.get(i).from()).isAfter(content.get(i + 1).from());
 	// 		assertThat(content.get(i).to()).isAfter(content.get(i + 1).to());
 	// 	}
@@ -133,15 +138,15 @@ class VacationRequestRepositorySearchTest {
 	// 	AdminVacationSearchCondition dateCondition = new AdminVacationSearchCondition(
 	// 		new AdminVacationSearchCondition.DateRangeCondition(LocalDate.of(2025, 1, 1), LocalDate.of(2026, 1, 1),
 	// 			null, null), new AdminVacationSearchCondition.ApplicantCondition(null, null, null, null),
-	// 		new AdminVacationSearchCondition.ApproverCondition(null, null), null);
+	// 		new AdminVacationSearchCondition.ApproverCondition(null), null);
 	// 	AdminVacationSearchCondition yearCondition = new AdminVacationSearchCondition(
 	// 		new AdminVacationSearchCondition.DateRangeCondition(null, null, 2025, null),
 	// 		new AdminVacationSearchCondition.ApplicantCondition(null, null, null, null),
-	// 		new AdminVacationSearchCondition.ApproverCondition(null, null), null);
+	// 		new AdminVacationSearchCondition.ApproverCondition(null), null);
 	// 	AdminVacationSearchCondition yearAndQuarterCondition = new AdminVacationSearchCondition(
 	// 		new AdminVacationSearchCondition.DateRangeCondition(null, null, 2025, Quarter.Q1),
 	// 		new AdminVacationSearchCondition.ApplicantCondition(null, null, null, null),
-	// 		new AdminVacationSearchCondition.ApproverCondition(null, null), null);
+	// 		new AdminVacationSearchCondition.ApproverCondition(null), null);
 	//
 	// 	// when
 	// 	Page<VacationRequestReadResponse> dateResult = vacationRequestSearchCustom.search(dateCondition,
@@ -163,7 +168,7 @@ class VacationRequestRepositorySearchTest {
 	// 	AdminVacationSearchCondition applicantNameCondition = new AdminVacationSearchCondition(
 	// 		new AdminVacationSearchCondition.DateRangeCondition(null, null, null, null),
 	// 		new AdminVacationSearchCondition.ApplicantCondition("0", null, null, null),
-	// 		new AdminVacationSearchCondition.ApproverCondition(null, null), null);
+	// 		new AdminVacationSearchCondition.ApproverCondition(null), null);
 	//
 	// 	// when
 	// 	Page<VacationRequestReadResponse> result = vacationRequestSearchCustom.search(applicantNameCondition,
@@ -182,7 +187,7 @@ class VacationRequestRepositorySearchTest {
 	// 	AdminVacationSearchCondition deptNameCondition = new AdminVacationSearchCondition(
 	// 		new AdminVacationSearchCondition.DateRangeCondition(null, null, null, null),
 	// 		new AdminVacationSearchCondition.ApplicantCondition(null, "0", null, null),
-	// 		new AdminVacationSearchCondition.ApproverCondition(null, null), null);
+	// 		new AdminVacationSearchCondition.ApproverCondition(null), null);
 	//
 	// 	Page<VacationRequestReadResponse> result = vacationRequestSearchCustom.search(deptNameCondition,
 	// 		PageRequest.of(0, Integer.MAX_VALUE));
@@ -198,24 +203,18 @@ class VacationRequestRepositorySearchTest {
 	// 	// given
 	// 	AdminVacationSearchCondition applicantVacationTypeCodeIdCondition = new AdminVacationSearchCondition(
 	// 		new AdminVacationSearchCondition.DateRangeCondition(null, null, null, null),
-	// 		new AdminVacationSearchCondition.ApplicantCondition(null, null, null, 3L),
-	// 		new AdminVacationSearchCondition.ApproverCondition(null, null), null);
+	// 		new AdminVacationSearchCondition.ApplicantCondition(null, null, null, 7L),
+	// 		new AdminVacationSearchCondition.ApproverCondition(null), null);
 	// 	AdminVacationSearchCondition applicantPositionCodeIdCondition = new AdminVacationSearchCondition(
 	// 		new AdminVacationSearchCondition.DateRangeCondition(null, null, null, null),
 	// 		new AdminVacationSearchCondition.ApplicantCondition(null, null, 1L, null),
-	// 		new AdminVacationSearchCondition.ApproverCondition(null, null), null);
-	// 	AdminVacationSearchCondition approverPositionCodeIdCondition = new AdminVacationSearchCondition(
-	// 		new AdminVacationSearchCondition.DateRangeCondition(null, null, null, null),
-	// 		new AdminVacationSearchCondition.ApplicantCondition(null, null, null, null),
-	// 		new AdminVacationSearchCondition.ApproverCondition(null, 2L), null);
+	// 		new AdminVacationSearchCondition.ApproverCondition(null), null);
 	//
 	// 	// when
 	// 	Page<VacationRequestReadResponse> applicantVacationTypeCodeIdResult = vacationRequestSearchCustom.search(
 	// 		applicantVacationTypeCodeIdCondition, PageRequest.of(0, Integer.MAX_VALUE));
 	// 	Page<VacationRequestReadResponse> applicantPositionCodeIdResult = vacationRequestSearchCustom.search(
 	// 		applicantPositionCodeIdCondition, PageRequest.of(0, Integer.MAX_VALUE));
-	// 	Page<VacationRequestReadResponse> approverPositionCodeIdResult = vacationRequestSearchCustom.search(
-	// 		approverPositionCodeIdCondition, PageRequest.of(0, Integer.MAX_VALUE));
 	//
 	// 	// then
 	// 	assertThat(applicantVacationTypeCodeIdResult).hasSize(3 * 4 * 3);
@@ -226,10 +225,6 @@ class VacationRequestRepositorySearchTest {
 	// 	for (VacationRequestReadResponse vacationRequestReadResponse : applicantPositionCodeIdResult) {
 	// 		assertThat(vacationRequestReadResponse.applicantName()).startsWith("member");
 	// 	}
-	// 	assertThat(approverPositionCodeIdResult).hasSize((3 - 1) * 4 * 3);
-	// 	for (VacationRequestReadResponse vacationRequestReadResponse : approverPositionCodeIdResult) {
-	// 		assertThat(vacationRequestReadResponse.approverName()).isEqualTo("approver 0 0");
-	// 	}
 	// }
 	//
 	// @Test
@@ -238,7 +233,7 @@ class VacationRequestRepositorySearchTest {
 	// 	AdminVacationSearchCondition vacationRequestStatusCondition = new AdminVacationSearchCondition(
 	// 		new AdminVacationSearchCondition.DateRangeCondition(null, null, null, null),
 	// 		new AdminVacationSearchCondition.ApplicantCondition(null, null, null, null),
-	// 		new AdminVacationSearchCondition.ApproverCondition(null, null), VacationRequestStatus.APPROVED);
+	// 		new AdminVacationSearchCondition.ApproverCondition(null), VacationRequestStatus.APPROVED);
 	//
 	// 	// when
 	// 	Page<VacationRequestReadResponse> vacationRequestStatusResult = vacationRequestSearchCustom.search(
@@ -252,12 +247,12 @@ class VacationRequestRepositorySearchTest {
 	// }
 	//
 	// @Test
-	// void testApproverName() {
+	// void testApproverNames() {
 	// 	// given
 	// 	AdminVacationSearchCondition approverNameCondition = new AdminVacationSearchCondition(
 	// 		new AdminVacationSearchCondition.DateRangeCondition(null, null, null, null),
 	// 		new AdminVacationSearchCondition.ApplicantCondition(null, null, null, null),
-	// 		new AdminVacationSearchCondition.ApproverCondition("approver 0", null), null);
+	// 		new AdminVacationSearchCondition.ApproverCondition("approver 0"), null);
 	//
 	// 	// when
 	// 	Page<VacationRequestReadResponse> approverNameResult = vacationRequestSearchCustom.search(approverNameCondition,
@@ -266,7 +261,10 @@ class VacationRequestRepositorySearchTest {
 	// 	// then
 	// 	assertThat(approverNameResult).hasSize(3 * 4 * 3);
 	// 	for (VacationRequestReadResponse vacationRequestReadResponse : approverNameResult) {
-	// 		assertThat(vacationRequestReadResponse.approverName()).startsWith("approver 0");
+	// 		assertThat(vacationRequestReadResponse.approverNames()).hasSize(3);
+	// 		assertThat(vacationRequestReadResponse.approverNames()[0].contains("approver 0")
+	// 			|| vacationRequestReadResponse.approverNames()[1].contains("approver 0")
+	// 			|| vacationRequestReadResponse.approverNames()[2].contains("approver 0")).isTrue();
 	// 	}
 	// }
 }
