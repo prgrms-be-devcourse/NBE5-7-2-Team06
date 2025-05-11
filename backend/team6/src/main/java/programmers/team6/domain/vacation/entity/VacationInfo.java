@@ -17,13 +17,17 @@ public class VacationInfo extends BaseEntity {
 
     private int useCount;
 
-    private int remainCount;
-
     private String vacationType;
 
     private Long memberId;
 
     @Version
-    private Integer version;
+    private int version;
 
+    public VacationInfo(int totalCount, int useCount, String vacationType, Long memberId) {
+        this.totalCount = totalCount;
+        this.useCount = useCount;
+        this.vacationType = vacationType;
+        this.memberId = memberId;
+    }
 }
