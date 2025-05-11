@@ -50,7 +50,7 @@ public interface ApprovalStepRepository extends JpaRepository<ApprovalStep, Long
 				)
 		from ApprovalStep a2 join a2.vacationRequest vr
 				join ApprovalStep a1 on a1.vacationRequest.id = vr.id and a1.step = 1
-		where a2.member.id = :memberId and a1.step = :step
+		where a2.member.id = :memberId and a2.step = :step
 		order by a2.id desc
 		""")
 	Page<ApprovalSecondStepSelectResponse> findSecondStepByMemberId(Long memberId, int step, Pageable pageable);

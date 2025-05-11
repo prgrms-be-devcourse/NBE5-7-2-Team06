@@ -12,6 +12,7 @@ import programmers.team6.domain.member.entity.Member;
 import programmers.team6.domain.member.repository.MemberRepository;
 import programmers.team6.domain.vacation.dto.ApprovalFirstStepDetailResponse;
 import programmers.team6.domain.vacation.dto.ApprovalFirstStepSelectResponse;
+import programmers.team6.domain.vacation.dto.ApprovalSecondStepSelectResponse;
 import programmers.team6.domain.vacation.dto.ApprovalStepRejectRequest;
 import programmers.team6.domain.vacation.dto.ApprovalStepSelectRequest;
 import programmers.team6.domain.vacation.entity.ApprovalStep;
@@ -42,6 +43,20 @@ public class ApprovalStepService {
 		validateMember(memberId);
 		return approvalStepRepository.findFirstStepByFilter(memberId, request.typeId(),
 			request.name(), request.from(), request.to(), request.status(), STEP1, pageable);
+	}
+
+	@Transactional(readOnly = true)
+	public Page<ApprovalSecondStepSelectResponse> findSecondStepByMemberId(Long memberId, Pageable pageable) {
+		validateMember(memberId);
+		return approvalStepRepository.findSecondStepByMemberId(memberId, STEP2, pageable);
+	}
+
+	@Transactional(readOnly = true)
+	public Page<ApprovalSecondStepSelectResponse> findSecondStepByFilter(
+		ApprovalStepSelectRequest request, Long memberId, Pageable pageable) {
+		validateMember(memberId);
+		return approvalStepRepository.findSecondStepByFilter(memberId, request.typeId(),
+			request.name(), request.from(), request.to(), request.status(), STEP2, pageable);
 	}
 
 	public void validateMember(Long memberId) {

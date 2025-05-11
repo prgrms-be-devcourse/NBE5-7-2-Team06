@@ -16,6 +16,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import programmers.team6.domain.vacation.dto.ApprovalFirstStepDetailResponse;
 import programmers.team6.domain.vacation.dto.ApprovalFirstStepSelectResponse;
+import programmers.team6.domain.vacation.dto.ApprovalSecondStepSelectResponse;
 import programmers.team6.domain.vacation.dto.ApprovalStepRejectRequest;
 import programmers.team6.domain.vacation.dto.ApprovalStepSelectRequest;
 import programmers.team6.domain.vacation.service.ApprovalStepService;
@@ -48,6 +49,20 @@ public class ApprovalStepController {
 		Long memberId = 2L;
 
 		return approvalStepService.findFirstStepDetailById(approvalStepId, memberId);
+	}
+
+	@GetMapping("/second")
+	@ResponseStatus(HttpStatus.OK)
+	public Page<ApprovalSecondStepSelectResponse> getSecondStep(
+		ApprovalStepSelectRequest request, @PageableDefault(size = 20) Pageable pageable) {
+		// todo: jwt 에서 memberId 꺼내야함
+		Long memberId = 4L;
+
+		if (!request.hasFilter()) {
+			return approvalStepService.findSecondStepByMemberId(memberId, pageable);
+		} else {
+			return approvalStepService.findSecondStepByFilter(request, memberId, pageable);
+		}
 	}
 
 	@PostMapping("/first/{approvalStepId}/approve")
