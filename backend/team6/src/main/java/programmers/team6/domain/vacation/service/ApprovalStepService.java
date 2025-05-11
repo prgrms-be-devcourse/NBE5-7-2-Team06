@@ -46,24 +46,30 @@ public class ApprovalStepService {
 
 	public void validateMember(Long memberId) {
 		if (!approvalStepRepository.existsByMemberId(memberId)) {
-			throw new NoSuchElementException("결재 목록 데이터가 없습니다.");
+			throw new NoSuchElementException("결재 목록이 없습니다.");
 		}
 	}
 
 	@Transactional(readOnly = true)
 	public ApprovalFirstStepDetailResponse findFirstStepDetailById(Long approvalStepId, Long memberId) {
-		ApprovalStep findApprovalStep = approvalStepRepository.findByIdAndMemberId(approvalStepId, memberId)
-			.orElseThrow(() -> new IllegalArgumentException("해당 결재 목록이 없습니다."));
+		ApprovalStep findApprovalStep = approvalStepRepository.findByIdAndMemberIdAndStep(approvalStepId, memberId,
+				STEP1)
+			.orElseThrow(() -> new IllegalArgumentException("해당 1차 결재 목록이 없습니다."));
 		return ApprovalStepMapper.fromEntity(findApprovalStep);
 	}
 
 	@Transactional
 	public void approveFirstStep(Long approvalStepId, Long memberId) {
-		ApprovalStep findApprovalStep1 = approvalStepRepository.findByIdAndMemberId(approvalStepId, memberId)
-			.orElseThrow(() -> new IllegalArgumentException("해당 요청을 결재할 수 없습니다."));
+		ApprovalStep findApprovalStep1 = approvalStepRepository.findByIdAndMemberIdAndStep(approvalStepId, memberId,
+				STEP1)
+			.orElseThrow(() -> new IllegalArgumentException("해당 1차 결재 목록이 없습니다."));
+		if (!findApprovalStep1.isApprovable()) {
+			throw new IllegalArgumentException("해당 결재를 승인할 수 없습니다.");
+		}
+
 		ApprovalStep findApprovalStep2 = approvalStepRepository.findByVacationRequestIdAndStep(
 				findApprovalStep1.getVacationRequest().getId(), STEP2)
-			.orElseThrow(() -> new IllegalArgumentException("해당 결재 목록이 없습니다."));
+			.orElseThrow(() -> new IllegalArgumentException("해당 2차 결재 목록이 없습니다."));
 
 		updateApprovalStepStatus(findApprovalStep1, ApprovalStatus.APPROVED, null);
 		updateApprovalStepStatus(findApprovalStep2, ApprovalStatus.IN_PROGRESS, null);
@@ -72,11 +78,16 @@ public class ApprovalStepService {
 
 	@Transactional
 	public void rejectFirstStep(Long approvalStepId, Long memberId, ApprovalStepRejectRequest request) {
-		ApprovalStep findApprovalStep1 = approvalStepRepository.findByIdAndMemberId(approvalStepId, memberId)
-			.orElseThrow(() -> new IllegalArgumentException("해당 요청을 결재할 수 없습니다."));
+		ApprovalStep findApprovalStep1 = approvalStepRepository.findByIdAndMemberIdAndStep(approvalStepId, memberId,
+				STEP1)
+			.orElseThrow(() -> new IllegalArgumentException("해당 1차 결재 목록이 없습니다."));
+		if (!findApprovalStep1.isApprovable()) {
+			throw new IllegalArgumentException("해당 결재를 반려할 수 없습니다.");
+		}
+
 		ApprovalStep findApprovalStep2 = approvalStepRepository.findByVacationRequestIdAndStep(
 				findApprovalStep1.getVacationRequest().getId(), STEP2)
-			.orElseThrow(() -> new IllegalArgumentException("해당 결재 목록이 없습니다."));
+			.orElseThrow(() -> new IllegalArgumentException("해당 2차 결재 목록이 없습니다."));
 
 		updateApprovalStepStatus(findApprovalStep1, ApprovalStatus.REJECTED, request.reason());
 		updateApprovalStepStatus(findApprovalStep2, ApprovalStatus.REJECTED, null);
@@ -87,7 +98,6 @@ public class ApprovalStepService {
 
 	private void updateApprovalStepStatus(ApprovalStep approvalStep, ApprovalStatus approvalStatus,
 		String reason) {
-
 		if (reason == null) {
 			approvalStep.apply(approvalStatus);
 		} else {

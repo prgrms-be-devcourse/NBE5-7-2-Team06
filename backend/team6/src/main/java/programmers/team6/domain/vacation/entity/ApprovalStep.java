@@ -57,6 +57,11 @@ public class ApprovalStep extends BaseEntity {
 
 	public void apply(ApprovalStatus approvalStatus, String reason) {
 		this.approvalStatus = approvalStatus;
+		this.reason = reason;
+	}
+
+	public boolean isApprovable() {
+		return this.approvalStatus == ApprovalStatus.IN_PROGRESS;
 	}
 
 }
