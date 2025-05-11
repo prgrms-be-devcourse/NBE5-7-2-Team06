@@ -120,6 +120,38 @@ public class ApprovalStepService {
 
 	}
 
+	@Transactional
+	public void approveSecondStep(Long approvalStepId, Long memberId) {
+		ApprovalStep findApprovalStep = approvalStepRepository.findByIdAndMemberIdAndStep(approvalStepId, memberId,
+				STEP2)
+			.orElseThrow(() -> new IllegalArgumentException("해당 2차 결재 목록이 없습니다."));
+		if (!findApprovalStep.isApprovable()) {
+			throw new IllegalArgumentException("해당 결재를 승인할 수 없습니다.");
+		}
+
+		updateApprovalStepStatus(findApprovalStep, ApprovalStatus.APPROVED, null);
+
+		findApprovalStep.getVacationRequest().updateStatus(VacationRequestStatus.APPROVED);
+
+		// todo: 연차 계산 후 차감 로직
+
+	}
+
+	@Transactional
+	public void rejectSecondStep(Long approvalStepId, Long memberId, ApprovalStepRejectRequest request) {
+		ApprovalStep findApprovalStep = approvalStepRepository.findByIdAndMemberIdAndStep(approvalStepId, memberId,
+				STEP2)
+			.orElseThrow(() -> new IllegalArgumentException("해당 2차 결재 목록이 없습니다."));
+		if (!findApprovalStep.isApprovable()) {
+			throw new IllegalArgumentException("해당 결재를 반려할 수 없습니다.");
+		}
+
+		updateApprovalStepStatus(findApprovalStep, ApprovalStatus.REJECTED, request.reason());
+
+		findApprovalStep.getVacationRequest().updateStatus(VacationRequestStatus.REJECTED);
+
+	}
+
 	private void updateApprovalStepStatus(ApprovalStep approvalStep, ApprovalStatus approvalStatus,
 		String reason) {
 		if (reason == null) {

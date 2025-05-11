@@ -93,4 +93,22 @@ public class ApprovalStepController {
 		approvalStepService.rejectFirstStep(approvalStepId, memberId, request);
 	}
 
+	@PostMapping("/second/{approvalStepId}/approve")
+	@ResponseStatus(HttpStatus.OK)
+	public void approveSecondStep(@PathVariable Long approvalStepId) {
+		// todo : jwt 에서 memberId 꺼내야함
+		Long memberId = 4L;
+
+		approvalStepService.approveSecondStep(approvalStepId, memberId);
+	}
+
+	@PostMapping("/second/{approvalStepId}/reject")
+	@ResponseStatus(HttpStatus.OK)
+	public void rejectSecondStep(@PathVariable Long approvalStepId,
+		@Valid @RequestBody ApprovalStepRejectRequest request) {
+		// todo : jwt 에서 memberId 꺼내야함
+		Long memberId = 4L;
+		approvalStepService.rejectSecondStep(approvalStepId, memberId, request);
+	}
+
 }
