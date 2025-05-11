@@ -30,4 +30,8 @@ public final class AnnualVacationGrantRule {
 		}
 		return monthlyVacationRule.toGrantInfo(vacationGrantEligibility);
 	}
+
+	public static AnnualVacationGrantRule statutory() {
+		return new AnnualVacationGrantRule(AnnualVacationRule.statutory(), MonthlyVacationRule.statutory());
+	}
 }

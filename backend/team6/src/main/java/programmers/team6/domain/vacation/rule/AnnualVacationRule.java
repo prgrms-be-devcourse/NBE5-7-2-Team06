@@ -12,6 +12,12 @@ import programmers.team6.global.entity.Positive;
 @RequiredArgsConstructor
 public final class AnnualVacationRule {
 
+	private static final Positive STATUTORY_BOUNDARY_YEAR = new Positive(1);
+	private static final Positive STATUTORY_INCREASE_YEAR = new Positive(2);
+	private static final Positive STATUTORY_INCREASE_DAYS = new Positive(1);
+	private static final Positive STATUTORY_INITIAL_GRANT_DAYS = new Positive(15);
+	private static final Positive STATUTORY_MAX_GRANT_DAYS = new Positive(25);
+
 	private final Positive boundaryYear;
 	private final Positive increaseYear;
 	private final Positive vacationIncreaseDays;
@@ -32,6 +38,11 @@ public final class AnnualVacationRule {
 		return new VacationGrantInfo(vacationGrantEligibility.id(),
 			vacationGrantEligibility.vacationCount() + calcIncreaseDays(yearsOfService),
 			vacationGrantEligibility.version());
+	}
+
+	public static AnnualVacationRule statutory() {
+		return new AnnualVacationRule(STATUTORY_BOUNDARY_YEAR, STATUTORY_INCREASE_YEAR, STATUTORY_INCREASE_DAYS,
+			STATUTORY_INITIAL_GRANT_DAYS, STATUTORY_MAX_GRANT_DAYS);
 	}
 
 	private int calcIncreaseDays(int yearsOfService) {
