@@ -12,6 +12,7 @@ import programmers.team6.domain.member.entity.Member;
 import programmers.team6.domain.member.repository.MemberRepository;
 import programmers.team6.domain.vacation.dto.ApprovalFirstStepDetailResponse;
 import programmers.team6.domain.vacation.dto.ApprovalFirstStepSelectResponse;
+import programmers.team6.domain.vacation.dto.ApprovalSecondStepDetailResponse;
 import programmers.team6.domain.vacation.dto.ApprovalSecondStepSelectResponse;
 import programmers.team6.domain.vacation.dto.ApprovalStepRejectRequest;
 import programmers.team6.domain.vacation.dto.ApprovalStepSelectRequest;
@@ -70,7 +71,15 @@ public class ApprovalStepService {
 		ApprovalStep findApprovalStep = approvalStepRepository.findByIdAndMemberIdAndStep(approvalStepId, memberId,
 				STEP1)
 			.orElseThrow(() -> new IllegalArgumentException("해당 1차 결재 목록이 없습니다."));
-		return ApprovalStepMapper.fromEntity(findApprovalStep);
+		return ApprovalStepMapper.fromFirstStepEntity(findApprovalStep);
+	}
+
+	@Transactional(readOnly = true)
+	public ApprovalSecondStepDetailResponse findSecondStepDetailById(Long approvalStepId, Long memberId) {
+		ApprovalStep findApprovalStep = approvalStepRepository.findByIdAndMemberIdAndStep(approvalStepId, memberId,
+				STEP2)
+			.orElseThrow(() -> new IllegalArgumentException("해당 2차 결재 목록이 없습니다."));
+		return ApprovalStepMapper.fromSecondStepEntity(findApprovalStep);
 	}
 
 	@Transactional
