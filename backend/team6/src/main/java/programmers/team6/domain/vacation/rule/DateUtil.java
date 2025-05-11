@@ -1,3 +1,4 @@
+
 package programmers.team6.domain.vacation.rule;
 
 import java.time.LocalDate;

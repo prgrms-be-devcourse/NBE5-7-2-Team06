@@ -1,6 +1,5 @@
 package programmers.team6.domain.vacation.rule;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import programmers.team6.domain.vacation.rule.vacationgranteligiblities.VacationGrantEligibility;

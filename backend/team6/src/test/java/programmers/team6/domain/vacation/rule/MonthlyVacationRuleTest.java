@@ -2,7 +2,6 @@ package programmers.team6.domain.vacation.rule;
 
 import static org.assertj.core.api.Assertions.*;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import org.junit.jupiter.api.Test;
