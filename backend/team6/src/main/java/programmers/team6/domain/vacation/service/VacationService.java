@@ -197,4 +197,32 @@ public class VacationService {
 			approvalStep.getMember().getName()
 		);
 	}
+
+	// 대기중인 휴가 신청 취소
+	@Transactional
+	public boolean cancelVacationRequest(Long memberId, Long requestId) {
+		// 취소 요청자 확인
+		Member requester = memberRepository.findById(memberId)
+			.orElseThrow(() -> new RuntimeException("멤버 정보를 찾을 수 없습니다."));
+
+		// 휴가 신청 조회
+		VacationRequest vacationRequest = vacationRequestRepository.findById(requestId)
+			.orElseThrow(() -> new RuntimeException("휴가 신청 정보를 찾을 수 없습니다."));
+
+		// 이미 취소된 상태인지 확인
+		if (vacationRequest.getStatus() == ApprovalStatus.CANCELED) {
+			throw new IllegalStateException("이미 취소된 휴가 신청입니다.");
+		}
+
+		// 취소 권한 확인 (본인이 신청한 휴가만 취소, 대기중인 휴가만 취소 가능)
+		if (!vacationRequest.canCancel(memberId)) {
+			throw new RuntimeException("취소 권한이 없거나 이미 처리된 휴가 신청입니다.");
+		}
+
+		// 휴가 신청 취소
+		vacationRequest.cancel();
+
+		return true;
+	}
+
 }

@@ -88,4 +88,18 @@ public class VacationRequest extends BaseEntity {
 	public boolean canUpdate(Long memberId) {
 		return this.requester.getId().equals(memberId) && this.status == ApprovalStatus.PENDING;
 	}
+
+	// 휴가 요청 취소
+	public void cancel() {
+		if (this.status != ApprovalStatus.PENDING) {
+			throw new IllegalStateException("대기 중인 휴가 요청만 취소할 수 있습니다.");
+		}
+
+		this.status = ApprovalStatus.CANCELED;
+	}
+
+	// 현재 요청자가 취소 권한을 가지고 있는지 학인
+	public boolean canCancel(Long memberId) {
+		return this.requester.getId().equals(memberId) && this.status == ApprovalStatus.PENDING;
+	}
 }
