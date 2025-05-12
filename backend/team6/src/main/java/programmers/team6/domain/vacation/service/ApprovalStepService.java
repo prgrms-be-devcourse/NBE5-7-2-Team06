@@ -105,8 +105,8 @@ public class ApprovalStepService {
 				findApprovalStep1.getVacationRequest().getId(), STEP2)
 			.orElseThrow(() -> new IllegalArgumentException("해당 2차 결재 목록이 없습니다."));
 
-		updateApprovalStepStatus(findApprovalStep1, ApprovalStatus.APPROVED, null);
-		updateApprovalStepStatus(findApprovalStep2, ApprovalStatus.IN_PROGRESS, null);
+		findApprovalStep1.updateStatus(ApprovalStatus.APPROVED);
+		findApprovalStep2.updateStatus(ApprovalStatus.IN_PROGRESS);
 
 	}
 
@@ -124,8 +124,8 @@ public class ApprovalStepService {
 				findApprovalStep1.getVacationRequest().getId(), STEP2)
 			.orElseThrow(() -> new IllegalArgumentException("해당 2차 결재 목록이 없습니다."));
 
-		updateApprovalStepStatus(findApprovalStep1, ApprovalStatus.REJECTED, request.reason());
-		updateApprovalStepStatus(findApprovalStep2, ApprovalStatus.REJECTED, null);
+		findApprovalStep1.updateStatus(ApprovalStatus.REJECTED, request.reason());
+		findApprovalStep2.updateStatus(ApprovalStatus.REJECTED);
 
 		findApprovalStep1.getVacationRequest().updateStatus(VacationRequestStatus.REJECTED);
 
@@ -150,11 +150,12 @@ public class ApprovalStepService {
 			findApprovalStep.getVacationRequest().getTo()) + 1;
 
 		if (findVacationInfo.canUseVacation(count)) {
-			updateApprovalStepStatus(findApprovalStep, ApprovalStatus.APPROVED, null);
+			findApprovalStep.updateStatus(ApprovalStatus.APPROVED);
+
 			findApprovalStep.getVacationRequest().updateStatus(VacationRequestStatus.APPROVED);
 			findVacationInfo.useVacation(count);
 		} else {
-			updateApprovalStepStatus(findApprovalStep, ApprovalStatus.CANCELED, null);
+			findApprovalStep.updateStatus(ApprovalStatus.CANCELED);
 			findApprovalStep.getVacationRequest().updateStatus(VacationRequestStatus.CANCELED);
 
 			// throw new IllegalArgumentException("잔여 연차 부족으로 취소되었습니다.");
@@ -178,19 +179,10 @@ public class ApprovalStepService {
 			throw new IllegalArgumentException("해당 결재를 반려할 수 없습니다.");
 		}
 
-		updateApprovalStepStatus(findApprovalStep, ApprovalStatus.REJECTED, request.reason());
+		findApprovalStep.updateStatus(ApprovalStatus.REJECTED, request.reason());
 
 		findApprovalStep.getVacationRequest().updateStatus(VacationRequestStatus.REJECTED);
 
-	}
-
-	private void updateApprovalStepStatus(ApprovalStep approvalStep, ApprovalStatus approvalStatus,
-		String reason) {
-		if (reason == null) {
-			approvalStep.updateStatus(approvalStatus);
-		} else {
-			approvalStep.updateStatus(approvalStatus, reason);
-		}
 	}
 
 	// 휴가 신청 시 호출되어, 해당 멤버의 결재 단계 생성
@@ -204,7 +196,7 @@ public class ApprovalStepService {
 	public void cancelApprovalStep(Long vacationStepId) {
 		List<ApprovalStep> findApprovalSteps = approvalStepRepository.findByVacationRequestId(vacationStepId);
 		for (ApprovalStep findApprovalStep : findApprovalSteps) {
-			updateApprovalStepStatus(findApprovalStep, ApprovalStatus.CANCELED, null);
+			findApprovalStep.updateStatus(ApprovalStatus.CANCELED);
 		}
 	}
 
