@@ -5,6 +5,7 @@ import java.util.NoSuchElementException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import programmers.team6.domain.auth.dto.JwtMemberInfo;
@@ -35,6 +36,7 @@ public class AuthService {
 	private final JwtTokenProvider jwtTokenProvider;
 	private final JwtService jwtService;
 
+	@Transactional
 	public void signUp(MemberSignUpRequest memberSignUpRequest) {
 
 		Dept dept = deptRepository.findById(memberSignUpRequest.dept()).orElseThrow(
@@ -55,10 +57,12 @@ public class AuthService {
 		memberRepository.save(member);
 	}
 
+	@Transactional(readOnly = true)
 	public boolean isEmailDuplicated(String email) {
 		return memberInfoRepository.existsByEmail(email);
 	}
 
+	@Transactional
 	public AuthTokenResponse login(MemberLoginRequest memberLoginRequest) {
 
 		Member member = memberRepository.findByEmail(memberLoginRequest.email())
