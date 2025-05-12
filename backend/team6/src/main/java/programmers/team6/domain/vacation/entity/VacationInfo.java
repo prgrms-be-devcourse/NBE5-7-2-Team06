@@ -39,4 +39,13 @@ public class VacationInfo extends BaseEntity {
 		this.vacationType = vacationType;
 		this.memberId = memberId;
 	}
+
+	public void useVacation(int count) {
+		this.useCount += count;
+	}
+
+	public boolean canUseVacation(int count) {
+		return this.useCount + count <= totalCount;
+	}
+
 }

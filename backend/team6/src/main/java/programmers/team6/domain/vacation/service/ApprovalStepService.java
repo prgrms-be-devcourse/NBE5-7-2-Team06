@@ -20,10 +20,12 @@ import programmers.team6.domain.vacation.dto.ApprovalSecondStepSelectResponse;
 import programmers.team6.domain.vacation.dto.ApprovalStepRejectRequest;
 import programmers.team6.domain.vacation.dto.ApprovalStepSelectRequest;
 import programmers.team6.domain.vacation.entity.ApprovalStep;
+import programmers.team6.domain.vacation.entity.VacationInfo;
 import programmers.team6.domain.vacation.entity.VacationRequest;
 import programmers.team6.domain.vacation.enums.ApprovalStatus;
 import programmers.team6.domain.vacation.enums.VacationRequestStatus;
 import programmers.team6.domain.vacation.repository.ApprovalStepRepository;
+import programmers.team6.domain.vacation.repository.VacationInfoRepository;
 import programmers.team6.domain.vacation.util.mapper.ApprovalStepMapper;
 
 @Slf4j
@@ -35,6 +37,7 @@ public class ApprovalStepService {
 
 	private final ApprovalStepRepository approvalStepRepository;
 	private final MemberRepository memberRepository;
+	private final VacationInfoRepository vacationInfoRepository;
 
 	@Transactional(readOnly = true)
 	public Page<ApprovalFirstStepSelectResponse> findFirstStepByMemberId(Long memberId, Pageable pageable) {
@@ -138,21 +141,30 @@ public class ApprovalStepService {
 			throw new IllegalArgumentException("해당 결재를 승인할 수 없습니다.");
 		}
 
-		updateApprovalStepStatus(findApprovalStep, ApprovalStatus.APPROVED, null);
+		VacationInfo findVacationInfo = vacationInfoRepository.findByMemberIdAndVacationType(
+				findApprovalStep.getVacationRequest().getMember().getId(),
+				findApprovalStep.getVacationRequest().getType().getName())
+			.orElseThrow(() -> new IllegalArgumentException("해당 휴가 유형 정보가 없습니다."));
 
-		findApprovalStep.getVacationRequest().updateStatus(VacationRequestStatus.APPROVED);
-
-		/*
-			todo: 휴가 차감 로직.
-			1. 신청 휴가 일수 계산
-			2. 해당 멤버, 휴가 타입으로 vacationInfo 를 찾는다.
-				2-1. 그러려면 vacationInfo 리포에 findByMemberIdAndVacationType 있어야함
-			3. memberInfo 의 useCount + 신청 휴가 일수 <= totalCount 인지 검증
-			4. 이후 useCount + 신청휴가일수를 수행하기 위한 엔티티 메서드? 호출
-
-		 */
-		int days = (int)ChronoUnit.DAYS.between(findApprovalStep.getVacationRequest().getFrom(),
+		int count = (int)ChronoUnit.DAYS.between(findApprovalStep.getVacationRequest().getFrom(),
 			findApprovalStep.getVacationRequest().getTo()) + 1;
+
+		if (findVacationInfo.canUseVacation(count)) {
+			updateApprovalStepStatus(findApprovalStep, ApprovalStatus.APPROVED, null);
+			findApprovalStep.getVacationRequest().updateStatus(VacationRequestStatus.APPROVED);
+			findVacationInfo.useVacation(count);
+		} else {
+			updateApprovalStepStatus(findApprovalStep, ApprovalStatus.CANCELED, null);
+			findApprovalStep.getVacationRequest().updateStatus(VacationRequestStatus.CANCELED);
+
+			// throw new IllegalArgumentException("잔여 연차 부족으로 취소되었습니다.");
+			/*
+				? : 예외를 터트리면 롤백됨.
+				1. 해당 예외는 트랜잭션에서 제외 시키는 방법
+				2. 예외처리를 하지말고, 해당 응답을 void가 아닌 상태, 메시지를 반환해주는 방법
+					(성공이면 상태 + 휴가 결재 완료, 실패면 실패 + 잔여 연차 부족 ~~)
+			 */
+		}
 
 	}
 
@@ -181,14 +193,14 @@ public class ApprovalStepService {
 		}
 	}
 
-	// 서비스 계층 전용 메서드
+	// 휴가 신청 시 호출되어, 해당 멤버의 결재 단계 생성
 	public void saveApprovalStep(Long memberId, VacationRequest vacationRequest, int step) {
 		Member findMember = memberRepository.findById(memberId)
 			.orElseThrow(() -> new IllegalArgumentException("해당 멤버가 존재하지 않습니다."));
 		approvalStepRepository.save(ApprovalStepMapper.toEntity(findMember, vacationRequest, step));
 	}
 
-	// 서비스 계층 전용 메서드
+	// 휴가 요청 취소될 경우, 관련 결재 단계 상태 CANCELED
 	public void cancelApprovalStep(Long vacationStepId) {
 		List<ApprovalStep> findApprovalSteps = approvalStepRepository.findByVacationRequestId(vacationStepId);
 		for (ApprovalStep findApprovalStep : findApprovalSteps) {
