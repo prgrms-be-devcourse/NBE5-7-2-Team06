@@ -8,4 +8,6 @@ import programmers.team6.domain.member.entity.Code;
 
 public interface CodeRepository extends JpaRepository<Code, Long> {
 	Optional<Code> findByIdAndGroupCode(Long id, String groupCode);
+
+	Optional<Code> findByGroupCodeAndCode(String groupCode, String code);
 }

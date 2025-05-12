@@ -8,6 +8,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.NoArgsConstructor;
 import programmers.team6.global.entity.BaseEntity;
 
@@ -23,14 +24,12 @@ public class Dept extends BaseEntity {
 	private String deptName;
 
 	@OneToOne
-	@JoinColumn(name = "dept_leader_id", nullable = false)
+	@JoinColumn(name = "dept_leader_id")
 	private Member deptLeader;
 
-	public Dept(String deptName) {
+	@Builder
+	public Dept(String deptName, Member deptLeader) {
 		this.deptName = deptName;
-	}
-
-	public void setDeptLeader(Member deptLeader) {
 		this.deptLeader = deptLeader;
 	}
 }

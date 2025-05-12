@@ -12,8 +12,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Version;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import programmers.team6.domain.member.entity.Code;
@@ -46,11 +46,13 @@ public class VacationRequest extends BaseEntity {
 	@Enumerated(value = EnumType.STRING)
 	private VacationRequestStatus status;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "member_id")
 	private Member member;
 
-	@Builder
+	@Version
+	private Integer version;
+
 	public VacationRequest(LocalDate from, LocalDate to, String reason, Code type,
 		Member member) {
 		this.from = from;

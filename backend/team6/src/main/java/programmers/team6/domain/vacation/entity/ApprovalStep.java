@@ -22,20 +22,21 @@ public class ApprovalStep extends BaseEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "approval_step_id")
-	private Long approvalStepId;
-
-	private int step;
-	@Column(name = "approval_status")
-	@Enumerated(value = EnumType.STRING)
-	private ApprovalStatus approvalStatus;
+	private Long id;
 
 	@ManyToOne
-	@JoinColumn(name = "member_id")
+	@JoinColumn(name = "member_id", nullable = false)
 	private Member member;
 
 	@ManyToOne
-	@JoinColumn(name = "vacation_request_id")
+	@JoinColumn(name = "vacation_request_id", nullable = false)
 	private VacationRequest vacationRequest;
+
+	@Column(name = "approval_status", nullable = false)
+	@Enumerated(value = EnumType.STRING)
+	private ApprovalStatus approvalStatus;
+
+	private int step;
 
 	private String reason;
 
