@@ -17,7 +17,7 @@ public enum Quarter {
 
 	public LocalDate getStart(int year) {
 		return switch (this) {
-			case Q1, Q2, Q3, Q4 -> makeQuarter(year, TemporalAdjusters.firstDayOfMonth());
+			case Q1, Q2, Q3, Q4 -> applyQuarterAdjuster(year, TemporalAdjusters.firstDayOfMonth());
 			case H1, NONE -> LocalDate.of(year, Month.JANUARY, 1);
 			case H2 -> LocalDate.of(year, Month.JULY, 1);
 		};
@@ -25,13 +25,13 @@ public enum Quarter {
 
 	public LocalDate getEnd(int year) {
 		return switch (this) {
-			case Q1, Q2, Q3, Q4 -> makeQuarter(year, TemporalAdjusters.lastDayOfMonth()).plusMonths(2);
+			case Q1, Q2, Q3, Q4 -> applyQuarterAdjuster(year, TemporalAdjusters.lastDayOfMonth()).plusMonths(2);
 			case H1 -> LocalDate.of(year, Month.JUNE, 30);
 			case H2, NONE -> LocalDate.of(year, Month.DECEMBER, 31);
 		};
 	}
 
-	private LocalDate makeQuarter(int year, TemporalAdjuster temporalAdjuster) {
+	private LocalDate applyQuarterAdjuster(int year, TemporalAdjuster temporalAdjuster) {
 		return LocalDate.of(year, 1, 1).with(IsoFields.QUARTER_OF_YEAR, this.value).with(temporalAdjuster);
 	}
 
