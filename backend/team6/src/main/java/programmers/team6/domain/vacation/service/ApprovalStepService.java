@@ -31,7 +31,8 @@ import programmers.team6.domain.vacation.util.mapper.ApprovalStepMapper;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class ApprovalStepService {
+public class ApprovalStepService {    // todo : 비즈니스 로직 분리 또는 엔티티 도메인 메서드로 리팩토링 고려
+
 	private static final int STEP1 = 1;
 	private static final int STEP2 = 2;
 
@@ -160,6 +161,7 @@ public class ApprovalStepService {
 
 			// throw new IllegalArgumentException("잔여 연차 부족으로 취소되었습니다.");
 			/*
+				todo
 				? : 예외를 터트리면 롤백됨.
 				1. 해당 예외는 트랜잭션에서 제외 시키는 방법
 				2. 예외처리를 하지말고, 해당 응답을 void가 아닌 상태, 메시지를 반환해주는 방법
