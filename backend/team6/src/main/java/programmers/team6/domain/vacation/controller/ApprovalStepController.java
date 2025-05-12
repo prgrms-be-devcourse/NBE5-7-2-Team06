@@ -76,7 +76,7 @@ public class ApprovalStepController {
 	}
 
 	@PatchMapping("/first/{approvalStepId}/approve")
-	@ResponseStatus(HttpStatus.OK)
+	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void approveFirstStep(@PathVariable Long approvalStepId) {
 		// todo : jwt 에서 memberId 꺼내야함
 		Long memberId = 2L;
@@ -85,7 +85,7 @@ public class ApprovalStepController {
 	}
 
 	@PatchMapping("/first/{approvalStepId}/reject")
-	@ResponseStatus(HttpStatus.OK)
+	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void rejectFirstStep(@PathVariable Long approvalStepId,
 		@Valid @RequestBody ApprovalStepRejectRequest request) {
 		// todo : jwt 에서 memberId 꺼내야함
@@ -94,7 +94,7 @@ public class ApprovalStepController {
 	}
 
 	@PatchMapping("/second/{approvalStepId}/approve")
-	@ResponseStatus(HttpStatus.OK)
+	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void approveSecondStep(@PathVariable Long approvalStepId) {
 		// todo : jwt 에서 memberId 꺼내야함
 		Long memberId = 4L;
@@ -103,7 +103,7 @@ public class ApprovalStepController {
 	}
 
 	@PatchMapping("/second/{approvalStepId}/reject")
-	@ResponseStatus(HttpStatus.OK)
+	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void rejectSecondStep(@PathVariable Long approvalStepId,
 		@Valid @RequestBody ApprovalStepRejectRequest request) {
 		// todo : jwt 에서 memberId 꺼내야함
