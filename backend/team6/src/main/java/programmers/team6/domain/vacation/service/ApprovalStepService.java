@@ -67,7 +67,7 @@ public class ApprovalStepService {
 			request.name(), request.from(), request.to(), request.status(), STEP2, pageable);
 	}
 
-	public void validateMember(Long memberId) {
+	private void validateMember(Long memberId) {
 		if (!approvalStepRepository.existsByMemberId(memberId)) {
 			throw new NoSuchElementException("결재 목록이 없습니다.");
 		}
