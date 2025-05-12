@@ -14,28 +14,42 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import programmers.team6.domain.member.entity.Member;
 import programmers.team6.domain.vacation.enums.ApprovalStatus;
+import programmers.team6.global.entity.BaseEntity;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class ApprovalStep {
+public class ApprovalStep extends BaseEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "approval_step_id")
 	private Long id;
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne
 	@JoinColumn(name = "member_id", nullable = false)
 	private Member member;
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne
 	@JoinColumn(name = "vacation_request_id", nullable = false)
 	private VacationRequest vacationRequest;
 
-	private int step;
-
 	@Column(name = "approval_status", nullable = false)
-	@Enumerated(EnumType.STRING)
-	private ApprovalStatus status;
+	@Enumerated(value = EnumType.STRING)
+	private ApprovalStatus approvalStatus;
+
+	private int step;
 
 	private String reason;
 
+	public ApprovalStep(Member member, VacationRequest vacationRequest, ApprovalStatus approvalStatus, int step,
+		String reason) {
+		this.member = member;
+		this.vacationRequest = vacationRequest;
+		this.approvalStatus = approvalStatus;
+		this.step = step;
+		this.reason = reason;
+	}
+
+	public void update(String reason) {
+		this.reason = reason;
+	}
 }
