@@ -23,6 +23,11 @@ public record AdminVacationSearchCondition(
 		// 분기
 		Quarter quarter
 	) {
+		public DateRangeCondition {
+			if (quarter == null) {
+				quarter = Quarter.NONE;
+			}
+		}
 	}
 
 	// 휴가 신청자

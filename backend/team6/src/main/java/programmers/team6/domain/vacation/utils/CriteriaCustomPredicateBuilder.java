@@ -3,12 +3,12 @@ package programmers.team6.domain.vacation.utils;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.From;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.metamodel.SingularAttribute;
+import programmers.team6.domain.vacation.enums.Quarter;
 
 /**
  * 필터링을 위한 Predicate 리스트 빌드
@@ -41,8 +41,11 @@ public class CriteriaCustomPredicateBuilder<T> {
 	public <R> CriteriaCustomPredicateBuilder<T> applyDateRangeFilter(From<T, R> root,
 		SingularAttribute<? super R, LocalDate> mappedFromField,
 		SingularAttribute<? super R, LocalDate> mappedToField,
-		Optional<LocalDate> from, Optional<LocalDate> to) {
-		return applyDateRangeFilter(root, mappedFromField, mappedToField, from.orElse(null), to.orElse(null));
+		Integer year, Quarter quarter) {
+		if (year == null) {
+			return this;
+		}
+		return applyDateRangeFilter(root, mappedFromField, mappedToField, quarter.getStart(year), quarter.getEnd(year));
 	}
 
 	public CriteriaCustomPredicateBuilder<T> applyEqualFilter(From<T, ?> root, Object conditionValue,

@@ -22,7 +22,6 @@ import programmers.team6.domain.vacation.entity.ApprovalStep;
 import programmers.team6.domain.vacation.entity.ApprovalStep_;
 import programmers.team6.domain.vacation.entity.VacationRequest;
 import programmers.team6.domain.vacation.entity.VacationRequest_;
-import programmers.team6.domain.vacation.enums.Quarter;
 import programmers.team6.domain.vacation.repository.VacationRequestRepository;
 import programmers.team6.domain.vacation.utils.CriteriaCustomPredicateBuilder;
 import programmers.team6.domain.vacation.utils.CriteriaCustomQueryBuilder;
@@ -65,9 +64,8 @@ public class VacationRequestSearchCustom {
 		List<Predicate> predicates = CriteriaCustomPredicateBuilder.<ApprovalStep>builder(cb)
 			.applyDateRangeFilter(vr, VacationRequest_.from, VacationRequest_.to, searchCondition.dateRange().start(),
 				searchCondition.dateRange().end())
-			.applyDateRangeFilter(vr, VacationRequest_.from, VacationRequest_.to,
-				Quarter.getStart(searchCondition.dateRange().year(), searchCondition.dateRange().quarter()),
-				Quarter.getEnd(searchCondition.dateRange().year(), searchCondition.dateRange().quarter()))
+			.applyDateRangeFilter(vr, VacationRequest_.from, VacationRequest_.to, searchCondition.dateRange().year(),
+				searchCondition.dateRange().quarter())
 			.applyLikeFilter(vr, searchCondition.applicant().name(), VacationRequest_.member, Member_.name)
 			.applyLikeFilter(vr, searchCondition.applicant().deptName(), VacationRequest_.member, Member_.dept,
 				Dept_.deptName)
