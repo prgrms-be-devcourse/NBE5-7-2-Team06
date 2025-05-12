@@ -1,5 +1,8 @@
 package programmers.team6.domain.vacation.util.mapper;
 
+import java.util.List;
+
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
 import programmers.team6.domain.member.entity.Code;
@@ -8,6 +11,7 @@ import programmers.team6.domain.vacation.dto.VacationCreateRequestDto;
 import programmers.team6.domain.vacation.dto.VacationCreateResponseDto;
 import programmers.team6.domain.vacation.dto.VacationInfoSelectResponseDto;
 import programmers.team6.domain.vacation.dto.VacationListResponseDto;
+import programmers.team6.domain.vacation.dto.VacationListResponsePageDto;
 import programmers.team6.domain.vacation.dto.VacationUpdateResponseDto;
 import programmers.team6.domain.vacation.entity.ApprovalStep;
 import programmers.team6.domain.vacation.entity.VacationInfo;
@@ -16,6 +20,7 @@ import programmers.team6.domain.vacation.enums.ApprovalStatus;
 
 @Component
 public class VacationMapper {
+	// VacationInfo → VacationInfoSelectResponseDto
 	public VacationInfoSelectResponseDto toVacationInfoSelectResponseDto(VacationInfo vacationInfo) {
 		return VacationInfoSelectResponseDto.builder()
 			.totalCount(vacationInfo.getTotalCount())
@@ -24,6 +29,7 @@ public class VacationMapper {
 			.build();
 	}
 
+	// VacationCreateRequestDto → VacationRequest
 	public VacationRequest toVacationRequest(VacationCreateRequestDto requestDto, Code vacationType,
 		ApprovalStatus status, Member requester) {
 		return VacationRequest.builder()
@@ -36,6 +42,7 @@ public class VacationMapper {
 			.build();
 	}
 
+	// 매개변수 → ApprovalStep
 	public ApprovalStep toApprovalStep(Member approver, VacationRequest vacationRequest, int step,
 		ApprovalStatus status) {
 		return ApprovalStep.builder()
@@ -46,6 +53,7 @@ public class VacationMapper {
 			.build();
 	}
 
+	// VacationRequest → VacationCreateResponseDto
 	public VacationCreateResponseDto toVacationCreateResponseDto(
 		VacationRequest vacationRequest,
 		String vacationTypeName,
@@ -61,6 +69,7 @@ public class VacationMapper {
 			.build();
 	}
 
+	// VacationRequest → VacationListResponseDto
 	public VacationListResponseDto toVacationRequestListResponseDto(
 		VacationRequest vacationRequest,
 		String vacationTypeName,
@@ -78,6 +87,7 @@ public class VacationMapper {
 			.build();
 	}
 
+	// VacationRequest → VacationUpdateResponseDto
 	// 휴가 요청 수정 후 응답 DTO 생성
 	public VacationUpdateResponseDto toVacationUpdateResponseDto(
 		VacationRequest vacationRequest,
@@ -92,6 +102,21 @@ public class VacationMapper {
 			.approvalStatus(vacationRequest.getStatus().name())
 			.approverName(approverName)
 			.updatedAt(vacationRequest.getUpdatedAt())
+			.build();
+	}
+
+	//
+	public VacationListResponsePageDto toVacationListResponsePageDto(
+		Page<VacationRequest> page,
+		List<VacationListResponseDto> content) {
+		return VacationListResponsePageDto.builder()
+			.content(content)
+			.pageNumber(page.getNumber())
+			.pageSize(page.getSize())
+			.totalElements(page.getTotalElements())
+			.totalPages(page.getTotalPages())
+			.first(page.isFirst())
+			.last(page.isLast())
 			.build();
 	}
 }

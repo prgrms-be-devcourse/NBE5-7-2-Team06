@@ -56,7 +56,6 @@ public class VacationRequest extends BaseEntity {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "requester_id", nullable = false)
 	private Member requester;
-
 	@Version
 	private Integer version;
 

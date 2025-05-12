@@ -152,15 +152,7 @@ public class VacationService {
 			.collect(Collectors.toList());
 
 		// 페이징 응답 DTO 생성
-		return VacationListResponsePageDto.builder()
-			.content(content)
-			.pageNumber(vacationRequestsPage.getNumber())
-			.pageSize(vacationRequestsPage.getSize())
-			.totalElements(vacationRequestsPage.getTotalElements())
-			.totalPages(vacationRequestsPage.getTotalPages())
-			.first(vacationRequestsPage.isFirst())
-			.last(vacationRequestsPage.isLast())
-			.build();
+		return vacationMapper.toVacationListResponsePageDto(vacationRequestsPage, content);
 	}
 
 	// 휴가 신청 수정
