@@ -37,3 +37,7 @@ out/
 .vscode/
 src/main/resources/application.yml
 src/main/resources/application.properties
+
+### 더미데이터 ###
+/src/main/java/programmers/team6/config/DummyDataInitializer.java
+
