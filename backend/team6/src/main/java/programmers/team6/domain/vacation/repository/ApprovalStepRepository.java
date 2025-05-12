@@ -1,6 +1,7 @@
 package programmers.team6.domain.vacation.repository;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -22,7 +23,7 @@ public interface ApprovalStepRepository extends JpaRepository<ApprovalStep, Long
 					vr.member.dept.deptName, vr.member.position.name, a.approvalStatus
 				)
 		from ApprovalStep a join a.member m join a.vacationRequest vr
-		where m.id = :memberId and a.step = :step
+		where a.member.id = :memberId and a.step = :step
 		order by a.id desc
 		""")
 	Page<ApprovalFirstStepSelectResponse> findFirstStepByMemberId(Long memberId, int step, Pageable pageable);
@@ -33,7 +34,7 @@ public interface ApprovalStepRepository extends JpaRepository<ApprovalStep, Long
 					vr.member.dept.deptName, vr.member.position.name, a.approvalStatus
 				)
 		from ApprovalStep a join a.member m join a.vacationRequest vr
-		where m.id = :memberId and a.step = :step
+		where a.member.id = :memberId and a.step = :step
 				and (:typeId is null or vr.type.id = :typeId)
 				and (:name is null or vr.member.name = :name)
 				and (:from is null or :to is null or (vr.from <= :to and  vr.to >= :from))
@@ -75,5 +76,7 @@ public interface ApprovalStepRepository extends JpaRepository<ApprovalStep, Long
 	Optional<ApprovalStep> findByIdAndMemberIdAndStep(Long id, Long memberId, int step);
 
 	Optional<ApprovalStep> findByVacationRequestIdAndStep(Long vacationRequestId, int step);
+
+	List<ApprovalStep> findByVacationRequestId(Long id);
 
 }

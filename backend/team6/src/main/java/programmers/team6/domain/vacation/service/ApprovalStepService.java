@@ -1,6 +1,7 @@
 package programmers.team6.domain.vacation.service;
 
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 import java.util.NoSuchElementException;
 
 import org.springframework.data.domain.Page;
@@ -171,6 +172,14 @@ public class ApprovalStepService {
 		Member findMember = memberRepository.findById(memberId)
 			.orElseThrow(() -> new IllegalArgumentException("해당 멤버가 존재하지 않습니다."));
 		approvalStepRepository.save(ApprovalStepMapper.toEntity(findMember, vacationRequest, step));
+	}
+
+	// 서비스 계층 전용 메서드
+	public void cancelApprovalStep(Long vacationStepId) {
+		List<ApprovalStep> findApprovalSteps = approvalStepRepository.findByVacationRequestId(vacationStepId);
+		for (ApprovalStep findApprovalStep : findApprovalSteps) {
+			updateApprovalStepStatus(findApprovalStep, ApprovalStatus.CANCELED, null);
+		}
 	}
 
 }
