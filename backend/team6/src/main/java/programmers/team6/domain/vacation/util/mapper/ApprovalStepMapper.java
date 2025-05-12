@@ -1,5 +1,7 @@
 package programmers.team6.domain.vacation.util.mapper;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import programmers.team6.domain.member.entity.Member;
 import programmers.team6.domain.vacation.dto.ApprovalFirstStepDetailResponse;
 import programmers.team6.domain.vacation.dto.ApprovalSecondStepDetailResponse;
@@ -7,6 +9,7 @@ import programmers.team6.domain.vacation.entity.ApprovalStep;
 import programmers.team6.domain.vacation.entity.VacationRequest;
 import programmers.team6.domain.vacation.enums.ApprovalStatus;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ApprovalStepMapper {
 	public static ApprovalFirstStepDetailResponse fromFirstStepEntity(ApprovalStep approvalStep) {
 		return new ApprovalFirstStepDetailResponse(
