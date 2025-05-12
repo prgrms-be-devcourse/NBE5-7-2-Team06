@@ -4,7 +4,6 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -27,21 +26,30 @@ public class ApprovalStep extends BaseEntity {
 	@Column(name = "approval_step_id")
 	private Long id;
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne
 	@JoinColumn(name = "member_id", nullable = false)
 	private Member member;
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne
 	@JoinColumn(name = "vacation_request_id", nullable = false)
 	private VacationRequest vacationRequest;
 
-	private int step;
-
 	@Column(name = "approval_status", nullable = false)
-	@Enumerated(EnumType.STRING)
+	@Enumerated(value = EnumType.STRING)
 	private ApprovalStatus approvalStatus;
 
+	private int step;
+
 	private String reason;
+
+	public ApprovalStep(Member member, VacationRequest vacationRequest, ApprovalStatus approvalStatus, int step,
+		String reason) {
+		this.member = member;
+		this.vacationRequest = vacationRequest;
+		this.approvalStatus = approvalStatus;
+		this.step = step;
+		this.reason = reason;
+	}
 
 	@Builder
 	public ApprovalStep(int step, ApprovalStatus approvalStatus, Member member, VacationRequest vacationRequest) {
@@ -49,6 +57,10 @@ public class ApprovalStep extends BaseEntity {
 		this.approvalStatus = approvalStatus;
 		this.member = member;
 		this.vacationRequest = vacationRequest;
+	}
+
+	public void update(String reason) {
+		this.reason = reason;
 	}
 
 	public void updateStatus(ApprovalStatus approvalStatus) {

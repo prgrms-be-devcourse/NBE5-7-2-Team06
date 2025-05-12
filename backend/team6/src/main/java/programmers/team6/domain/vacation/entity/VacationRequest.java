@@ -31,6 +31,10 @@ public class VacationRequest extends BaseEntity {
 	@Column(name = "vacation_request_id")
 	private Long id;
 
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "member_id")
+	private Member member;
+
 	@Column(name = "from_date", nullable = false)
 	private LocalDate from;
 
@@ -40,20 +44,35 @@ public class VacationRequest extends BaseEntity {
 	private String reason;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "type_code", nullable = false)
+	@JoinColumn(name = "type_code")
 	private Code type;
 
 	@Enumerated(value = EnumType.STRING)
 	private VacationRequestStatus status;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "member_id")
-	private Member member;
 	@Version
 	private Integer version;
+
+	public VacationRequest(Member member, LocalDate from, LocalDate to, String reason, Code type, Integer version,
+		VacationRequestStatus status) {
+		this.member = member;
+		this.from = from;
+		this.to = to;
+		this.reason = reason;
+		this.type = type;
+		this.version = version;
+		this.status = VacationRequestStatus.IN_PROGRESS;
+	}
+
+	public void update(Code type, LocalDate from, LocalDate to, VacationRequestStatus status, String reason) {
+		this.type = type;
+		this.from = from;
+		this.to = to;
+		this.status = status;
+		this.reason = reason;
+	}
 
 	public void updateStatus(VacationRequestStatus vacationRequestStatus) {
 		this.status = vacationRequestStatus;
 	}
-
 }
