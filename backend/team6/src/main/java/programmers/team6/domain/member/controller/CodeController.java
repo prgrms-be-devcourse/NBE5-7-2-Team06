@@ -21,7 +21,7 @@ import programmers.team6.domain.member.service.CodeService;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/code")
+@RequestMapping("/admin/code")
 public class CodeController {
 	private final CodeService codeService;
 
