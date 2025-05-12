@@ -1,6 +1,6 @@
 package programmers.team6.domain.vacation.entity;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -32,10 +32,10 @@ public class VacationRequest extends BaseEntity {
 	private Long id;
 
 	@Column(name = "from_date", nullable = false)
-	private LocalDateTime from;
+	private LocalDate from;
 
 	@Column(name = "to_date", nullable = false)
-	private LocalDateTime to;
+	private LocalDate to;
 
 	private String reason;
 

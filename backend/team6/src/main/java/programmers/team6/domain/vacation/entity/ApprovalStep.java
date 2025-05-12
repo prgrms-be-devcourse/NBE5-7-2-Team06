@@ -25,7 +25,7 @@ public class ApprovalStep extends BaseEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "approval_step_id")
-	private Long id;
+	private Long approvalStepId;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "member_id", nullable = false)
@@ -51,11 +51,11 @@ public class ApprovalStep extends BaseEntity {
 		this.vacationRequest = vacationRequest;
 	}
 
-	public void apply(ApprovalStatus approvalStatus) {
+	public void updateStatus(ApprovalStatus approvalStatus) {
 		this.approvalStatus = approvalStatus;
 	}
 
-	public void apply(ApprovalStatus approvalStatus, String reason) {
+	public void updateStatus(ApprovalStatus approvalStatus, String reason) {
 		this.approvalStatus = approvalStatus;
 		this.reason = reason;
 	}

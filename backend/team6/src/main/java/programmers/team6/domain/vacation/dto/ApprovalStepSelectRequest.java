@@ -1,6 +1,6 @@
 package programmers.team6.domain.vacation.dto;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 import lombok.extern.slf4j.Slf4j;
 import programmers.team6.domain.vacation.enums.ApprovalStatus;
@@ -9,8 +9,8 @@ import programmers.team6.domain.vacation.enums.ApprovalStatus;
 public record ApprovalStepSelectRequest(
 	Long typeId,
 	String name,
-	LocalDateTime from,
-	LocalDateTime to,
+	LocalDate from,
+	LocalDate to,
 	ApprovalStatus status
 ) {
 	public boolean hasFilter() {

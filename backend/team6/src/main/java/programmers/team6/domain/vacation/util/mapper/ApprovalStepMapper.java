@@ -10,7 +10,7 @@ import programmers.team6.domain.vacation.enums.ApprovalStatus;
 public class ApprovalStepMapper {
 	public static ApprovalFirstStepDetailResponse fromFirstStepEntity(ApprovalStep approvalStep) {
 		return new ApprovalFirstStepDetailResponse(
-			approvalStep.getId(),
+			approvalStep.getApprovalStepId(),
 			approvalStep.getVacationRequest().getMember().getName(),
 			approvalStep.getVacationRequest().getMember().getDept().getDeptName(),
 			approvalStep.getVacationRequest().getMember().getPosition().getName(),
@@ -25,7 +25,7 @@ public class ApprovalStepMapper {
 
 	public static ApprovalSecondStepDetailResponse fromSecondStepEntity(ApprovalStep approvalStep) {
 		return new ApprovalSecondStepDetailResponse(
-			approvalStep.getId(),
+			approvalStep.getApprovalStepId(),
 			approvalStep.getVacationRequest().getMember().getName(),
 			approvalStep.getVacationRequest().getMember().getDept().getDeptName(),
 			approvalStep.getVacationRequest().getMember().getPosition().getName(),

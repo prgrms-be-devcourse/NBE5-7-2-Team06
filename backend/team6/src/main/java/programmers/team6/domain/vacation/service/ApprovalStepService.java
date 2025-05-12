@@ -72,7 +72,8 @@ public class ApprovalStepService {
 
 	@Transactional(readOnly = true)
 	public ApprovalFirstStepDetailResponse findFirstStepDetailById(Long approvalStepId, Long memberId) {
-		ApprovalStep findApprovalStep = approvalStepRepository.findByIdAndMemberIdAndStep(approvalStepId, memberId,
+		ApprovalStep findApprovalStep = approvalStepRepository.findByApprovalStepIdAndMemberIdAndStep(approvalStepId,
+				memberId,
 				STEP1)
 			.orElseThrow(() -> new IllegalArgumentException("해당 1차 결재 목록이 없습니다."));
 		return ApprovalStepMapper.fromFirstStepEntity(findApprovalStep);
@@ -80,7 +81,8 @@ public class ApprovalStepService {
 
 	@Transactional(readOnly = true)
 	public ApprovalSecondStepDetailResponse findSecondStepDetailById(Long approvalStepId, Long memberId) {
-		ApprovalStep findApprovalStep = approvalStepRepository.findByIdAndMemberIdAndStep(approvalStepId, memberId,
+		ApprovalStep findApprovalStep = approvalStepRepository.findByApprovalStepIdAndMemberIdAndStep(approvalStepId,
+				memberId,
 				STEP2)
 			.orElseThrow(() -> new IllegalArgumentException("해당 2차 결재 목록이 없습니다."));
 		return ApprovalStepMapper.fromSecondStepEntity(findApprovalStep);
@@ -88,7 +90,8 @@ public class ApprovalStepService {
 
 	@Transactional
 	public void approveFirstStep(Long approvalStepId, Long memberId) {
-		ApprovalStep findApprovalStep1 = approvalStepRepository.findByIdAndMemberIdAndStep(approvalStepId, memberId,
+		ApprovalStep findApprovalStep1 = approvalStepRepository.findByApprovalStepIdAndMemberIdAndStep(approvalStepId,
+				memberId,
 				STEP1)
 			.orElseThrow(() -> new IllegalArgumentException("해당 1차 결재 목록이 없습니다."));
 		if (!findApprovalStep1.isApprovable()) {
@@ -106,7 +109,8 @@ public class ApprovalStepService {
 
 	@Transactional
 	public void rejectFirstStep(Long approvalStepId, Long memberId, ApprovalStepRejectRequest request) {
-		ApprovalStep findApprovalStep1 = approvalStepRepository.findByIdAndMemberIdAndStep(approvalStepId, memberId,
+		ApprovalStep findApprovalStep1 = approvalStepRepository.findByApprovalStepIdAndMemberIdAndStep(approvalStepId,
+				memberId,
 				STEP1)
 			.orElseThrow(() -> new IllegalArgumentException("해당 1차 결재 목록이 없습니다."));
 		if (!findApprovalStep1.isApprovable()) {
@@ -126,7 +130,8 @@ public class ApprovalStepService {
 
 	@Transactional
 	public void approveSecondStep(Long approvalStepId, Long memberId) {
-		ApprovalStep findApprovalStep = approvalStepRepository.findByIdAndMemberIdAndStep(approvalStepId, memberId,
+		ApprovalStep findApprovalStep = approvalStepRepository.findByApprovalStepIdAndMemberIdAndStep(approvalStepId,
+				memberId,
 				STEP2)
 			.orElseThrow(() -> new IllegalArgumentException("해당 2차 결재 목록이 없습니다."));
 		if (!findApprovalStep.isApprovable()) {
@@ -137,15 +142,24 @@ public class ApprovalStepService {
 
 		findApprovalStep.getVacationRequest().updateStatus(VacationRequestStatus.APPROVED);
 
-		// todo: 멤버 연차 차감. vacationRequest->member->memberInfo 로 접근해서 차감.
-		long days = ChronoUnit.DAYS.between(findApprovalStep.getVacationRequest().getFrom().toLocalDate(),
-			findApprovalStep.getVacationRequest().getTo().toLocalDate()) + 1;
-		log.info("days = {}", days);
+		/*
+			todo: 휴가 차감 로직.
+			1. 신청 휴가 일수 계산
+			2. 해당 멤버, 휴가 타입으로 vacationInfo 를 찾는다.
+				2-1. 그러려면 vacationInfo 리포에 findByMemberIdAndVacationType 있어야함
+			3. memberInfo 의 useCount + 신청 휴가 일수 <= totalCount 인지 검증
+			4. 이후 useCount + 신청휴가일수를 수행하기 위한 엔티티 메서드? 호출
+
+		 */
+		int days = (int)ChronoUnit.DAYS.between(findApprovalStep.getVacationRequest().getFrom(),
+			findApprovalStep.getVacationRequest().getTo()) + 1;
+
 	}
 
 	@Transactional
 	public void rejectSecondStep(Long approvalStepId, Long memberId, ApprovalStepRejectRequest request) {
-		ApprovalStep findApprovalStep = approvalStepRepository.findByIdAndMemberIdAndStep(approvalStepId, memberId,
+		ApprovalStep findApprovalStep = approvalStepRepository.findByApprovalStepIdAndMemberIdAndStep(approvalStepId,
+				memberId,
 				STEP2)
 			.orElseThrow(() -> new IllegalArgumentException("해당 2차 결재 목록이 없습니다."));
 		if (!findApprovalStep.isApprovable()) {
@@ -161,9 +175,9 @@ public class ApprovalStepService {
 	private void updateApprovalStepStatus(ApprovalStep approvalStep, ApprovalStatus approvalStatus,
 		String reason) {
 		if (reason == null) {
-			approvalStep.apply(approvalStatus);
+			approvalStep.updateStatus(approvalStatus);
 		} else {
-			approvalStep.apply(approvalStatus, reason);
+			approvalStep.updateStatus(approvalStatus, reason);
 		}
 	}
 
