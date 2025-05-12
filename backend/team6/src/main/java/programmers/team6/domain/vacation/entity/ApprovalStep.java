@@ -10,7 +10,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.NoArgsConstructor;
 import programmers.team6.domain.member.entity.Member;
 import programmers.team6.domain.vacation.enums.ApprovalStatus;
@@ -40,13 +39,12 @@ public class ApprovalStep extends BaseEntity {
 
 	private String reason;
 
-	@Builder
-	public ApprovalStep(int step, ApprovalStatus approvalStatus, Member member, VacationRequest vacationRequest,
+	public ApprovalStep(Member member, VacationRequest vacationRequest, ApprovalStatus approvalStatus, int step,
 		String reason) {
-		this.step = step;
-		this.approvalStatus = approvalStatus;
 		this.member = member;
 		this.vacationRequest = vacationRequest;
+		this.approvalStatus = approvalStatus;
+		this.step = step;
 		this.reason = reason;
 	}
 
