@@ -28,37 +28,5 @@ import programmers.team6.domain.vacation.service.VacationRequestService;
 @RequestMapping("/vacation_requests")
 @RequiredArgsConstructor
 public class VacationRequestController {
-	private final VacationRequestService vacationRequestService;
 
-	@GetMapping
-	@ResponseStatus(HttpStatus.OK)
-	Page<VacationRequestReadResponse> selectVacationRequests(
-		@PageableDefault(page = 0, size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable,
-		@RequestBody AdminVacationSearchCondition searchCondition) {
-		return vacationRequestService.search(pageable, searchCondition);
-	}
-
-	@GetMapping("/{id}")
-	@ResponseStatus(HttpStatus.OK)
-	VacationRequestDetailReadResponse showVacationRequestDetail(@PathVariable Long id) {
-		return vacationRequestService.selectVacationRequestDetailById(id);
-	}
-
-	@PutMapping("/{id}")
-	@ResponseStatus(HttpStatus.NO_CONTENT)
-	void updateVacationRequestDetail(@PathVariable Long id,
-		@RequestBody VacationRequestDetailUpdateRequest vacationRequestDetailUpdateRequest) {
-		vacationRequestService.updateVacationRequestDetailById(id, vacationRequestDetailUpdateRequest);
-	}
-
-	// TODO - 추후에 전역 예외 처리할 것같아, 임시적으로 여기에 exception handling 필요
-	@ExceptionHandler(VacationException.class)
-	public ResponseEntity<String> handleVacationException(VacationException e) {
-		return ResponseEntity.badRequest().body(e.getVacationExceptionMessage().getMessage());
-	}
-
-	@ExceptionHandler(CodeException.class)
-	public ResponseEntity<String> handleCodeException(CodeException e) {
-		return ResponseEntity.badRequest().body(e.getCodeExceptionMessage().getMessage());
-	}
 }
