@@ -1,14 +1,14 @@
 package programmers.team6.domain.vacation.repository;
 
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+
 import programmers.team6.domain.vacation.dto.VacationMonthlyStatisticsResponse;
 import programmers.team6.domain.admin.dto.VacationRequestDetailReadResponse;
 import programmers.team6.domain.vacation.entity.VacationRequest;
-
-import java.util.List;
 
 public interface VacationRequestRepository extends JpaRepository<VacationRequest, Long> {
 
