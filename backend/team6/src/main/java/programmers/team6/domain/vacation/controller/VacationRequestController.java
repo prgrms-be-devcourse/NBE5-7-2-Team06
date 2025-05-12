@@ -25,12 +25,12 @@ import programmers.team6.domain.vacation.exception.VacationException;
 import programmers.team6.domain.vacation.service.VacationRequestService;
 
 @RestController
-@RequestMapping("/api/admin/vacationRequest")
+@RequestMapping("/vacation_requests")
 @RequiredArgsConstructor
 public class VacationRequestController {
 	private final VacationRequestService vacationRequestService;
 
-	@GetMapping("/search")
+	@GetMapping
 	@ResponseStatus(HttpStatus.OK)
 	Page<VacationRequestReadResponse> selectVacationRequests(
 		@PageableDefault(page = 0, size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable,
