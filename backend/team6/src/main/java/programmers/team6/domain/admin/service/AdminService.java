@@ -8,16 +8,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
-import programmers.team6.domain.member.entity.Code;
-import programmers.team6.domain.member.enums.CodeExceptionMessage;
-import programmers.team6.domain.member.exception.CodeException;
-import programmers.team6.domain.member.repository.CodeRepository;
+import programmers.team6.domain.admin.dto.AdminVacationRequestSearchCustom;
 import programmers.team6.domain.admin.dto.AdminVacationSearchCondition;
 import programmers.team6.domain.admin.dto.ApprovalStepDetailUpdateResponse;
 import programmers.team6.domain.admin.dto.VacationRequestDetailReadResponse;
 import programmers.team6.domain.admin.dto.VacationRequestDetailUpdateRequest;
 import programmers.team6.domain.admin.dto.VacationRequestSearchResponse;
-import programmers.team6.domain.admin.dto.AdminVacationRequestSearchCustom;
+import programmers.team6.domain.member.entity.Code;
+import programmers.team6.domain.member.enums.CodeExceptionMessage;
+import programmers.team6.domain.member.exception.CodeException;
+import programmers.team6.domain.member.repository.CodeRepository;
 import programmers.team6.domain.vacation.entity.ApprovalStep;
 import programmers.team6.domain.vacation.entity.VacationRequest;
 import programmers.team6.domain.vacation.enums.VacationExceptionMessage;
@@ -40,7 +40,8 @@ public class AdminService {
 
 	@Transactional(readOnly = true)
 	public VacationRequestDetailReadResponse selectVacationRequestDetailById(Long id) {
-		List<ApprovalStepDetailUpdateResponse> approvalStepDetailUpdateResponses = approvalStepRepository.findApprovalStepDetailById(id);
+		List<ApprovalStepDetailUpdateResponse> approvalStepDetailUpdateResponses = approvalStepRepository.findApprovalStepDetailById(
+			id);
 		if (approvalStepDetailUpdateResponses.isEmpty()) {
 			throw new VacationException(VacationExceptionMessage.EMPTY_APPROVAL_STEP);
 		}

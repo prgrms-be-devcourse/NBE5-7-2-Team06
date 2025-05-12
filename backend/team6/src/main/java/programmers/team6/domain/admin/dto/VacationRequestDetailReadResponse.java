@@ -15,7 +15,8 @@ public record VacationRequestDetailReadResponse(LocalDate from, LocalDate to, St
 		this(from, to, name, deptName, position, reason, vacationType, vacationRequestStatus, new ArrayList<>());
 	}
 
-	public VacationRequestDetailReadResponse injectApprovalStepDetails(List<ApprovalStepDetailUpdateResponse> approvalStepDetailUpdateResponses) {
+	public VacationRequestDetailReadResponse injectApprovalStepDetails(
+		List<ApprovalStepDetailUpdateResponse> approvalStepDetailUpdateResponses) {
 		this.approvalStepDetailUpdateResponses.addAll(approvalStepDetailUpdateResponses);
 		return this;
 	}

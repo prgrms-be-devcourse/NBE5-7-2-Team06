@@ -120,7 +120,8 @@ class VacationRequestRepositorySearchTest {
 		// when
 		Page<VacationRequestSearchResponse> defaultResult = adminVacationRequestSearchCustom.search(defaultCondition,
 			PageRequest.of(0, Integer.MAX_VALUE));
-		Page<VacationRequestSearchResponse> defaultPageableResult = adminVacationRequestSearchCustom.search(defaultCondition,
+		Page<VacationRequestSearchResponse> defaultPageableResult = adminVacationRequestSearchCustom.search(
+			defaultCondition,
 			PageRequest.of(0, 3));
 		Page<VacationRequestSearchResponse> latestResult = adminVacationRequestSearchCustom.search(latestCondition,
 			PageRequest.of(0, Integer.MAX_VALUE));
@@ -269,7 +270,8 @@ class VacationRequestRepositorySearchTest {
 			new AdminVacationSearchCondition.ApproverCondition("approver 0"), null);
 
 		// when
-		Page<VacationRequestSearchResponse> approverNameResult = adminVacationRequestSearchCustom.search(approverNameCondition,
+		Page<VacationRequestSearchResponse> approverNameResult = adminVacationRequestSearchCustom.search(
+			approverNameCondition,
 			PageRequest.of(0, Integer.MAX_VALUE));
 
 		// then

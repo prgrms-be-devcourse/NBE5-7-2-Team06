@@ -15,6 +15,9 @@ import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import lombok.RequiredArgsConstructor;
+import programmers.team6.domain.admin.utils.CriteriaCustomPredicateBuilder;
+import programmers.team6.domain.admin.utils.CriteriaCustomQueryBuilder;
+import programmers.team6.domain.admin.utils.QueryUtils;
 import programmers.team6.domain.member.entity.Code_;
 import programmers.team6.domain.member.entity.Dept_;
 import programmers.team6.domain.member.entity.Member_;
@@ -23,9 +26,6 @@ import programmers.team6.domain.vacation.entity.ApprovalStep_;
 import programmers.team6.domain.vacation.entity.VacationRequest;
 import programmers.team6.domain.vacation.entity.VacationRequest_;
 import programmers.team6.domain.vacation.repository.VacationRequestRepository;
-import programmers.team6.domain.admin.utils.CriteriaCustomPredicateBuilder;
-import programmers.team6.domain.admin.utils.CriteriaCustomQueryBuilder;
-import programmers.team6.domain.admin.utils.QueryUtils;
 import programmers.team6.global.entity.BaseEntity_;
 
 @Repository
