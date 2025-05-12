@@ -75,7 +75,7 @@ public class ApprovalStepService {
 
 	@Transactional(readOnly = true)
 	public ApprovalFirstStepDetailResponse findFirstStepDetailById(Long approvalStepId, Long memberId) {
-		ApprovalStep findApprovalStep = approvalStepRepository.findByApprovalStepIdAndMemberIdAndStep(approvalStepId,
+		ApprovalStep findApprovalStep = approvalStepRepository.findByIdAndMemberIdAndStep(approvalStepId,
 				memberId,
 				STEP1)
 			.orElseThrow(() -> new IllegalArgumentException("해당 1차 결재 목록이 없습니다."));
@@ -84,7 +84,7 @@ public class ApprovalStepService {
 
 	@Transactional(readOnly = true)
 	public ApprovalSecondStepDetailResponse findSecondStepDetailById(Long approvalStepId, Long memberId) {
-		ApprovalStep findApprovalStep = approvalStepRepository.findByApprovalStepIdAndMemberIdAndStep(approvalStepId,
+		ApprovalStep findApprovalStep = approvalStepRepository.findByIdAndMemberIdAndStep(approvalStepId,
 				memberId,
 				STEP2)
 			.orElseThrow(() -> new IllegalArgumentException("해당 2차 결재 목록이 없습니다."));
@@ -93,7 +93,7 @@ public class ApprovalStepService {
 
 	@Transactional
 	public void approveFirstStep(Long approvalStepId, Long memberId) {
-		ApprovalStep findApprovalStep1 = approvalStepRepository.findByApprovalStepIdAndMemberIdAndStep(approvalStepId,
+		ApprovalStep findApprovalStep1 = approvalStepRepository.findByIdAndMemberIdAndStep(approvalStepId,
 				memberId,
 				STEP1)
 			.orElseThrow(() -> new IllegalArgumentException("해당 1차 결재 목록이 없습니다."));
@@ -112,7 +112,7 @@ public class ApprovalStepService {
 
 	@Transactional
 	public void rejectFirstStep(Long approvalStepId, Long memberId, ApprovalStepRejectRequest request) {
-		ApprovalStep findApprovalStep1 = approvalStepRepository.findByApprovalStepIdAndMemberIdAndStep(approvalStepId,
+		ApprovalStep findApprovalStep1 = approvalStepRepository.findByIdAndMemberIdAndStep(approvalStepId,
 				memberId,
 				STEP1)
 			.orElseThrow(() -> new IllegalArgumentException("해당 1차 결재 목록이 없습니다."));
@@ -133,7 +133,7 @@ public class ApprovalStepService {
 
 	@Transactional
 	public void approveSecondStep(Long approvalStepId, Long memberId) {
-		ApprovalStep findApprovalStep = approvalStepRepository.findByApprovalStepIdAndMemberIdAndStep(approvalStepId,
+		ApprovalStep findApprovalStep = approvalStepRepository.findByIdAndMemberIdAndStep(approvalStepId,
 				memberId,
 				STEP2)
 			.orElseThrow(() -> new IllegalArgumentException("해당 2차 결재 목록이 없습니다."));
@@ -171,7 +171,7 @@ public class ApprovalStepService {
 
 	@Transactional
 	public void rejectSecondStep(Long approvalStepId, Long memberId, ApprovalStepRejectRequest request) {
-		ApprovalStep findApprovalStep = approvalStepRepository.findByApprovalStepIdAndMemberIdAndStep(approvalStepId,
+		ApprovalStep findApprovalStep = approvalStepRepository.findByIdAndMemberIdAndStep(approvalStepId,
 				memberId,
 				STEP2)
 			.orElseThrow(() -> new IllegalArgumentException("해당 2차 결재 목록이 없습니다."));
