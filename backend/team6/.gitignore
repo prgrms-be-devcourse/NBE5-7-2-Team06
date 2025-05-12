@@ -37,3 +37,8 @@ out/
 .vscode/
 src/main/resources/application.yml
 src/main/resources/application.properties
+
+#application.yml
+/src/main/resources/application.yml
+
+/src/main/java/programmers/team6/global/DummyCodeInitializer.java
