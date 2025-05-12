@@ -17,38 +17,38 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 import programmers.team6.domain.member.exception.CodeException;
-import programmers.team6.domain.vacation.dto.AdminVacationSearchCondition;
-import programmers.team6.domain.vacation.dto.VacationRequestDetailReadResponse;
-import programmers.team6.domain.vacation.dto.VacationRequestDetailUpdateRequest;
-import programmers.team6.domain.vacation.dto.VacationRequestReadResponse;
+import programmers.team6.domain.admin.dto.AdminVacationSearchCondition;
+import programmers.team6.domain.admin.dto.VacationRequestDetailReadResponse;
+import programmers.team6.domain.admin.dto.VacationRequestDetailUpdateRequest;
+import programmers.team6.domain.admin.dto.VacationRequestSearchResponse;
 import programmers.team6.domain.vacation.exception.VacationException;
-import programmers.team6.domain.vacation.service.VacationRequestService;
+import programmers.team6.domain.admin.service.AdminService;
 
 @RestController
 @RequestMapping("/admin")
 @RequiredArgsConstructor
 public class AdminController {
-	private final VacationRequestService vacationRequestService;
+	private final AdminService adminService;
 
 	@GetMapping("/vacation-request")
 	@ResponseStatus(HttpStatus.OK)
-	Page<VacationRequestReadResponse> selectVacationRequests(
+	Page<VacationRequestSearchResponse> selectVacationRequests(
 		@PageableDefault(page = 0, size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable,
 		@RequestBody AdminVacationSearchCondition searchCondition) {
-		return vacationRequestService.search(pageable, searchCondition);
+		return adminService.search(pageable, searchCondition);
 	}
 
 	@GetMapping("/vacation-request/{id}")
 	@ResponseStatus(HttpStatus.OK)
 	VacationRequestDetailReadResponse showVacationRequestDetail(@PathVariable Long id) {
-		return vacationRequestService.selectVacationRequestDetailById(id);
+		return adminService.selectVacationRequestDetailById(id);
 	}
 
 	@PutMapping("/vacation-request/{id}")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	void updateVacationRequestDetail(@PathVariable Long id,
 		@RequestBody VacationRequestDetailUpdateRequest vacationRequestDetailUpdateRequest) {
-		vacationRequestService.updateVacationRequestDetailById(id, vacationRequestDetailUpdateRequest);
+		adminService.updateVacationRequestDetailById(id, vacationRequestDetailUpdateRequest);
 	}
 
 	// TODO - 추후에 전역 예외 처리할 것같아, 임시적으로 여기에 exception handling 필요

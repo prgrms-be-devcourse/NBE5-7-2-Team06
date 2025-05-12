@@ -1,4 +1,4 @@
-package programmers.team6.domain.vacation.utils;
+package programmers.team6.domain.admin.utils;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;

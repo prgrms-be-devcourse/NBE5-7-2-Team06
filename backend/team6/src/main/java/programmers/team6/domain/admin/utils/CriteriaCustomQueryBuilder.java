@@ -1,4 +1,4 @@
-package programmers.team6.domain.vacation.utils;
+package programmers.team6.domain.admin.utils;
 
 import java.util.List;
 

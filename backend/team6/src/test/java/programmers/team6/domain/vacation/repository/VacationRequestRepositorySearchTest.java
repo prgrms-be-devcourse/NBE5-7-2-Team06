@@ -1,14 +1,28 @@
 package programmers.team6.domain.vacation.repository;
 
+import static org.assertj.core.api.Assertions.*;
+
+import java.time.LocalDate;
+import java.util.List;
+
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.transaction.annotation.Transactional;
 
+import programmers.team6.domain.admin.dto.AdminVacationRequestSearchCustom;
+import programmers.team6.domain.admin.dto.AdminVacationSearchCondition;
+import programmers.team6.domain.admin.dto.VacationRequestSearchResponse;
+import programmers.team6.domain.admin.enums.Quarter;
 import programmers.team6.domain.member.repository.CodeRepository;
 import programmers.team6.domain.member.repository.DeptRepository;
 import programmers.team6.domain.member.repository.MemberRepository;
-import programmers.team6.domain.vacation.dto.VacationRequestSearchCustom;
+import programmers.team6.domain.vacation.enums.VacationRequestStatus;
 
+@Disabled
 @SpringBootTest
 @Transactional
 	/**
@@ -17,18 +31,18 @@ import programmers.team6.domain.vacation.dto.VacationRequestSearchCustom;
 	 * 조회시 검색 기능을 테스트하기 위해 테스트마다 데이터를 추가 생성하기엔 시간이 많이 걸려 로컬 환경에서 임의로 데이터 생성하고 테스트 진행
 	 */
 class VacationRequestRepositorySearchTest {
-	// @Autowired
-	// private VacationRequestRepository vacationRequestRepository;
-	// @Autowired
-	// private ApprovalStepRepository approvalStepRepository;
-	// @Autowired
-	// private CodeRepository codeRepository;
-	// @Autowired
-	// private MemberRepository memberRepository;
-	// @Autowired
-	// private DeptRepository deptRepository;
-	// @Autowired
-	// VacationRequestSearchCustom vacationRequestSearchCustom;
+	@Autowired
+	private VacationRequestRepository vacationRequestRepository;
+	@Autowired
+	private ApprovalStepRepository approvalStepRepository;
+	@Autowired
+	private CodeRepository codeRepository;
+	@Autowired
+	private MemberRepository memberRepository;
+	@Autowired
+	private DeptRepository deptRepository;
+	@Autowired
+	AdminVacationRequestSearchCustom adminVacationRequestSearchCustom;
 
 	// @Test
 	// @Rollback(value = false)
@@ -90,181 +104,181 @@ class VacationRequestRepositorySearchTest {
 	// 	entityManager.close();
 	// }
 	//
-	// @Test
-	// void testDefault() {
-	// 	// given
-	// 	AdminVacationSearchCondition defaultCondition = new AdminVacationSearchCondition(
-	// 		new AdminVacationSearchCondition.DateRangeCondition(null, null, null, null),
-	// 		new AdminVacationSearchCondition.ApplicantCondition(null, null, null, null),
-	// 		new AdminVacationSearchCondition.ApproverCondition(null), null);
-	//
-	// 	AdminVacationSearchCondition latestCondition = new AdminVacationSearchCondition(
-	// 		new AdminVacationSearchCondition.DateRangeCondition(null, null, null, null),
-	// 		new AdminVacationSearchCondition.ApplicantCondition("member 0", null, null, null),
-	// 		new AdminVacationSearchCondition.ApproverCondition(null), null);
-	//
-	// 	// when
-	// 	Page<VacationRequestReadResponse> defaultResult = vacationRequestSearchCustom.search(defaultCondition,
-	// 		PageRequest.of(0, Integer.MAX_VALUE));
-	// 	Page<VacationRequestReadResponse> defaultPageableResult = vacationRequestSearchCustom.search(defaultCondition,
-	// 		PageRequest.of(0, 3));
-	// 	Page<VacationRequestReadResponse> latestResult = vacationRequestSearchCustom.search(latestCondition,
-	// 		PageRequest.of(0, Integer.MAX_VALUE));
-	//
-	// 	// then
-	// 	assertThat(defaultResult).hasSize(3 * 4 * 3 * 3);
-	// 	assertThat(defaultPageableResult).hasSize(3);
-	//
-	// 	for (VacationRequestReadResponse vacationRequestReadResponse : defaultPageableResult) {
-	// 		assertThat(vacationRequestReadResponse.type()).isNotNull();
-	// 		assertThat(vacationRequestReadResponse.from()).isNotNull();
-	// 		assertThat(vacationRequestReadResponse.to()).isNotNull();
-	// 		assertThat(vacationRequestReadResponse.applicantName()).isNotNull();
-	// 		assertThat(vacationRequestReadResponse.approverNames()).isNotNull();
-	// 		assertThat(vacationRequestReadResponse.deptName()).isNotNull();
-	// 		assertThat(vacationRequestReadResponse.status()).isNotNull();
-	// 	}
-	//
-	// 	List<VacationRequestReadResponse> content = latestResult.getContent();
-	// 	for (int i = 0; i < content.size() - 1; i++) {
-	// 		assertThat(content.get(i).from()).isAfter(content.get(i + 1).from());
-	// 		assertThat(content.get(i).to()).isAfter(content.get(i + 1).to());
-	// 	}
-	// }
-	//
-	// @Test
-	// void testDate() {
-	// 	// given
-	// 	AdminVacationSearchCondition dateCondition = new AdminVacationSearchCondition(
-	// 		new AdminVacationSearchCondition.DateRangeCondition(LocalDate.of(2025, 1, 1), LocalDate.of(2026, 1, 1),
-	// 			null, null), new AdminVacationSearchCondition.ApplicantCondition(null, null, null, null),
-	// 		new AdminVacationSearchCondition.ApproverCondition(null), null);
-	// 	AdminVacationSearchCondition yearCondition = new AdminVacationSearchCondition(
-	// 		new AdminVacationSearchCondition.DateRangeCondition(null, null, 2025, null),
-	// 		new AdminVacationSearchCondition.ApplicantCondition(null, null, null, null),
-	// 		new AdminVacationSearchCondition.ApproverCondition(null), null);
-	// 	AdminVacationSearchCondition yearAndQuarterCondition = new AdminVacationSearchCondition(
-	// 		new AdminVacationSearchCondition.DateRangeCondition(null, null, 2025, Quarter.Q1),
-	// 		new AdminVacationSearchCondition.ApplicantCondition(null, null, null, null),
-	// 		new AdminVacationSearchCondition.ApproverCondition(null), null);
-	//
-	// 	// when
-	// 	Page<VacationRequestReadResponse> dateResult = vacationRequestSearchCustom.search(dateCondition,
-	// 		PageRequest.of(0, Integer.MAX_VALUE));
-	// 	Page<VacationRequestReadResponse> yearResult = vacationRequestSearchCustom.search(yearCondition,
-	// 		PageRequest.of(0, Integer.MAX_VALUE));
-	// 	Page<VacationRequestReadResponse> yearAndQuarterResult = vacationRequestSearchCustom.search(
-	// 		yearAndQuarterCondition, PageRequest.of(0, Integer.MAX_VALUE));
-	//
-	// 	// then
-	// 	assertThat(dateResult).hasSize(3 * 4 * 3);
-	// 	assertThat(yearResult).hasSize(3 * 4 * 3);
-	// 	assertThat(yearAndQuarterResult).hasSize(3 * 3 * 3);
-	// }
-	//
-	// @Test
-	// void testApplicantName() {
-	// 	// given
-	// 	AdminVacationSearchCondition applicantNameCondition = new AdminVacationSearchCondition(
-	// 		new AdminVacationSearchCondition.DateRangeCondition(null, null, null, null),
-	// 		new AdminVacationSearchCondition.ApplicantCondition("0", null, null, null),
-	// 		new AdminVacationSearchCondition.ApproverCondition(null), null);
-	//
-	// 	// when
-	// 	Page<VacationRequestReadResponse> result = vacationRequestSearchCustom.search(applicantNameCondition,
-	// 		PageRequest.of(0, Integer.MAX_VALUE));
-	//
-	// 	// then
-	// 	for (VacationRequestReadResponse vacationRequestReadResponse : result) {
-	// 		assertThat(vacationRequestReadResponse.applicantName()).contains("0");
-	// 	}
-	// 	assertThat(result).hasSize(3 * 4 * 3);
-	// }
-	//
-	// @Test
-	// void testDeptName() {
-	// 	// given
-	// 	AdminVacationSearchCondition deptNameCondition = new AdminVacationSearchCondition(
-	// 		new AdminVacationSearchCondition.DateRangeCondition(null, null, null, null),
-	// 		new AdminVacationSearchCondition.ApplicantCondition(null, "0", null, null),
-	// 		new AdminVacationSearchCondition.ApproverCondition(null), null);
-	//
-	// 	Page<VacationRequestReadResponse> result = vacationRequestSearchCustom.search(deptNameCondition,
-	// 		PageRequest.of(0, Integer.MAX_VALUE));
-	//
-	// 	for (VacationRequestReadResponse vacationRequestReadResponse : result) {
-	// 		assertThat(vacationRequestReadResponse.deptName()).contains("0");
-	// 	}
-	// 	assertThat(result).hasSize(3 * 4 * 3);
-	// }
-	//
-	// @Test
-	// void testCodeId() {
-	// 	// given
-	// 	AdminVacationSearchCondition applicantVacationTypeCodeIdCondition = new AdminVacationSearchCondition(
-	// 		new AdminVacationSearchCondition.DateRangeCondition(null, null, null, null),
-	// 		new AdminVacationSearchCondition.ApplicantCondition(null, null, null, 7L),
-	// 		new AdminVacationSearchCondition.ApproverCondition(null), null);
-	// 	AdminVacationSearchCondition applicantPositionCodeIdCondition = new AdminVacationSearchCondition(
-	// 		new AdminVacationSearchCondition.DateRangeCondition(null, null, null, null),
-	// 		new AdminVacationSearchCondition.ApplicantCondition(null, null, 1L, null),
-	// 		new AdminVacationSearchCondition.ApproverCondition(null), null);
-	//
-	// 	// when
-	// 	Page<VacationRequestReadResponse> applicantVacationTypeCodeIdResult = vacationRequestSearchCustom.search(
-	// 		applicantVacationTypeCodeIdCondition, PageRequest.of(0, Integer.MAX_VALUE));
-	// 	Page<VacationRequestReadResponse> applicantPositionCodeIdResult = vacationRequestSearchCustom.search(
-	// 		applicantPositionCodeIdCondition, PageRequest.of(0, Integer.MAX_VALUE));
-	//
-	// 	// then
-	// 	assertThat(applicantVacationTypeCodeIdResult).hasSize(3 * 4 * 3);
-	// 	for (VacationRequestReadResponse vacationRequestReadResponse : applicantVacationTypeCodeIdResult) {
-	// 		assertThat(vacationRequestReadResponse.applicantName()).isEqualTo("member 0");
-	// 	}
-	// 	assertThat(applicantPositionCodeIdResult).hasSize(3 * 4 * 3 * 3);
-	// 	for (VacationRequestReadResponse vacationRequestReadResponse : applicantPositionCodeIdResult) {
-	// 		assertThat(vacationRequestReadResponse.applicantName()).startsWith("member");
-	// 	}
-	// }
-	//
-	// @Test
-	// void testVacationRequestStatus() {
-	// 	// given
-	// 	AdminVacationSearchCondition vacationRequestStatusCondition = new AdminVacationSearchCondition(
-	// 		new AdminVacationSearchCondition.DateRangeCondition(null, null, null, null),
-	// 		new AdminVacationSearchCondition.ApplicantCondition(null, null, null, null),
-	// 		new AdminVacationSearchCondition.ApproverCondition(null), VacationRequestStatus.APPROVED);
-	//
-	// 	// when
-	// 	Page<VacationRequestReadResponse> vacationRequestStatusResult = vacationRequestSearchCustom.search(
-	// 		vacationRequestStatusCondition, PageRequest.of(0, Integer.MAX_VALUE));
-	//
-	// 	// then
-	// 	assertThat(vacationRequestStatusResult).hasSize(4 * 3 * 3);
-	// 	for (VacationRequestReadResponse vacationRequestReadResponse : vacationRequestStatusResult) {
-	// 		assertThat(vacationRequestReadResponse.status()).isEqualTo(VacationRequestStatus.APPROVED);
-	// 	}
-	// }
-	//
-	// @Test
-	// void testApproverNames() {
-	// 	// given
-	// 	AdminVacationSearchCondition approverNameCondition = new AdminVacationSearchCondition(
-	// 		new AdminVacationSearchCondition.DateRangeCondition(null, null, null, null),
-	// 		new AdminVacationSearchCondition.ApplicantCondition(null, null, null, null),
-	// 		new AdminVacationSearchCondition.ApproverCondition("approver 0"), null);
-	//
-	// 	// when
-	// 	Page<VacationRequestReadResponse> approverNameResult = vacationRequestSearchCustom.search(approverNameCondition,
-	// 		PageRequest.of(0, Integer.MAX_VALUE));
-	//
-	// 	// then
-	// 	assertThat(approverNameResult).hasSize(3 * 4 * 3);
-	// 	for (VacationRequestReadResponse vacationRequestReadResponse : approverNameResult) {
-	// 		assertThat(vacationRequestReadResponse.approverNames()).hasSize(3);
-	// 		assertThat(vacationRequestReadResponse.approverNames()[0].contains("approver 0")
-	// 			|| vacationRequestReadResponse.approverNames()[1].contains("approver 0")
-	// 			|| vacationRequestReadResponse.approverNames()[2].contains("approver 0")).isTrue();
-	// 	}
-	// }
+	@Test
+	void testDefault() {
+		// given
+		AdminVacationSearchCondition defaultCondition = new AdminVacationSearchCondition(
+			new AdminVacationSearchCondition.DateRangeCondition(null, null, null, null),
+			new AdminVacationSearchCondition.ApplicantCondition(null, null, null, null),
+			new AdminVacationSearchCondition.ApproverCondition(null), null);
+
+		AdminVacationSearchCondition latestCondition = new AdminVacationSearchCondition(
+			new AdminVacationSearchCondition.DateRangeCondition(null, null, null, null),
+			new AdminVacationSearchCondition.ApplicantCondition("member 0", null, null, null),
+			new AdminVacationSearchCondition.ApproverCondition(null), null);
+
+		// when
+		Page<VacationRequestSearchResponse> defaultResult = adminVacationRequestSearchCustom.search(defaultCondition,
+			PageRequest.of(0, Integer.MAX_VALUE));
+		Page<VacationRequestSearchResponse> defaultPageableResult = adminVacationRequestSearchCustom.search(defaultCondition,
+			PageRequest.of(0, 3));
+		Page<VacationRequestSearchResponse> latestResult = adminVacationRequestSearchCustom.search(latestCondition,
+			PageRequest.of(0, Integer.MAX_VALUE));
+
+		// then
+		assertThat(defaultResult).hasSize(3 * 4 * 3 * 3);
+		assertThat(defaultPageableResult).hasSize(3);
+
+		for (VacationRequestSearchResponse vacationRequestReadResponse : defaultPageableResult) {
+			assertThat(vacationRequestReadResponse.type()).isNotNull();
+			assertThat(vacationRequestReadResponse.from()).isNotNull();
+			assertThat(vacationRequestReadResponse.to()).isNotNull();
+			assertThat(vacationRequestReadResponse.applicantName()).isNotNull();
+			assertThat(vacationRequestReadResponse.approverNames()).isNotNull();
+			assertThat(vacationRequestReadResponse.deptName()).isNotNull();
+			assertThat(vacationRequestReadResponse.status()).isNotNull();
+		}
+
+		List<VacationRequestSearchResponse> content = latestResult.getContent();
+		for (int i = 0; i < content.size() - 1; i++) {
+			assertThat(content.get(i).from()).isAfter(content.get(i + 1).from());
+			assertThat(content.get(i).to()).isAfter(content.get(i + 1).to());
+		}
+	}
+
+	@Test
+	void testDate() {
+		// given
+		AdminVacationSearchCondition dateCondition = new AdminVacationSearchCondition(
+			new AdminVacationSearchCondition.DateRangeCondition(LocalDate.of(2025, 1, 1), LocalDate.of(2026, 1, 1),
+				null, null), new AdminVacationSearchCondition.ApplicantCondition(null, null, null, null),
+			new AdminVacationSearchCondition.ApproverCondition(null), null);
+		AdminVacationSearchCondition yearCondition = new AdminVacationSearchCondition(
+			new AdminVacationSearchCondition.DateRangeCondition(null, null, 2025, null),
+			new AdminVacationSearchCondition.ApplicantCondition(null, null, null, null),
+			new AdminVacationSearchCondition.ApproverCondition(null), null);
+		AdminVacationSearchCondition yearAndQuarterCondition = new AdminVacationSearchCondition(
+			new AdminVacationSearchCondition.DateRangeCondition(null, null, 2025, Quarter.Q1),
+			new AdminVacationSearchCondition.ApplicantCondition(null, null, null, null),
+			new AdminVacationSearchCondition.ApproverCondition(null), null);
+
+		// when
+		Page<VacationRequestSearchResponse> dateResult = adminVacationRequestSearchCustom.search(dateCondition,
+			PageRequest.of(0, Integer.MAX_VALUE));
+		Page<VacationRequestSearchResponse> yearResult = adminVacationRequestSearchCustom.search(yearCondition,
+			PageRequest.of(0, Integer.MAX_VALUE));
+		Page<VacationRequestSearchResponse> yearAndQuarterResult = adminVacationRequestSearchCustom.search(
+			yearAndQuarterCondition, PageRequest.of(0, Integer.MAX_VALUE));
+
+		// then
+		assertThat(dateResult).hasSize(3 * 4 * 3);
+		assertThat(yearResult).hasSize(3 * 4 * 3);
+		assertThat(yearAndQuarterResult).hasSize(3 * 3 * 3);
+	}
+
+	@Test
+	void testApplicantName() {
+		// given
+		AdminVacationSearchCondition applicantNameCondition = new AdminVacationSearchCondition(
+			new AdminVacationSearchCondition.DateRangeCondition(null, null, null, null),
+			new AdminVacationSearchCondition.ApplicantCondition("0", null, null, null),
+			new AdminVacationSearchCondition.ApproverCondition(null), null);
+
+		// when
+		Page<VacationRequestSearchResponse> result = adminVacationRequestSearchCustom.search(applicantNameCondition,
+			PageRequest.of(0, Integer.MAX_VALUE));
+
+		// then
+		for (VacationRequestSearchResponse vacationRequestReadResponse : result) {
+			assertThat(vacationRequestReadResponse.applicantName()).contains("0");
+		}
+		assertThat(result).hasSize(3 * 4 * 3);
+	}
+
+	@Test
+	void testDeptName() {
+		// given
+		AdminVacationSearchCondition deptNameCondition = new AdminVacationSearchCondition(
+			new AdminVacationSearchCondition.DateRangeCondition(null, null, null, null),
+			new AdminVacationSearchCondition.ApplicantCondition(null, "0", null, null),
+			new AdminVacationSearchCondition.ApproverCondition(null), null);
+
+		Page<VacationRequestSearchResponse> result = adminVacationRequestSearchCustom.search(deptNameCondition,
+			PageRequest.of(0, Integer.MAX_VALUE));
+
+		for (VacationRequestSearchResponse vacationRequestReadResponse : result) {
+			assertThat(vacationRequestReadResponse.deptName()).contains("0");
+		}
+		assertThat(result).hasSize(3 * 4 * 3);
+	}
+
+	@Test
+	void testCodeId() {
+		// given
+		AdminVacationSearchCondition applicantVacationTypeCodeIdCondition = new AdminVacationSearchCondition(
+			new AdminVacationSearchCondition.DateRangeCondition(null, null, null, null),
+			new AdminVacationSearchCondition.ApplicantCondition(null, null, null, 7L),
+			new AdminVacationSearchCondition.ApproverCondition(null), null);
+		AdminVacationSearchCondition applicantPositionCodeIdCondition = new AdminVacationSearchCondition(
+			new AdminVacationSearchCondition.DateRangeCondition(null, null, null, null),
+			new AdminVacationSearchCondition.ApplicantCondition(null, null, 1L, null),
+			new AdminVacationSearchCondition.ApproverCondition(null), null);
+
+		// when
+		Page<VacationRequestSearchResponse> applicantVacationTypeCodeIdResult = adminVacationRequestSearchCustom.search(
+			applicantVacationTypeCodeIdCondition, PageRequest.of(0, Integer.MAX_VALUE));
+		Page<VacationRequestSearchResponse> applicantPositionCodeIdResult = adminVacationRequestSearchCustom.search(
+			applicantPositionCodeIdCondition, PageRequest.of(0, Integer.MAX_VALUE));
+
+		// then
+		assertThat(applicantVacationTypeCodeIdResult).hasSize(3 * 4 * 3);
+		for (VacationRequestSearchResponse vacationRequestReadResponse : applicantVacationTypeCodeIdResult) {
+			assertThat(vacationRequestReadResponse.applicantName()).isEqualTo("member 0");
+		}
+		assertThat(applicantPositionCodeIdResult).hasSize(3 * 4 * 3 * 3);
+		for (VacationRequestSearchResponse vacationRequestReadResponse : applicantPositionCodeIdResult) {
+			assertThat(vacationRequestReadResponse.applicantName()).startsWith("member");
+		}
+	}
+
+	@Test
+	void testVacationRequestStatus() {
+		// given
+		AdminVacationSearchCondition vacationRequestStatusCondition = new AdminVacationSearchCondition(
+			new AdminVacationSearchCondition.DateRangeCondition(null, null, null, null),
+			new AdminVacationSearchCondition.ApplicantCondition(null, null, null, null),
+			new AdminVacationSearchCondition.ApproverCondition(null), VacationRequestStatus.APPROVED);
+
+		// when
+		Page<VacationRequestSearchResponse> vacationRequestStatusResult = adminVacationRequestSearchCustom.search(
+			vacationRequestStatusCondition, PageRequest.of(0, Integer.MAX_VALUE));
+
+		// then
+		assertThat(vacationRequestStatusResult).hasSize(4 * 3 * 3);
+		for (VacationRequestSearchResponse vacationRequestReadResponse : vacationRequestStatusResult) {
+			assertThat(vacationRequestReadResponse.status()).isEqualTo(VacationRequestStatus.APPROVED);
+		}
+	}
+
+	@Test
+	void testApproverNames() {
+		// given
+		AdminVacationSearchCondition approverNameCondition = new AdminVacationSearchCondition(
+			new AdminVacationSearchCondition.DateRangeCondition(null, null, null, null),
+			new AdminVacationSearchCondition.ApplicantCondition(null, null, null, null),
+			new AdminVacationSearchCondition.ApproverCondition("approver 0"), null);
+
+		// when
+		Page<VacationRequestSearchResponse> approverNameResult = adminVacationRequestSearchCustom.search(approverNameCondition,
+			PageRequest.of(0, Integer.MAX_VALUE));
+
+		// then
+		assertThat(approverNameResult).hasSize(3 * 4 * 3);
+		for (VacationRequestSearchResponse vacationRequestReadResponse : approverNameResult) {
+			assertThat(vacationRequestReadResponse.approverNames()).hasSize(3);
+			assertThat(vacationRequestReadResponse.approverNames().get(0).contains("approver 0")
+				|| vacationRequestReadResponse.approverNames().get(1).contains("approver 0")
+				|| vacationRequestReadResponse.approverNames().get(2).contains("approver 0")).isTrue();
+		}
+	}
 }

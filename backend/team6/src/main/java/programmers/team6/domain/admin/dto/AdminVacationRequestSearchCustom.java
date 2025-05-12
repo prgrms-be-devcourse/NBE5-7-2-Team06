@@ -1,4 +1,4 @@
-package programmers.team6.domain.vacation.dto;
+package programmers.team6.domain.admin.dto;
 
 import java.util.List;
 
@@ -23,14 +23,14 @@ import programmers.team6.domain.vacation.entity.ApprovalStep_;
 import programmers.team6.domain.vacation.entity.VacationRequest;
 import programmers.team6.domain.vacation.entity.VacationRequest_;
 import programmers.team6.domain.vacation.repository.VacationRequestRepository;
-import programmers.team6.domain.vacation.utils.CriteriaCustomPredicateBuilder;
-import programmers.team6.domain.vacation.utils.CriteriaCustomQueryBuilder;
-import programmers.team6.domain.vacation.utils.QueryUtils;
+import programmers.team6.domain.admin.utils.CriteriaCustomPredicateBuilder;
+import programmers.team6.domain.admin.utils.CriteriaCustomQueryBuilder;
+import programmers.team6.domain.admin.utils.QueryUtils;
 import programmers.team6.global.entity.BaseEntity_;
 
 @Repository
 @RequiredArgsConstructor
-public class VacationRequestSearchCustom {
+public class AdminVacationRequestSearchCustom {
 	private final VacationRequestRepository vacationRequestRepository;
 	private final EntityManager entityManager;
 
@@ -43,9 +43,9 @@ public class VacationRequestSearchCustom {
 	 * @param pageable
 	 * @return
 	 */
-	public Page<VacationRequestReadResponse> search(AdminVacationSearchCondition searchCondition, Pageable pageable) {
+	public Page<VacationRequestSearchResponse> search(AdminVacationSearchCondition searchCondition, Pageable pageable) {
 		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-		CriteriaQuery<VacationRequestReadResponse> cq = cb.createQuery(VacationRequestReadResponse.class);
+		CriteriaQuery<VacationRequestSearchResponse> cq = cb.createQuery(VacationRequestSearchResponse.class);
 
 		Root<ApprovalStep> as = cq.from(ApprovalStep.class);
 		Join<ApprovalStep, VacationRequest> vr = as.join("vacationRequest", JoinType.INNER);
@@ -80,9 +80,9 @@ public class VacationRequestSearchCustom {
 		 * Predicates들을 기반을 Query 생성
 		 */
 
-		TypedQuery<VacationRequestReadResponse> query = CriteriaCustomQueryBuilder.builder(cq, cb)
+		TypedQuery<VacationRequestSearchResponse> query = CriteriaCustomQueryBuilder.builder(cq, cb)
 			.applyDynamicPredicates(predicates)
-			.projection(VacationRequestReadResponse.class, vr.get(VacationRequest_.type).get(Code_.name),
+			.projection(VacationRequestSearchResponse.class, vr.get(VacationRequest_.type).get(Code_.name),
 				vr.get(VacationRequest_.from), vr.get(VacationRequest_.to),
 				vr.get(VacationRequest_.member).get(Member_.name),
 				cb.function("GROUP_CONCAT", String.class, as.get(ApprovalStep_.member).get(Member_.name)),

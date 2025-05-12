@@ -1,8 +1,8 @@
-package programmers.team6.domain.vacation.dto;
+package programmers.team6.domain.admin.dto;
 
 import java.time.LocalDate;
 
-import programmers.team6.domain.vacation.enums.Quarter;
+import programmers.team6.domain.admin.enums.Quarter;
 import programmers.team6.domain.vacation.enums.VacationRequestStatus;
 
 public record AdminVacationSearchCondition(

@@ -1,4 +1,4 @@
-package programmers.team6.domain.vacation.enums;
+package programmers.team6.domain.admin.enums;
 
 import java.time.LocalDate;
 import java.time.Month;

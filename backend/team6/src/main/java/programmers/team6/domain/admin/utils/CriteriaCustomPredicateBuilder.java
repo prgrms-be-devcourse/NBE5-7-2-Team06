@@ -1,4 +1,4 @@
-package programmers.team6.domain.vacation.utils;
+package programmers.team6.domain.admin.utils;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -8,7 +8,7 @@ import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.From;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.metamodel.SingularAttribute;
-import programmers.team6.domain.vacation.enums.Quarter;
+import programmers.team6.domain.admin.enums.Quarter;
 
 /**
  * 필터링을 위한 Predicate 리스트 빌드

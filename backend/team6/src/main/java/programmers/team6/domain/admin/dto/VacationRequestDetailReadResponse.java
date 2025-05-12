@@ -1,4 +1,4 @@
-package programmers.team6.domain.vacation.dto;
+package programmers.team6.domain.admin.dto;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -9,14 +9,14 @@ import programmers.team6.domain.vacation.enums.VacationRequestStatus;
 public record VacationRequestDetailReadResponse(LocalDate from, LocalDate to, String name, String deptName,
 												String position, String reason, String vacationType,
 												VacationRequestStatus vacationRequestStatus,
-												List<ApprovalStepDetail> approvalStepDetails) {
+												List<ApprovalStepDetailUpdateResponse> approvalStepDetailUpdateResponses) {
 	public VacationRequestDetailReadResponse(LocalDate from, LocalDate to, String name, String deptName,
 		String position, String reason, String vacationType, VacationRequestStatus vacationRequestStatus) {
 		this(from, to, name, deptName, position, reason, vacationType, vacationRequestStatus, new ArrayList<>());
 	}
 
-	public VacationRequestDetailReadResponse injectApprovalStepDetails(List<ApprovalStepDetail> approvalStepDetails) {
-		this.approvalStepDetails.addAll(approvalStepDetails);
+	public VacationRequestDetailReadResponse injectApprovalStepDetails(List<ApprovalStepDetailUpdateResponse> approvalStepDetailUpdateResponses) {
+		this.approvalStepDetailUpdateResponses.addAll(approvalStepDetailUpdateResponses);
 		return this;
 	}
 }
