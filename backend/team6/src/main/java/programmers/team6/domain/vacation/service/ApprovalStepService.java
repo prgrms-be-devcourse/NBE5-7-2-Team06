@@ -2,7 +2,6 @@ package programmers.team6.domain.vacation.service;
 
 import java.time.temporal.ChronoUnit;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -42,36 +41,26 @@ public class ApprovalStepService {    // todo : 비즈니스 로직 분리 또�
 
 	@Transactional(readOnly = true)
 	public Page<ApprovalFirstStepSelectResponse> findFirstStepByMemberId(Long memberId, Pageable pageable) {
-		validateMember(memberId);
 		return approvalStepRepository.findFirstStepByMemberId(memberId, STEP1, pageable);
 	}
 
 	@Transactional(readOnly = true)
 	public Page<ApprovalFirstStepSelectResponse> findFirstStepByFilter(
 		ApprovalStepSelectRequest request, Long memberId, Pageable pageable) {
-		validateMember(memberId);
 		return approvalStepRepository.findFirstStepByFilter(memberId, request.typeId(),
 			request.name(), request.from(), request.to(), request.status(), STEP1, pageable);
 	}
 
 	@Transactional(readOnly = true)
 	public Page<ApprovalSecondStepSelectResponse> findSecondStepByMemberId(Long memberId, Pageable pageable) {
-		validateMember(memberId);
 		return approvalStepRepository.findSecondStepByMemberId(memberId, STEP2, pageable);
 	}
 
 	@Transactional(readOnly = true)
 	public Page<ApprovalSecondStepSelectResponse> findSecondStepByFilter(
 		ApprovalStepSelectRequest request, Long memberId, Pageable pageable) {
-		validateMember(memberId);
 		return approvalStepRepository.findSecondStepByFilter(memberId, request.typeId(),
 			request.name(), request.from(), request.to(), request.status(), STEP2, pageable);
-	}
-
-	private void validateMember(Long memberId) {
-		if (!approvalStepRepository.existsByMemberId(memberId)) {
-			throw new NoSuchElementException("결재 목록이 없습니다.");
-		}
 	}
 
 	@Transactional(readOnly = true)
