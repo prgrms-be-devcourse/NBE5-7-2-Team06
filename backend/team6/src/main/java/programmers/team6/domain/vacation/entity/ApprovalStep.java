@@ -73,7 +73,7 @@ public class ApprovalStep extends BaseEntity {
 	}
 
 	public boolean isApprovable() {
-		return this.approvalStatus == ApprovalStatus.IN_PROGRESS;
+		return this.approvalStatus == ApprovalStatus.PENDING;
 	}
 
 }

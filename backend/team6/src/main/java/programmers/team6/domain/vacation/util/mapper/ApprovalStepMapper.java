@@ -42,7 +42,7 @@ public class ApprovalStepMapper {
 	}
 
 	public static ApprovalStep toEntity(Member member, VacationRequest vacationRequest, int step) {
-		ApprovalStatus approvalStatus = (step == 1) ? ApprovalStatus.IN_PROGRESS : ApprovalStatus.WAITING;
+		ApprovalStatus approvalStatus = (step == 1) ? ApprovalStatus.PENDING : ApprovalStatus.WAITING;
 		return ApprovalStep.builder()
 			.member(member)
 			.vacationRequest(vacationRequest)
