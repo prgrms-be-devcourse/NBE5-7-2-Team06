@@ -1,7 +1,13 @@
 package programmers.team6.domain.vacation.entity;
 
-import jakarta.persistence.*;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Version;
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import programmers.team6.global.entity.BaseEntity;
 
@@ -9,21 +15,29 @@ import programmers.team6.global.entity.BaseEntity;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class VacationInfo extends BaseEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int vacationId;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Getter
+	private int vacationId;
 
-    private int totalCount;
+	@Getter
+	private int totalCount;
 
-    private int useCount;
+	@Getter
+	private int useCount;
 
-    private int remainCount;
+	private String vacationType;
 
-    private String vacationType;
+	private Long memberId;
 
-    private Long memberId;
+	@Getter
+	@Version
+	private int version;
 
-    @Version
-    private Integer version;
-
+	public VacationInfo(int totalCount, int useCount, String vacationType, Long memberId) {
+		this.totalCount = totalCount;
+		this.useCount = useCount;
+		this.vacationType = vacationType;
+		this.memberId = memberId;
+	}
 }
