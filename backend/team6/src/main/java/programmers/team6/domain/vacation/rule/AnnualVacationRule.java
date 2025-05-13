@@ -53,4 +53,8 @@ public final class AnnualVacationRule {
 	private int calculateAdditionalVacationDays(int yearsOfService) {
 		return (((yearsOfService - boundaryYear.toInt()) / increaseYear.toInt()) * vacationIncreaseDays.toInt());
 	}
+
+	public boolean isNonOverMaxVacation(Positive totalCount) {
+		return !this.maxGrantDays.isLessThan(totalCount);
+	}
 }
