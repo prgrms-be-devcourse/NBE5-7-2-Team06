@@ -21,6 +21,7 @@ import programmers.team6.domain.auth.util.JwtUtils;
 import programmers.team6.domain.member.entity.Code;
 import programmers.team6.domain.member.entity.Dept;
 import programmers.team6.domain.member.entity.Member;
+import programmers.team6.domain.member.enums.Role;
 import programmers.team6.domain.member.repository.CodeRepository;
 import programmers.team6.domain.member.repository.DeptRepository;
 import programmers.team6.domain.member.repository.MemberInfoRepository;
@@ -70,6 +71,10 @@ public class AuthService {
 
 		Member member = memberRepository.findByEmail(memberLoginRequest.email())
 			.orElseThrow(() -> new NoSuchElementException("이메일 없음"));
+
+		if (member.getRole().equals(Role.PENDING)) {
+			throw new IllegalArgumentException("회원가입 승인 대기중입니다.");
+		}
 
 		if (!passwordEncoder.matches(memberLoginRequest.password(), member.getMemberInfo().getPassword())) {
 			throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
