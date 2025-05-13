@@ -24,7 +24,6 @@ import programmers.team6.global.entity.BaseEntity;
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Getter
 public class Member extends BaseEntity {
 
 	@Id
