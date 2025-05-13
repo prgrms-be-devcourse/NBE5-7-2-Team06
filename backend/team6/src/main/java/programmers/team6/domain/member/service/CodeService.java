@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import programmers.team6.domain.member.dto.CodeCreateRequest;
 import programmers.team6.domain.member.dto.CodeReadResponse;
 import programmers.team6.domain.member.entity.Code;
+import programmers.team6.domain.member.enums.BasicCodeInfo;
 import programmers.team6.domain.member.enums.CodeExceptionMessage;
 import programmers.team6.domain.member.exception.CodeException;
 import programmers.team6.domain.member.repository.CodeRepository;
@@ -35,8 +36,17 @@ public class CodeService {
 		code.updateCode(codeCreateRequest.groupCode(), codeCreateRequest.code(), codeCreateRequest.name());
 	}
 
+	/**
+	 * 삭제하려는 code가 필수 CODE인 경우 삭제하지 못하도록 수정
+	 * @param id
+	 */
 	public void deleteCode(Long id) {
-		codeRepository.deleteById(id);
+		Code deletedTarget = codeRepository.findById(id)
+			.orElseThrow(() -> new CodeException(CodeExceptionMessage.EMPTY_CODE));
+		if (BasicCodeInfo.isIn(deletedTarget.getGroupCode(), deletedTarget.getCode())) {
+			return;
+		}
+		codeRepository.delete(deletedTarget);
 	}
 
 }
