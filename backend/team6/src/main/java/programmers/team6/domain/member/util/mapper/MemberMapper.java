@@ -1,6 +1,6 @@
 package programmers.team6.domain.member.util.mapper;
 
-import programmers.team6.domain.member.dto.MemberCreateRequest;
+import programmers.team6.domain.auth.dto.request.MemberSignUpRequest;
 import programmers.team6.domain.member.entity.Code;
 import programmers.team6.domain.member.entity.Dept;
 import programmers.team6.domain.member.entity.Member;
@@ -9,20 +9,20 @@ import programmers.team6.domain.member.enums.Role;
 
 public class MemberMapper {
 
-	public static Member MemberCreateRequestToEntity(MemberCreateRequest memberCreateRequest, Dept dept,
+	public static Member MemberCreateRequestToEntity(MemberSignUpRequest memberSignUpRequest, Dept dept,
 		Code position, String encodedPassword) {
 
 		MemberInfo memberInfo = MemberInfo.builder()
-			.birth(memberCreateRequest.getBirth())
-			.email(memberCreateRequest.getEmail())
+			.birth(memberSignUpRequest.birth())
+			.email(memberSignUpRequest.email())
 			.password(encodedPassword)
 			.build();
 
 		Member member = Member.builder()
-			.name(memberCreateRequest.getName())
+			.name(memberSignUpRequest.name())
 			.dept(dept)
 			.position(position)
-			.joinDate(memberCreateRequest.getJoinDate())
+			.joinDate(memberSignUpRequest.joinDate())
 			.role(Role.USER)
 			.build();
 
