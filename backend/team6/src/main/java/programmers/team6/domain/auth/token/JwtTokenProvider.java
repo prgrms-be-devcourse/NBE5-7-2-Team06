@@ -4,7 +4,6 @@ import java.util.Date;
 
 import javax.crypto.SecretKey;
 
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Component;
 
 import io.jsonwebtoken.Claims;
@@ -33,14 +32,16 @@ public class JwtTokenProvider {
 	private final JwtConfiguration jwtConfiguration;
 	private final JwtService jwtService;
 
+	private static final String HEADER = "Authorization";
+	private static final String BEARER = "Bearer ";
+
 	public TokenPairWithExpiration generateTokenPair(JwtMemberInfo jwtMemberInfo) {
 
 		String accessToken = issueAccessToken(jwtMemberInfo);
 		String refreshToken = issueRefreshToken(jwtMemberInfo);
 
-		jwtService.saveRefreshToken(jwtMemberInfo.id(), refreshToken, jwtConfiguration.refreshTokenExpiration());
-
-		return new TokenPairWithExpiration(accessToken, refreshToken, jwtConfiguration.accessTokenExpiration());
+		return new TokenPairWithExpiration(accessToken, refreshToken, jwtConfiguration.accessTokenExpiration(),
+			jwtConfiguration.refreshTokenExpiration());
 	}
 
 	public boolean validate(String token) {
@@ -67,7 +68,7 @@ public class JwtTokenProvider {
 
 		if (jwtService.isBlackListed(accessToken)) {
 			log.warn(" 블랙리스트 토큰 접근 시도: {}", accessToken);
-			throw new BadCredentialsException("블랙리스트 토큰 접근 시도");
+			return true;
 		}
 
 		return false;
@@ -116,9 +117,9 @@ public class JwtTokenProvider {
 	}
 
 	public String extractToken(HttpServletRequest request) {
-		String header = request.getHeader("Authorization");
+		String header = request.getHeader(HEADER);
 
-		if (header != null && header.startsWith("Bearer ")) {
+		if (header != null && header.startsWith(BEARER)) {
 			return header.substring(7);
 		}
 		return null;

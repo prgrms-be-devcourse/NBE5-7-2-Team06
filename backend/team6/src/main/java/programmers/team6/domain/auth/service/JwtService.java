@@ -18,8 +18,8 @@ public class JwtService {
 		stringRedisTemplate.opsForValue().set(key, refreshToken, expirationTime, TimeUnit.MILLISECONDS);
 	}
 
-	public void saveBlackList(String accessToken, long expirationTime) {
-		String key = "BL_" + accessToken;
+	public void addBlackList(String refreshToken, long expirationTime) {
+		String key = "BL_" + refreshToken;
 		stringRedisTemplate.opsForValue().set(key, "logout", expirationTime, TimeUnit.MILLISECONDS);
 	}
 
