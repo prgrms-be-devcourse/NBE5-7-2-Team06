@@ -22,6 +22,7 @@ import programmers.team6.global.entity.BaseEntity;
 		@UniqueConstraint(columnNames = {"group_code", "code"})
 	}
 )
+@Getter
 public class Code extends BaseEntity {
 
 	@Id
