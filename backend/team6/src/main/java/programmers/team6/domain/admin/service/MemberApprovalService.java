@@ -16,11 +16,10 @@ import programmers.team6.domain.member.repository.MemberRepository;
 @Transactional(readOnly = true)
 public class MemberApprovalService {
 
-	private static final Role ROLE_PENDING = Role.PENDING;
 	private final MemberRepository memberRepository;
 
 	public List<MemberApprovalResponse> findPendingMembers() {
-		return memberRepository.findPendingMembers(ROLE_PENDING);
+		return memberRepository.findPendingMembers(Role.PENDING);
 	}
 
 	@Transactional
