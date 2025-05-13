@@ -23,7 +23,7 @@ public class VacationInfoController {
 
 	@PatchMapping("/{memberId}")
 	@ResponseStatus(value = HttpStatus.OK)
-	public void updateTotalCount(@Validated @PathVariable Long memberId,
+	public void updateTotalCount(@PathVariable Long memberId,
 		@RequestBody VacationInfoUpdateTotalCountRequests request) {
 		vacationInfoService.updateFrom(memberId, request);
 	}
