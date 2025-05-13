@@ -73,7 +73,7 @@ public class Member extends BaseEntity {
 
 	public void validateDeletable() {
 		if (this.role != Role.PENDING) {
-			throw new IllegalArgumentException("해당 유저는 승인된 유저이므로 삭제할 수 없습니다.");
+			throw new IllegalArgumentException("해당 멤버는 승인된 멤버이므로 삭제할 수 없습니다.");
 		}
 	}
 
