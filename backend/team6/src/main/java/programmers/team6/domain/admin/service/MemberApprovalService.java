@@ -10,6 +10,11 @@ import programmers.team6.domain.admin.dto.MemberApprovalResponse;
 import programmers.team6.domain.member.entity.Member;
 import programmers.team6.domain.member.enums.Role;
 import programmers.team6.domain.member.repository.MemberRepository;
+import programmers.team6.domain.vacation.entity.VacationInfo;
+import programmers.team6.domain.vacation.enums.VacationCode;
+import programmers.team6.domain.vacation.repository.VacationInfoRepository;
+import programmers.team6.domain.vacation.rule.VacationGrantRule;
+import programmers.team6.domain.vacation.rule.VacationGrantRuleFinder;
 
 @Service
 @RequiredArgsConstructor
@@ -17,6 +22,8 @@ import programmers.team6.domain.member.repository.MemberRepository;
 public class MemberApprovalService {
 
 	private final MemberRepository memberRepository;
+	private final VacationGrantRuleFinder vacationGrantRuleFinder;
+	private final VacationInfoRepository vacationInfoRepository;
 
 	public List<MemberApprovalResponse> findPendingMembers() {
 		return memberRepository.findPendingMembers(Role.PENDING);
@@ -24,11 +31,20 @@ public class MemberApprovalService {
 
 	@Transactional
 	public void approveMember(Long memberId) {
-		Member findMember = memberRepository.findById(memberId)
+		Member member = memberRepository.findById(memberId)
 			.orElseThrow(() -> new IllegalArgumentException("해당 멤버가 존재하지 않습니다."));
-		findMember.approveMember();
+		member.approve();
 
-		// todo : vacationInfo 연차 추가하는 것 필요
+		initInfo(member);
+	}
+
+	private void initInfo(Member member) {
+		//TODO : 추후 batch insert를 고민해봐야 할듯
+		for (VacationCode type : VacationCode.values()) {
+			VacationGrantRule vacationRule = vacationGrantRuleFinder.find(type);
+			VacationInfo vacationInfo = vacationRule.createVacationInfo(member.getId());
+			vacationInfoRepository.save(vacationInfo);
+		}
 	}
 
 	@Transactional

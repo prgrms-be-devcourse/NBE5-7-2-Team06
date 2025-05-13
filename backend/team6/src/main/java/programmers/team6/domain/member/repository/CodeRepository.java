@@ -1,5 +1,6 @@
 package programmers.team6.domain.member.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -10,4 +11,6 @@ public interface CodeRepository extends JpaRepository<Code, Long> {
 	Optional<Code> findByIdAndGroupCode(Long id, String groupCode);
 
 	Optional<Code> findByGroupCodeAndCode(String groupCode, String code);
+
+	List<Code> findByGroupCode(String vacationType);
 }

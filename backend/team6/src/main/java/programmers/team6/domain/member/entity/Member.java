@@ -64,7 +64,7 @@ public class Member extends BaseEntity {
 		this.role = role;
 	}
 
-	public void approveMember() {
+	public void approve() {
 		if (this.role != Role.PENDING) {
 			throw new IllegalArgumentException("승인 대기 상태가 아닌 멤버는 권한을 변경할 수 없습니다.");
 		}

@@ -3,6 +3,7 @@ package programmers.team6.domain.vacation.rule;
 import java.time.LocalDate;
 
 import lombok.RequiredArgsConstructor;
+import programmers.team6.domain.vacation.entity.VacationInfo;
 import programmers.team6.domain.vacation.rule.vacationgranteligiblities.VacationGrantEligibility;
 import programmers.team6.domain.vacation.rule.vacationgranteligiblities.VacationGrantInfo;
 import programmers.team6.global.entity.Positive;
@@ -39,5 +40,10 @@ public final class AnnualVacationGrantRule implements VacationGrantRule {
 	@Override
 	public boolean canUpdate(Positive totalCount) {
 		return annualVacationRule.isNonOverMaxVacation(totalCount);
+	}
+
+	@Override
+	public VacationInfo createVacationInfo(Long memberId) {
+		return annualVacationRule.vacationInfo(memberId);
 	}
 }
