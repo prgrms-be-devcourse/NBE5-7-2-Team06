@@ -5,9 +5,10 @@ import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
 import programmers.team6.domain.vacation.rule.vacationgranteligiblities.VacationGrantEligibility;
 import programmers.team6.domain.vacation.rule.vacationgranteligiblities.VacationGrantInfo;
+import programmers.team6.global.entity.Positive;
 
 @RequiredArgsConstructor
-public final class AnnualVacationGrantRule {
+public final class AnnualVacationGrantRule implements VacationGrantRule {
 
 	private final AnnualVacationRule annualVacationRule;
 	private final MonthlyVacationRule monthlyVacationRule;
@@ -33,5 +34,10 @@ public final class AnnualVacationGrantRule {
 			return annualVacationRule.toGrantInfo(now, vacationGrantEligibility);
 		}
 		return monthlyVacationRule.toGrantInfo(vacationGrantEligibility);
+	}
+
+	@Override
+	public boolean canUpdate(Positive totalCount) {
+		return annualVacationRule.isNonOverMaxVacation(totalCount);
 	}
 }

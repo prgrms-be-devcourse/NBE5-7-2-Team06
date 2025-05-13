@@ -29,4 +29,8 @@ public interface VacationInfoRepository extends JpaRepository<VacationInfo, Inte
 		+ "       AND FUNCTION('month', m.joinDate) = FUNCTION('month', :currentDate))")
 	List<VacationGrantEligibility> findEligibilities(@Param("startJoinDate") LocalDate startJoinDate,
 		@Param("currentDate") LocalDate currentDate);
+
+	List<VacationInfo> findAllByMemberId(Long memberId);
+
+	List<VacationInfo> findAllByMemberIdIn(List<Long> memberIds);
 }
