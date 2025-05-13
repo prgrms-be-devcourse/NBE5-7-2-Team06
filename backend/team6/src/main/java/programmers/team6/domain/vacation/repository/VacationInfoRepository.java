@@ -30,7 +30,7 @@ public interface VacationInfoRepository extends JpaRepository<VacationInfo, Inte
 	List<VacationGrantEligibility> findEligibilities(@Param("startJoinDate") LocalDate startJoinDate,
 		@Param("currentDate") LocalDate currentDate);
 
-	List<VacationInfo> findAllByMemberId(Long aLong);
+	List<VacationInfo> findAllByMemberId(Long memberId);
 
-	List<VacationInfo> findAllByMemberIdIn(List<Long> longs);
+	List<VacationInfo> findAllByMemberIdIn(List<Long> memberIds);
 }
