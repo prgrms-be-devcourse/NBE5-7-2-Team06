@@ -31,4 +31,6 @@ public interface VacationInfoRepository extends JpaRepository<VacationInfo, Inte
 		@Param("currentDate") LocalDate currentDate);
 
 	List<VacationInfo> findAllByMemberId(Long aLong);
+
+	List<VacationInfo> findAllByMemberIdIn(List<Long> longs);
 }

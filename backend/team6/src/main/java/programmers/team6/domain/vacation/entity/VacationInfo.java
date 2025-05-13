@@ -31,6 +31,7 @@ public class VacationInfo extends BaseEntity {
 	@Getter
 	private String vacationType;
 
+	@Getter
 	private Long memberId;
 
 	@Getter

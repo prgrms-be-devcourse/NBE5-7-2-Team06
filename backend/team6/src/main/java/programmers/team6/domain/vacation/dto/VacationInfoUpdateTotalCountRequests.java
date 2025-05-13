@@ -2,7 +2,11 @@ package programmers.team6.domain.vacation.dto;
 
 import java.util.List;
 
-public record VacationInfoUpdateTotalCountRequests(List<VacationInfoUpdateTotalCountRequest> vacations) {
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+
+public record VacationInfoUpdateTotalCountRequests(
+	@NotNull @NotEmpty List<VacationInfoUpdateTotalCountRequest> vacations) {
 
 	public VacationInfoUpdateTotalCountRequest getTarget(String type) {
 		for (VacationInfoUpdateTotalCountRequest vacation : vacations) {
