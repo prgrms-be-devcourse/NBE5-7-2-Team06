@@ -32,7 +32,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 		String token = jwtTokenProvider.extractToken(request);
 
-		if (token != null && jwtTokenProvider.validate(token) && !jwtTokenProvider.isBlackListed(token)) {
+		if (token != null && jwtTokenProvider.validate(token)) {
 
 			TokenBody tokenbody = jwtTokenProvider.parseClaims(token);
 
