@@ -65,8 +65,8 @@ public class Member extends BaseEntity {
 	}
 
 	public void approveMember() {
-		if (this.role == Role.USER) {
-			throw new IllegalArgumentException("이미 권한이 부여되어 있습니다.");
+		if (this.role != Role.PENDING) {
+			throw new IllegalArgumentException("승인 대기 상태가 아닌 멤버는 권한을 변경할 수 없습니다.");
 		}
 		this.role = Role.USER;
 	}
