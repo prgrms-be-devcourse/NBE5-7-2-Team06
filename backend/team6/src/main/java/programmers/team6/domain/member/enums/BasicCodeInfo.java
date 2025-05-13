@@ -10,12 +10,12 @@ public enum BasicCodeInfo {
 	CONGRATULATORY("VACATION_TYPE", "04", "경조사 휴가");
 	private final String groupCode;
 	private final String code;
-	private final String description;
+	private final String name;
 
-	BasicCodeInfo(String groupCode, String code, String description) {
+	BasicCodeInfo(String groupCode, String code, String name) {
 		this.groupCode = groupCode;
 		this.code = code;
-		this.description = description;
+		this.name = name;
 	}
 
 	public static boolean isIn(String groupCode, String code) {

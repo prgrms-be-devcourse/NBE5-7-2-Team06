@@ -19,7 +19,7 @@ public class CodeMapper {
 		return Code.builder()
 			.groupCode(basicCodeInfo.getGroupCode())
 			.code(basicCodeInfo.getCode())
-			.name(basicCodeInfo.name())
+			.name(basicCodeInfo.getName())
 			.build();
 	}
 
