@@ -65,6 +65,16 @@ public class Member extends BaseEntity {
 	}
 
 	public void approveMember() {
+		if (this.role == Role.USER) {
+			throw new IllegalArgumentException("이미 권한이 부여되어 있습니다.");
+		}
 		this.role = Role.USER;
 	}
+
+	public void validateDeletable() {
+		if (this.role != Role.PENDING) {
+			throw new IllegalArgumentException("해당 유저는 승인된 유저이므로 삭제할 수 없습니다.");
+		}
+	}
+
 }

@@ -28,12 +28,15 @@ public class MemberApprovalService {
 		Member findMember = memberRepository.findById(memberId)
 			.orElseThrow(() -> new IllegalArgumentException("해당 멤버가 존재하지 않습니다."));
 		findMember.approveMember();
+
+		// todo : vacationInfo 연차 추가하는 것 필요
 	}
 
 	@Transactional
 	public void deleteMember(Long memberId) {
 		Member member = memberRepository.findById(memberId)
 			.orElseThrow(() -> new IllegalArgumentException("해당 멤버가 존재하지 않습니다."));
+		member.validateDeletable();
 		memberRepository.delete(member);
 	}
 }

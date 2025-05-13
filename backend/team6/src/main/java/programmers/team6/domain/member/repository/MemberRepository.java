@@ -13,7 +13,7 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
 	@Query(
 		"select new programmers.team6.domain.admin.dto.MemberApprovalResponse("
-			+ "m.name, m.position.name, m.dept.deptName, m.memberInfo.birth, m.memberInfo.email"
+			+ "m.id, m.name, m.position.name, m.dept.deptName, m.memberInfo.birth, m.memberInfo.email"
 			+ ")"
 			+ "from Member m "
 			+ "where m.role = :role")
