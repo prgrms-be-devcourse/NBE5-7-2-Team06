@@ -13,22 +13,15 @@ public class JwtService {
 
 	private final StringRedisTemplate stringRedisTemplate;
 
-	public void saveRefreshToken(Long id, String refreshToken, long expirationTime) {
-		String key = "RT_" + id;
-		stringRedisTemplate.opsForValue().set(key, refreshToken, expirationTime, TimeUnit.MILLISECONDS);
-	}
+	private static final String PREFIX = "BL_";
 
 	public void addBlackList(String refreshToken, long expirationTime) {
-		String key = "BL_" + refreshToken;
+		String key = PREFIX + refreshToken;
 		stringRedisTemplate.opsForValue().set(key, "logout", expirationTime, TimeUnit.MILLISECONDS);
 	}
 
-	public void deleteRefreshToken(Long id) {
-		stringRedisTemplate.delete("RT_" + id);
-	}
-
 	public boolean isBlackListed(String accessToken) {
-		return stringRedisTemplate.hasKey("BL_" + accessToken);
+		return stringRedisTemplate.hasKey(PREFIX + accessToken);
 	}
 
 }
