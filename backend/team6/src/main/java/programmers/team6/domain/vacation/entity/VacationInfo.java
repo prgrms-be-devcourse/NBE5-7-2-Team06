@@ -65,4 +65,13 @@ public class VacationInfo extends BaseEntity {
 	public boolean isSameVersion(Integer version) {
 		return this.version == version;
 	}
+
+	public void useVacation(int count) {
+		this.useCount += count;
+	}
+
+	public boolean canUseVacation(int count) {
+		return this.useCount + count <= totalCount;
+	}
+
 }
