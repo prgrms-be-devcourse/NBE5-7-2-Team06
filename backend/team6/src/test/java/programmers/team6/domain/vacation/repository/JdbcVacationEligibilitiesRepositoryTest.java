@@ -33,7 +33,7 @@ class JdbcVacationEligibilitiesRepositoryTest {
 	private JdbcTemplate jdbcTemplate;
 
 	private static VacationGrantInfo createGrantInfo(VacationInfo vacationInfo) {
-		return new VacationGrantInfo(vacationInfo.getVacationId(), vacationInfo.getTotalCount() + 1,
+		return new VacationGrantInfo(vacationInfo.getVacationId(), (int)vacationInfo.getTotalCount() + 1,
 			vacationInfo.getVersion());
 	}
 
