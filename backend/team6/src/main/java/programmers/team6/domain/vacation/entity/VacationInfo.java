@@ -47,14 +47,18 @@ public class VacationInfo extends BaseEntity {
 	}
 
 	@CheckReturnValue
-	public VacationInfoUpdateResult updateTotalCount(Integer version, Integer totalCount) {
-		if (!isSameVersion(version)) {
-			return VacationInfoUpdateResult.MISS_VERSION;
-		}
+	public VacationInfoUpdateResult updateTotalCount(Integer totalCount) {
 		if (isOverUseCount(totalCount)) {
 			return VacationInfoUpdateResult.MISS_RULES;
 		}
 		this.totalCount = totalCount;
+		return VacationInfoUpdateResult.SUCCESS;
+	}
+
+	@CheckReturnValue
+	public VacationInfoUpdateResult init(int totalCount) {
+		this.totalCount = totalCount;
+		this.useCount = 0;
 		return VacationInfoUpdateResult.SUCCESS;
 	}
 
