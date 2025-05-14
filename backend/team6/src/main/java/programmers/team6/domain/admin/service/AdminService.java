@@ -56,9 +56,8 @@ public class AdminService {
 		VacationRequest vacationRequest = vacationRequestRepository.findVacationRequestById(id)
 			.orElseThrow(() -> new VacationException(VacationExceptionMessage.EMPTY_VACATION_REQUEST_DETAIL));
 
-		// TODO - should change, hard coding "VACATION"
 		Code vacationRequestType = codeRepository.findByIdAndGroupCode(vacationRequestDetailUpdateRequest.typeId(),
-			"VACATION").orElseThrow(() -> new CodeException(CodeExceptionMessage.EMPTY_CODE));
+			"VACATION_TYPE").orElseThrow(() -> new CodeException(CodeExceptionMessage.EMPTY_CODE));
 		vacationRequest.update(vacationRequestType, vacationRequestDetailUpdateRequest.from(),
 			vacationRequestDetailUpdateRequest.to(), vacationRequestDetailUpdateRequest.vacationRequestStatus(),
 			vacationRequestDetailUpdateRequest.reason());
