@@ -19,7 +19,6 @@ import programmers.team6.domain.vacation.dto.VacationCreateRequestDto;
 import programmers.team6.domain.vacation.dto.VacationCreateResponseDto;
 import programmers.team6.domain.vacation.dto.VacationInfoSelectResponseDto;
 import programmers.team6.domain.vacation.dto.VacationListResponseDto;
-import programmers.team6.domain.vacation.dto.VacationListResponsePageDto;
 import programmers.team6.domain.vacation.dto.VacationUpdateRequestDto;
 import programmers.team6.domain.vacation.dto.VacationUpdateResponseDto;
 import programmers.team6.domain.vacation.entity.ApprovalStep;
@@ -88,39 +87,9 @@ public class VacationService {
 		);
 	}
 
-	// 휴가 신청 내역 확인
+	// 휴가 신청 내역 (페이징: 20개씩)
 	@Transactional
-	public List<VacationListResponseDto> getVacationRequestList(Long memberId) {
-		// 사용자 존재 여부 확인
-		memberRepository.findById(memberId)
-			.orElseThrow(() -> new RuntimeException("멤버 정보를 찾을 수 없습니다."));
-
-		// 휴가 신청 내역 조회
-		List<VacationRequest> vacationRequests = vacationRequestRepository.findByRequesterId(memberId);
-
-		// DTO로 변환하여 반환
-		return vacationRequests.stream()
-			.map(request -> {
-				// 결재 단계 정보 조회 (첫 번째 결재자 정보만 가져옴)
-				ApprovalStep approvalStep = approvalStepRepository.findFirstByVacationRequestOrderByStepAsc(request)
-					.orElseThrow(() -> new RuntimeException("결재 단계 정보를 찾을 수 없습니다."));
-
-				// 휴가 유형 이름 조회
-				String vacationTypeName = request.getType().getName();
-
-				return vacationMapper.toVacationRequestListResponseDto(
-					request,
-					vacationTypeName,
-					request.getStatus().name(),
-					approvalStep.getMember().getName()
-				);
-			})
-			.collect(Collectors.toList());
-	}
-
-	// 휴가 신청 내역 페이징 조회 (20개씩)
-	@Transactional
-	public VacationListResponsePageDto getVacationRequestListPaging(Long memberId, int page) {
+	public VacationListResponseDto getVacationRequestList(Long memberId, int page) {
 		// 사용자 존재 여부 확인
 		memberRepository.findById(memberId)
 			.orElseThrow(() -> new RuntimeException("멤버 정보를 찾을 수 없습니다."));
@@ -133,7 +102,7 @@ public class VacationService {
 			pageable);
 
 		// 엔티티를 DTO로 변환
-		List<VacationListResponseDto> content = vacationRequestsPage.getContent().stream()
+		List<VacationCreateResponseDto> content = vacationRequestsPage.getContent().stream()
 			.map(request -> {
 				// 결재 단계 정보 조회 (첫 번째 결재자 정보만 가져옴)
 				ApprovalStep approvalStep = approvalStepRepository.findFirstByVacationRequestOrderByStepAsc(request)
@@ -142,28 +111,29 @@ public class VacationService {
 				// 휴가 유형 이름 조회
 				String vacationTypeName = request.getType().getName();
 
-				return vacationMapper.toVacationRequestListResponseDto(
+				return vacationMapper.toVacationCreateResponseDto(
 					request,
 					vacationTypeName,
-					request.getStatus().name(),
+					request.getStatus(),
 					approvalStep.getMember().getName()
 				);
 			})
 			.collect(Collectors.toList());
 
 		// 페이징 응답 DTO 생성
-		return vacationMapper.toVacationListResponsePageDto(vacationRequestsPage, content);
+		return vacationMapper.toVacationListResponseDto(vacationRequestsPage, content);
 	}
 
 	// 휴가 신청 수정
 	@Transactional
-	public VacationUpdateResponseDto updateVacationRequest(Long memberId, VacationUpdateRequestDto requestDto) {
+	public VacationUpdateResponseDto updateVacationRequest(Long memberId, Long requestId,
+		VacationUpdateRequestDto requestDto) {
 		// 요청자 확인
 		Member requester = memberRepository.findById(memberId)
 			.orElseThrow(() -> new RuntimeException("멤버 정보를 찾을 수 없습니다."));
 
 		// 휴가 신청 조회
-		VacationRequest vacationRequest = vacationRequestRepository.findById(requestDto.getRequestId())
+		VacationRequest vacationRequest = vacationRequestRepository.findById(requestId)
 			.orElseThrow(() -> new RuntimeException("휴가 신청 정보를 찾을 수 없습니다."));
 
 		// 수정 권한 확인 (본인이 신청한 휴가만 수정 가능)

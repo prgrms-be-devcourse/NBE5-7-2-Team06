@@ -12,10 +12,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class VacationCreateResponseDto {
+	private Long requestId;
 	private LocalDateTime from;
 	private LocalDateTime to;
 	private String reason;
 	private String vacationType;
 	private String approvalStatus;
 	private String approverName;
+	private LocalDateTime createdAt;
+	private LocalDateTime updatedAt;
 }

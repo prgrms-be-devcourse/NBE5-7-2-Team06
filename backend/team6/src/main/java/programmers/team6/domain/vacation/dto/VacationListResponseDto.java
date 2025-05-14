@@ -1,6 +1,6 @@
 package programmers.team6.domain.vacation.dto;
 
-import java.time.LocalDateTime;
+import java.util.List;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,13 +12,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class VacationListResponseDto {
-	private Long requestId;
-	private LocalDateTime from;
-	private LocalDateTime to;
-	private String reason;
-	private String vacationType;
-	private String approvalStatus;
-	private String approverName;
-	private LocalDateTime createdAt;
+	private List<VacationCreateResponseDto> content;
+	private int pageNumber;
+	private int pageSize;
+	private long totalElements;
+	private int totalPages;
+	private boolean first;
+	private boolean last;
+
 }
 

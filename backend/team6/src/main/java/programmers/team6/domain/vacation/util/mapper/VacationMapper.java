@@ -11,7 +11,6 @@ import programmers.team6.domain.vacation.dto.VacationCreateRequestDto;
 import programmers.team6.domain.vacation.dto.VacationCreateResponseDto;
 import programmers.team6.domain.vacation.dto.VacationInfoSelectResponseDto;
 import programmers.team6.domain.vacation.dto.VacationListResponseDto;
-import programmers.team6.domain.vacation.dto.VacationListResponsePageDto;
 import programmers.team6.domain.vacation.dto.VacationUpdateResponseDto;
 import programmers.team6.domain.vacation.entity.ApprovalStep;
 import programmers.team6.domain.vacation.entity.VacationInfo;
@@ -60,30 +59,15 @@ public class VacationMapper {
 		ApprovalStatus approvalStatus,
 		String approverName) {
 		return VacationCreateResponseDto.builder()
+			.requestId(vacationRequest.getId())
 			.from(vacationRequest.getFrom())
 			.to(vacationRequest.getTo())
 			.reason(vacationRequest.getReason())
 			.vacationType(vacationTypeName)
 			.approvalStatus(approvalStatus.name())
 			.approverName(approverName)
-			.build();
-	}
-
-	// VacationRequest → VacationListResponseDto
-	public VacationListResponseDto toVacationRequestListResponseDto(
-		VacationRequest vacationRequest,
-		String vacationTypeName,
-		String approvalStatus,
-		String approverName) {
-		return VacationListResponseDto.builder()
-			.requestId(vacationRequest.getId())
-			.from(vacationRequest.getFrom())
-			.to(vacationRequest.getTo())
-			.reason(vacationRequest.getReason())
-			.vacationType(vacationTypeName)
-			.approvalStatus(approvalStatus)
-			.approverName(approverName)
 			.createdAt(vacationRequest.getCreatedAt())
+			.updatedAt(vacationRequest.getUpdatedAt())
 			.build();
 	}
 
@@ -106,10 +90,10 @@ public class VacationMapper {
 	}
 
 	//
-	public VacationListResponsePageDto toVacationListResponsePageDto(
+	public VacationListResponseDto toVacationListResponseDto(
 		Page<VacationRequest> page,
-		List<VacationListResponseDto> content) {
-		return VacationListResponsePageDto.builder()
+		List<VacationCreateResponseDto> content) {
+		return VacationListResponseDto.builder()
 			.content(content)
 			.pageNumber(page.getNumber())
 			.pageSize(page.getSize())

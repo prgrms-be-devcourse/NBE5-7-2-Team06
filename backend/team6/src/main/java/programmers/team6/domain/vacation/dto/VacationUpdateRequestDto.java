@@ -14,9 +14,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class VacationUpdateRequestDto {
-	@NotNull(message = "휴가 요청 ID는 필수입니다.")
-	private Long requestId;
-
 	@NotNull(message = "시작일은 필수입니다.")
 	private LocalDateTime from;
 
