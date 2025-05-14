@@ -24,7 +24,6 @@ import programmers.team6.domain.auth.dto.request.RefreshTokenRequest;
 import programmers.team6.domain.auth.dto.response.AuthTokenResponse;
 import programmers.team6.domain.auth.dto.response.LoginResponse;
 import programmers.team6.domain.auth.service.AuthService;
-import programmers.team6.domain.auth.token.JwtTokenProvider;
 import programmers.team6.domain.auth.util.JwtUtils;
 
 @RestController
@@ -33,7 +32,6 @@ import programmers.team6.domain.auth.util.JwtUtils;
 public class AuthController {
 
 	private final AuthService authService;
-	private final JwtTokenProvider jwtTokenProvider;
 
 	@PostMapping("/signup")
 	public ResponseEntity<Void> signUp(@RequestBody MemberSignUpRequest memberSignUpRequest) {
