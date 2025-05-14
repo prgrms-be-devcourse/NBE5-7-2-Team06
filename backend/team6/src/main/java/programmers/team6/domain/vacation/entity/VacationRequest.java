@@ -84,28 +84,36 @@ public class VacationRequest extends BaseEntity {
 		return this.requester.getId().equals(memberId) && this.status == VacationRequestStatus.IN_PROGRESS;
 	}
 
-	// 휴가 요청 취소
-	public void cancel() {
-		if (this.status != VacationRequestStatus.IN_PROGRESS) {
-			throw new IllegalStateException("진행 중인 휴가 요청만 취소할 수 있습니다.");
-		}
-
-		this.status = VacationRequestStatus.CANCELED;
-	}
-
 	// 현재 요청자가 취소 권한을 가지고 있는지 학인
 	public boolean canCancel(Long memberId) {
 		return this.requester.getId().equals(memberId) && this.status == VacationRequestStatus.IN_PROGRESS;
 	}
 
-	// 상태 검사 (취소)
-	private void validateCanBeCanceled() {
-		if (this.status == VacationRequestStatus.CANCELED) {
-			throw new IllegalStateException("이미 취소된 휴가 신청입니다.");
-		}
-		if (this.status != VacationRequestStatus.IN_PROGRESS) {
+	// 취소 권한 확인
+	private void validateCancel(Long memberId) {
+		if (!canCancel(memberId)) {
+			// 세부 오류 메시지
+			if (!this.requester.getId().equals(memberId)) {
+				throw new RuntimeException("휴가 신청자만 취소할 수 있습니다.");
+			}
+
+			if (this.status == VacationRequestStatus.CANCELED) {
+				throw new IllegalStateException("이미 취소된 휴가 신청입니다.");
+			}
+
 			throw new IllegalStateException("진행 중인 휴가 요청만 취소할 수 있습니다.");
 		}
+	}
+
+	// 휴가 신청 취소
+	private void changeStatusToCanceled() {
+		this.status = VacationRequestStatus.CANCELED;
+	}
+
+	// 휴가 취소 권한 검증 후 취소 처리
+	public void cancel(Long memberId) {
+		validateCancel(memberId);
+		changeStatusToCanceled();
 	}
 
 }
