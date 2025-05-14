@@ -136,4 +136,8 @@ public class ApprovalStep extends BaseEntity {
 	public void cancelVacation() {
 		this.vacationRequest.cancel();
 	}
+
+	public boolean isHalfDay() {
+		return this.vacationRequest.isHalfDay();
+	}
 }
