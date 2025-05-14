@@ -1,6 +1,7 @@
 package programmers.team6.domain.admin.dto;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import programmers.team6.domain.admin.enums.Quarter;
 import programmers.team6.domain.vacation.enums.VacationRequestStatus;
@@ -15,9 +16,9 @@ public record AdminVacationSearchCondition(
 
 	public record DateRangeCondition(
 		// 시작일
-		LocalDate start,
+		LocalDateTime start,
 		// 종료일
-		LocalDate end,
+		LocalDateTime end,
 		// 년도
 		Integer year,
 		// 분기

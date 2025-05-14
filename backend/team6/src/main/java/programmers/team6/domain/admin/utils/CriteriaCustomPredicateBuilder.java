@@ -1,6 +1,7 @@
 package programmers.team6.domain.admin.utils;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,9 +29,9 @@ public class CriteriaCustomPredicateBuilder<T> {
 	}
 
 	public <R> CriteriaCustomPredicateBuilder<T> applyDateRangeFilter(From<T, R> root,
-		SingularAttribute<? super R, LocalDate> mappedFromField,
-		SingularAttribute<? super R, LocalDate> mappedToField,
-		LocalDate from, LocalDate to) {
+		SingularAttribute<? super R, LocalDateTime> mappedFromField,
+		SingularAttribute<? super R, LocalDateTime> mappedToField,
+		LocalDateTime from, LocalDateTime to) {
 		if (isProvided(from) && isProvided(to)) {
 			this.predicates.add(cb.greaterThanOrEqualTo(root.get(mappedToField), from));
 			this.predicates.add(cb.lessThanOrEqualTo(root.get(mappedFromField), to));
@@ -39,8 +40,8 @@ public class CriteriaCustomPredicateBuilder<T> {
 	}
 
 	public <R> CriteriaCustomPredicateBuilder<T> applyDateRangeFilter(From<T, R> root,
-		SingularAttribute<? super R, LocalDate> mappedFromField,
-		SingularAttribute<? super R, LocalDate> mappedToField,
+		SingularAttribute<? super R, LocalDateTime> mappedFromField,
+		SingularAttribute<? super R, LocalDateTime> mappedToField,
 		Integer year, Quarter quarter) {
 		if (year == null) {
 			return this;

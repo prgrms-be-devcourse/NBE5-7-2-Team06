@@ -8,11 +8,14 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import programmers.team6.domain.vacation.entity.VacationInfo;
+import programmers.team6.domain.vacation.rule.vacationgranteligiblities.VacationGrantEligibility;
 
 public interface VacationInfoRepository extends JpaRepository<VacationInfo, Integer> {
 
 	@Query(value = "SELECT COUNT(DISTINCT vi.memberId) FROM VacationInfo vi")
 	long countAllMemberIds();
+
+	Optional<VacationInfo> findByMemberIdAndVacationType(Long memberId, String vacationType);
 
 	@Query("SELECT vi "
 		+ "FROM VacationInfo vi "

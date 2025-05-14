@@ -48,6 +48,10 @@ public class VacationInfo extends BaseEntity {
 
 	@CheckReturnValue
 	public VacationInfoUpdateResult updateTotalCount(Integer totalCount) {
+	public VacationInfoUpdateResult updateTotalCount(Integer version, double totalCount) {
+		if (!isSameVersion(version)) {
+			return VacationInfoUpdateResult.MISS_VERSION;
+		}
 		if (isOverUseCount(totalCount)) {
 			return VacationInfoUpdateResult.MISS_RULES;
 		}
@@ -62,11 +66,20 @@ public class VacationInfo extends BaseEntity {
 		return VacationInfoUpdateResult.SUCCESS;
 	}
 
-	private boolean isOverUseCount(int totalCount) {
+	private boolean isOverUseCount(double totalCount) {
 		return this.useCount > totalCount;
 	}
 
 	public boolean isSameVersion(Integer version) {
 		return this.version == version;
 	}
+
+	public void useVacation(int count) {
+		this.useCount += count;
+	}
+
+	public boolean canUseVacation(int count) {
+		return this.useCount + count <= totalCount;
+	}
+
 }
