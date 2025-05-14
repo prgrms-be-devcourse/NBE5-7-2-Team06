@@ -142,17 +142,13 @@ public class VacationService {
 		VacationRequest vacationRequest = vacationRequestRepository.findById(requestId)
 			.orElseThrow(() -> new RuntimeException("휴가 신청 정보를 찾을 수 없습니다."));
 
-		// 수정 권한 확인 (본인이 신청한 휴가만 수정 가능)
-		if (!vacationRequest.canUpdate(memberId)) {
-			throw new RuntimeException("수정 권한이 없습니다.");
-		}
-
 		// 휴가 유형 코드 조회
 		Code vacationType = codeRepository.findByGroupCodeAndCode("VACATION_TYPE", requestDto.getVacationType())
 			.orElseThrow(() -> new RuntimeException("잘못된 휴가 유형입니다."));
 
-		// 휴가 신청 수정
-		vacationRequest.update(requestDto.getFrom(), requestDto.getTo(), requestDto.getReason(), vacationType);
+		// 수정 권한 검증 및 수정 처리
+		vacationRequest.updateByMember(memberId, requestDto.getFrom(), requestDto.getTo(), requestDto.getReason(),
+			vacationType);
 
 		// 결재자 정보 조회
 		ApprovalStep approvalStep = approvalStepRepository.findFirstByVacationRequestOrderByStepAsc(

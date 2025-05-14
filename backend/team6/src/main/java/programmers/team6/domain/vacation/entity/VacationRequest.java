@@ -66,24 +66,36 @@ public class VacationRequest extends BaseEntity {
 		this.requester = requester;
 	}
 
-	// 휴가 요청 정보 수정
-	public void update(LocalDateTime from, LocalDateTime to, String reason, Code type) {
-		// 대기 중인 상태만 수정 가능
-		if (this.status != VacationRequestStatus.IN_PROGRESS) {
-			throw new IllegalStateException("진행 중인 휴가 요청만 수정할 수 있습니다.");
-		}
+	// UPDATE
+	// 현재 요청자가 수정 권한을 가지고 있는지 확인
+	public boolean canUpdate(Long memberId) {
+		return this.requester.getId().equals(memberId) && this.status == VacationRequestStatus.IN_PROGRESS;
+	}
 
+	// 수정 권한 검증
+	private void validateUpdate(Long memberId) {
+		if (!canUpdate(memberId)) {
+			// 세부 오류 메시지
+			if (!this.requester.getId().equals(memberId)) {
+				throw new RuntimeException("휴가 신청자만 수정할 수 있습니다.");
+			}
+
+			if (this.status != VacationRequestStatus.IN_PROGRESS) {
+				throw new IllegalStateException("진행 중인 휴가 요청만 수정할 수 있습니다.");
+			}
+		}
+	}
+
+	// 휴가 수정 권한 검증 후 수정 처리
+	public void updateByMember(Long memberId, LocalDateTime from, LocalDateTime to, String reason, Code type) {
+		validateUpdate(memberId);
 		this.from = from;
 		this.to = to;
 		this.reason = reason;
 		this.type = type;
 	}
 
-	// 현재 요청자가 수정 권한을 가지고 있는지 확인
-	public boolean canUpdate(Long memberId) {
-		return this.requester.getId().equals(memberId) && this.status == VacationRequestStatus.IN_PROGRESS;
-	}
-
+	// DELETE
 	// 현재 요청자가 취소 권한을 가지고 있는지 학인
 	public boolean canCancel(Long memberId) {
 		return this.requester.getId().equals(memberId) && this.status == VacationRequestStatus.IN_PROGRESS;
