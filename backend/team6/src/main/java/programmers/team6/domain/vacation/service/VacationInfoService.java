@@ -1,10 +1,7 @@
 package programmers.team6.domain.vacation.service;
 
 import java.time.LocalDate;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,7 +10,6 @@ import lombok.RequiredArgsConstructor;
 import programmers.team6.domain.vacation.dto.VacationInfoUpdateTotalCountRequest;
 import programmers.team6.domain.vacation.dto.VacationInfoUpdateTotalCountRequests;
 import programmers.team6.domain.vacation.dto.VacationInfoUpdateTotalCountRequestsList;
-import programmers.team6.domain.vacation.dto.VacationInfoUpdateTotalCountRequestsListItem;
 import programmers.team6.domain.vacation.entity.VacationInfo;
 import programmers.team6.domain.vacation.enums.VacationInfoUpdateResult;
 import programmers.team6.domain.vacation.repository.VacationEligibilitiesRepository;
@@ -58,28 +54,25 @@ public class VacationInfoService {
 
 	@Transactional
 	public void updateFrom(VacationInfoUpdateTotalCountRequestsList request) {
-		List<VacationInfo> vacationInfos = vacationInfoRepository.findAllByMemberIdIn(request.memberIds());
-		Map<Long, List<VacationInfo>> vacationInfoMap = vacationInfos.stream()
-			.collect(Collectors.groupingBy(VacationInfo::getMemberId));
-		for (VacationInfoUpdateTotalCountRequestsListItem item : request.requests()) {
-			updateTotalCount(item.vacations(), vacationInfoMap.getOrDefault(item.memberId(),
-				Collections.emptyList()));
+		VacationInfos vacationInfos = findVacationInfos(request.vacationIds());
+		updateVacationInfos(request, vacationInfos);
+	}
+
+	private VacationInfos findVacationInfos(List<Integer> ids) {
+		List<VacationInfo> vacationInfos = vacationInfoRepository.findAllByVacationIdIn(ids);
+		return new VacationInfos(vacationInfos);
+	}
+
+	private void updateVacationInfos(VacationInfoUpdateTotalCountRequestsList request,
+		VacationInfos vacationInfos) {
+		for (VacationInfoUpdateTotalCountRequests vacations : request.requests()) {
+			updateTotalCount(vacationInfos.getByMemberId(vacations.memberId()), vacations);
 		}
 	}
 
-	@Transactional
-	public void updateFrom(Long memberId, VacationInfoUpdateTotalCountRequests vacationInfoUpdateTotalCountRequests) {
-
-		List<VacationInfo> infos = vacationInfoRepository.findAllByMemberId(memberId);
-
-		updateTotalCount(vacationInfoUpdateTotalCountRequests, infos);
-	}
-
-	private void updateTotalCount(VacationInfoUpdateTotalCountRequests vacationInfoUpdateTotalCountRequests,
-		List<VacationInfo> infos) {
+	private void updateTotalCount(List<VacationInfo> infos, VacationInfoUpdateTotalCountRequests requests) {
 		for (VacationInfo info : infos) {
-			VacationInfoUpdateTotalCountRequest request = vacationInfoUpdateTotalCountRequests.getTarget(
-				info.getVacationType());
+			VacationInfoUpdateTotalCountRequest request = requests.getTarget(info.getVacationType());
 			VacationGrantRule vacationGrantRule = vacationGrantRuleFinder.find(info.getVacationType());
 			if (!vacationGrantRule.canUpdate(new Positive(request.totalCount()))) {
 				//TODO : 공통예외구현되면 수정예정
