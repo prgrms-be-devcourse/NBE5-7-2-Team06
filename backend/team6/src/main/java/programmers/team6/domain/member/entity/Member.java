@@ -31,7 +31,7 @@ public class Member extends BaseEntity {
 	private String name;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "dept_id", nullable = false)
+	@JoinColumn(name = "dept_id")
 	private Dept dept;
 
 	@ManyToOne(fetch = FetchType.LAZY)

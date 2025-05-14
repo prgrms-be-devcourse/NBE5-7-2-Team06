@@ -1,9 +1,12 @@
 package programmers.team6.domain.vacation.service;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -96,7 +99,7 @@ public class VacationService {
 	}
 
 	// 휴가 신청 내역 (페이징: 20개씩)
-	@Transactional
+	@Transactional(readOnly = true)
 	public VacationListResponseDto getVacationRequestList(Long memberId, int page) {
 		// 사용자 존재 여부 확인
 		getMemberById(memberId);
@@ -104,31 +107,58 @@ public class VacationService {
 		// 페이지 요청 객체 생성 (페이지 번호는 0부터 시작)
 		Pageable pageable = PageRequest.of(page, 20);
 
-		// 휴가 신청 내역 페이징 조회
-		Page<VacationRequest> vacationRequestsPage = vacationRequestRepository.findByRequesterIdWithPaging(memberId,
-			pageable);
+		// 1. ID만 페이징해서 가져오기
+		Page<Long> idPage = vacationRequestRepository.findIdsByRequesterIdPaging(memberId, pageable);
 
-		// 엔티티를 DTO로 변환
-		List<VacationCreateResponseDto> content = vacationRequestsPage.getContent().stream()
+		if (idPage.isEmpty()) {
+			// 빈 결과 반환
+			return VacationListResponseDto.builder()
+				.content(Collections.emptyList())
+				.pageNumber(page)
+				.pageSize(pageable.getPageSize())
+				.totalElements(idPage.getTotalElements())
+				.totalPages(idPage.getTotalPages())
+				.first(idPage.isFirst())
+				.last(idPage.isLast())
+				.build();
+		}
+
+		// 2. 페이징된 ID로 상세 정보 조회 (페치 조인 사용)
+		List<VacationRequest> vacationRequests = vacationRequestRepository.findByIdsWithFetch(idPage.getContent());
+
+		// 3. 결재 단계 정보 일괄 조회
+		List<Long> requestIds = vacationRequests.stream()
+			.map(VacationRequest::getId)
+			.collect(Collectors.toList());
+
+		Map<Long, ApprovalStep> approvalStepMap = approvalStepRepository.findFirstStepsByVacationRequestIds(requestIds)
+			.stream()
+			.collect(Collectors.toMap(
+				step -> step.getVacationRequest().getId(),
+				step -> step,
+				(existing, replacement) -> existing
+			));
+
+		// 4. DTO 변환
+		List<VacationCreateResponseDto> content = vacationRequests.stream()
 			.map(request -> {
-				// 결재 단계 정보 조회 (첫 번째 결재자 정보만 가져옴)
-				ApprovalStep approvalStep = approvalStepRepository.findFirstByVacationRequestOrderByStepAsc(request)
-					.orElseThrow(() -> new RuntimeException("결재 단계 정보를 찾을 수 없습니다."));
-
-				// 휴가 유형 이름 조회
-				String vacationTypeName = request.getType().getName();
+				ApprovalStep approvalStep = approvalStepMap.get(request.getId());
+				String approverName = approvalStep != null ? approvalStep.getMember().getName() : "미지정";
 
 				return vacationMapper.toVacationCreateResponseDto(
 					request,
-					vacationTypeName,
+					request.getType().getName(),
 					request.getStatus(),
-					approvalStep.getMember().getName()
+					approverName
 				);
 			})
 			.collect(Collectors.toList());
 
-		// 페이징 응답 DTO 생성
-		return vacationMapper.toVacationListResponseDto(vacationRequestsPage, content);
+		// 5. 페이징 응답 DTO 생성
+		return vacationMapper.toVacationListResponseDto(
+			new PageImpl<>(vacationRequests, pageable, idPage.getTotalElements()),
+			content
+		);
 	}
 
 	// 휴가 신청 수정

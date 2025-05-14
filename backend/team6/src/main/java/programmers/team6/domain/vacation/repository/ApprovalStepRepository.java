@@ -1,8 +1,11 @@
 package programmers.team6.domain.vacation.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import programmers.team6.domain.vacation.entity.ApprovalStep;
 import programmers.team6.domain.vacation.entity.VacationRequest;
@@ -10,4 +13,7 @@ import programmers.team6.domain.vacation.entity.VacationRequest;
 public interface ApprovalStepRepository extends JpaRepository<ApprovalStep, Long> {
 	// 휴가 요청에 대한 첫 번째 결재 단계 조회 (단계 오름차순)
 	Optional<ApprovalStep> findFirstByVacationRequestOrderByStepAsc(VacationRequest vacationRequest);
+
+	@Query("SELECT a FROM ApprovalStep a JOIN FETCH a.member WHERE a.vacationRequest.id IN :requestIds AND a.step = 1")
+	List<ApprovalStep> findFirstStepsByVacationRequestIds(@Param("requestIds") List<Long> requestIds);
 }

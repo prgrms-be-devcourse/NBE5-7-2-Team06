@@ -30,7 +30,7 @@ public class Dept extends BaseEntity {
 	}
 
 	@OneToOne
-	@JoinColumn(name = "dept_leader_id", nullable = true)
+	@JoinColumn(name = "dept_leader_id", nullable = false)
 	private Member deptLeader;
 
 	@Builder
