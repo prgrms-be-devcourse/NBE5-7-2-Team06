@@ -63,6 +63,27 @@ public class ApprovalStep extends BaseEntity {
 		this.reason = reason;
 	}
 
+	public void approve() {
+		updateStatus(ApprovalStatus.APPROVED);
+	}
+
+	public void reject() {
+		updateStatus(ApprovalStatus.REJECTED);
+	}
+
+	public void reject(String reason) {
+		this.reason = reason;
+		updateStatus(ApprovalStatus.REJECTED);
+	}
+
+	public void pending() {
+		updateStatus(ApprovalStatus.PENDING);
+	}
+
+	public void cancel() {
+		updateStatus(ApprovalStatus.CANCELED);
+	}
+
 	public void updateStatus(ApprovalStatus approvalStatus) {
 		this.approvalStatus = approvalStatus;
 	}
@@ -76,4 +97,43 @@ public class ApprovalStep extends BaseEntity {
 		return this.approvalStatus == ApprovalStatus.PENDING;
 	}
 
+	public void validateApprovable() {
+		if (this.approvalStatus != ApprovalStatus.PENDING) {
+			throw new IllegalArgumentException("해당 결재를 승인할 수 없습니다.");
+		}
+	}
+
+	public void validateRejectable() {
+		if (this.approvalStatus != ApprovalStatus.PENDING) {
+			throw new IllegalArgumentException("해당 결재를 반려할 수 없습니다.");
+		}
+	}
+
+	public Long getVacationMemberId() {
+		return this.vacationRequest.getMemberId();
+	}
+
+	public String getVacationCode() {
+		return this.vacationRequest.getCode();
+	}
+
+	public Long getVacationRequestId() {
+		return this.vacationRequest.getId();
+	}
+
+	public int calcVacationDays() {
+		return this.vacationRequest.calcVacationDays();
+	}
+
+	public void approveVacation() {
+		this.vacationRequest.approve();
+	}
+
+	public void rejectVacation() {
+		this.vacationRequest.reject();
+	}
+
+	public void cancelVacation() {
+		this.vacationRequest.cancel();
+	}
 }

@@ -1,6 +1,7 @@
 package programmers.team6.domain.vacation.entity;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -75,4 +76,29 @@ public class VacationRequest extends BaseEntity {
 	public void updateStatus(VacationRequestStatus vacationRequestStatus) {
 		this.status = vacationRequestStatus;
 	}
+
+	public void approve() {
+		updateStatus(VacationRequestStatus.APPROVED);
+	}
+
+	public void reject() {
+		updateStatus(VacationRequestStatus.REJECTED);
+	}
+
+	public void cancel() {
+		updateStatus(VacationRequestStatus.CANCELED);
+	}
+
+	public int calcVacationDays() {
+		return (int)ChronoUnit.DAYS.between(from.toLocalDate(), to.toLocalDate()) + 1;
+	}
+
+	public Long getMemberId() {
+		return this.member.getId();
+	}
+
+	public String getCode() {
+		return this.type.getCode();
+	}
+
 }

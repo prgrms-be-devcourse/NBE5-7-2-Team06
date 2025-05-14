@@ -1,6 +1,5 @@
 package programmers.team6.domain.vacation.service;
 
-import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
@@ -21,8 +20,6 @@ import programmers.team6.domain.vacation.dto.ApprovalStepSelectRequest;
 import programmers.team6.domain.vacation.entity.ApprovalStep;
 import programmers.team6.domain.vacation.entity.VacationInfo;
 import programmers.team6.domain.vacation.entity.VacationRequest;
-import programmers.team6.domain.vacation.enums.ApprovalStatus;
-import programmers.team6.domain.vacation.enums.VacationRequestStatus;
 import programmers.team6.domain.vacation.repository.ApprovalStepRepository;
 import programmers.team6.domain.vacation.repository.VacationInfoRepository;
 import programmers.team6.domain.vacation.util.mapper.ApprovalStepMapper;
@@ -30,6 +27,7 @@ import programmers.team6.domain.vacation.util.mapper.ApprovalStepMapper;
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class ApprovalStepService {    // todo : 비즈니스 로직 분리 또는 엔티티 도메인 메서드로 리팩토링 고려
 
 	private static final int STEP1 = 1;
@@ -39,114 +37,98 @@ public class ApprovalStepService {    // todo : 비즈니스 로직 분리 또�
 	private final MemberRepository memberRepository;
 	private final VacationInfoRepository vacationInfoRepository;
 
-	@Transactional(readOnly = true)
 	public Page<ApprovalFirstStepSelectResponse> findFirstStepByMemberId(Long memberId, Pageable pageable) {
 		return approvalStepRepository.findFirstStepByMemberId(memberId, STEP1, pageable);
 	}
 
-	@Transactional(readOnly = true)
 	public Page<ApprovalFirstStepSelectResponse> findFirstStepByFilter(
 		ApprovalStepSelectRequest request, Long memberId, Pageable pageable) {
 		return approvalStepRepository.findFirstStepByFilter(memberId, request.typeId(),
 			request.name(), request.from(), request.to(), request.status(), STEP1, pageable);
 	}
 
-	@Transactional(readOnly = true)
 	public Page<ApprovalSecondStepSelectResponse> findSecondStepByMemberId(Long memberId, Pageable pageable) {
 		return approvalStepRepository.findSecondStepByMemberId(memberId, STEP2, pageable);
 	}
 
-	@Transactional(readOnly = true)
 	public Page<ApprovalSecondStepSelectResponse> findSecondStepByFilter(
 		ApprovalStepSelectRequest request, Long memberId, Pageable pageable) {
 		return approvalStepRepository.findSecondStepByFilter(memberId, request.typeId(),
 			request.name(), request.from(), request.to(), request.status(), STEP2, pageable);
 	}
 
-	@Transactional(readOnly = true)
 	public ApprovalFirstStepDetailResponse findFirstStepDetailById(Long approvalStepId, Long memberId) {
 		ApprovalStep findApprovalStep = approvalStepRepository.findByIdAndMemberIdAndStep(approvalStepId,
-				memberId,
-				STEP1)
+				memberId, STEP1)
 			.orElseThrow(() -> new IllegalArgumentException("해당 1차 결재 목록이 없습니다."));
 		return ApprovalStepMapper.fromFirstStepEntity(findApprovalStep);
 	}
 
-	@Transactional(readOnly = true)
 	public ApprovalSecondStepDetailResponse findSecondStepDetailById(Long approvalStepId, Long memberId) {
 		ApprovalStep findApprovalStep = approvalStepRepository.findByIdAndMemberIdAndStep(approvalStepId,
-				memberId,
-				STEP2)
+				memberId, STEP2)
 			.orElseThrow(() -> new IllegalArgumentException("해당 2차 결재 목록이 없습니다."));
 		return ApprovalStepMapper.fromSecondStepEntity(findApprovalStep);
 	}
 
 	@Transactional
 	public void approveFirstStep(Long approvalStepId, Long memberId) {
-		ApprovalStep findApprovalStep1 = approvalStepRepository.findByIdAndMemberIdAndStep(approvalStepId,
-				memberId,
-				STEP1)
+		ApprovalStep firstStepApproval = approvalStepRepository.findByIdAndMemberIdAndStep(approvalStepId,
+				memberId, STEP1)
 			.orElseThrow(() -> new IllegalArgumentException("해당 1차 결재 목록이 없습니다."));
-		if (!findApprovalStep1.isApprovable()) {
-			throw new IllegalArgumentException("해당 결재를 승인할 수 없습니다.");
-		}
 
-		ApprovalStep findApprovalStep2 = approvalStepRepository.findByVacationRequestIdAndStep(
-				findApprovalStep1.getVacationRequest().getId(), STEP2)
+		firstStepApproval.validateApprovable();
+
+		ApprovalStep secondStepApproval = approvalStepRepository.findByVacationRequestIdAndStep(
+				firstStepApproval.getVacationRequestId(), STEP2)
 			.orElseThrow(() -> new IllegalArgumentException("해당 2차 결재 목록이 없습니다."));
 
-		findApprovalStep1.updateStatus(ApprovalStatus.APPROVED);
-		findApprovalStep2.updateStatus(ApprovalStatus.PENDING);
+		firstStepApproval.approve();
+		secondStepApproval.pending();
 
 	}
 
 	@Transactional
 	public void rejectFirstStep(Long approvalStepId, Long memberId, ApprovalStepRejectRequest request) {
-		ApprovalStep findApprovalStep1 = approvalStepRepository.findByIdAndMemberIdAndStep(approvalStepId,
-				memberId,
-				STEP1)
+		ApprovalStep firstStepApproval = approvalStepRepository.findByIdAndMemberIdAndStep(approvalStepId,
+				memberId, STEP1)
 			.orElseThrow(() -> new IllegalArgumentException("해당 1차 결재 목록이 없습니다."));
-		if (!findApprovalStep1.isApprovable()) {
-			throw new IllegalArgumentException("해당 결재를 반려할 수 없습니다.");
-		}
 
-		ApprovalStep findApprovalStep2 = approvalStepRepository.findByVacationRequestIdAndStep(
-				findApprovalStep1.getVacationRequest().getId(), STEP2)
+		firstStepApproval.validateRejectable();
+
+		ApprovalStep secondStepApproval = approvalStepRepository.findByVacationRequestIdAndStep(
+				firstStepApproval.getVacationRequestId(), STEP2)
 			.orElseThrow(() -> new IllegalArgumentException("해당 2차 결재 목록이 없습니다."));
 
-		findApprovalStep1.updateStatus(ApprovalStatus.REJECTED, request.reason());
-		findApprovalStep2.updateStatus(ApprovalStatus.REJECTED);
-
-		findApprovalStep1.getVacationRequest().updateStatus(VacationRequestStatus.REJECTED);
+		firstStepApproval.reject(request.reason());
+		secondStepApproval.reject();
+		firstStepApproval.rejectVacation();
 
 	}
 
 	@Transactional
 	public void approveSecondStep(Long approvalStepId, Long memberId) {
 		ApprovalStep findApprovalStep = approvalStepRepository.findByIdAndMemberIdAndStep(approvalStepId,
-				memberId,
-				STEP2)
+				memberId, STEP2)
 			.orElseThrow(() -> new IllegalArgumentException("해당 2차 결재 목록이 없습니다."));
-		if (!findApprovalStep.isApprovable()) {
-			throw new IllegalArgumentException("해당 결재를 승인할 수 없습니다.");
-		}
+
+		findApprovalStep.validateApprovable();
 
 		VacationInfo findVacationInfo = vacationInfoRepository.findByMemberIdAndVacationType(
-				findApprovalStep.getVacationRequest().getMember().getId(),
-				findApprovalStep.getVacationRequest().getType().getCode())
+				findApprovalStep.getVacationMemberId(),
+				findApprovalStep.getVacationCode())
 			.orElseThrow(() -> new IllegalArgumentException("해당 휴가 유형 정보가 없습니다."));
 
-		int count = (int)ChronoUnit.DAYS.between(findApprovalStep.getVacationRequest().getFrom(),
-			findApprovalStep.getVacationRequest().getTo()) + 1;
+		int count = findApprovalStep.calcVacationDays();
 
 		if (findVacationInfo.canUseVacation(count)) {
-			findApprovalStep.updateStatus(ApprovalStatus.APPROVED);
+			findApprovalStep.approve();
 
-			findApprovalStep.getVacationRequest().updateStatus(VacationRequestStatus.APPROVED);
+			findApprovalStep.approveVacation();
 			findVacationInfo.useVacation(count);
 		} else {
-			findApprovalStep.updateStatus(ApprovalStatus.CANCELED);
-			findApprovalStep.getVacationRequest().updateStatus(VacationRequestStatus.CANCELED);
+			findApprovalStep.cancel();
+			findApprovalStep.cancelVacation();
 
 			// throw new IllegalArgumentException("잔여 연차 부족으로 취소되었습니다.");
 			/*
@@ -163,16 +145,12 @@ public class ApprovalStepService {    // todo : 비즈니스 로직 분리 또�
 	@Transactional
 	public void rejectSecondStep(Long approvalStepId, Long memberId, ApprovalStepRejectRequest request) {
 		ApprovalStep findApprovalStep = approvalStepRepository.findByIdAndMemberIdAndStep(approvalStepId,
-				memberId,
-				STEP2)
+				memberId, STEP2)
 			.orElseThrow(() -> new IllegalArgumentException("해당 2차 결재 목록이 없습니다."));
-		if (!findApprovalStep.isApprovable()) {
-			throw new IllegalArgumentException("해당 결재를 반려할 수 없습니다.");
-		}
 
-		findApprovalStep.updateStatus(ApprovalStatus.REJECTED, request.reason());
-
-		findApprovalStep.getVacationRequest().updateStatus(VacationRequestStatus.REJECTED);
+		findApprovalStep.validateRejectable();
+		findApprovalStep.reject(request.reason());
+		findApprovalStep.rejectVacation();
 
 	}
 
@@ -191,7 +169,7 @@ public class ApprovalStepService {    // todo : 비즈니스 로직 분리 또�
 	public void cancelApprovalStep(Long vacationStepId) {
 		List<ApprovalStep> findApprovalSteps = approvalStepRepository.findByVacationRequestId(vacationStepId);
 		for (ApprovalStep findApprovalStep : findApprovalSteps) {
-			findApprovalStep.updateStatus(ApprovalStatus.CANCELED);
+			findApprovalStep.cancel();
 		}
 	}
 
