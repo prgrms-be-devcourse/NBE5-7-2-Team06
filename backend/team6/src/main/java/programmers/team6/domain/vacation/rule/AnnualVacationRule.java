@@ -5,8 +5,10 @@ import static programmers.team6.global.util.DateUtil.*;
 import java.time.LocalDate;
 
 import lombok.RequiredArgsConstructor;
-import programmers.team6.domain.vacation.rule.vacationgranteligiblities.VacationGrantEligibility;
-import programmers.team6.domain.vacation.rule.vacationgranteligiblities.VacationGrantInfo;
+import programmers.team6.domain.member.entity.Member;
+import programmers.team6.domain.vacation.entity.VacationInfo;
+import programmers.team6.domain.vacation.enums.VacationCode;
+import programmers.team6.domain.vacation.enums.VacationInfoUpdateResult;
 import programmers.team6.global.entity.Positive;
 
 @RequiredArgsConstructor
@@ -16,7 +18,6 @@ public final class AnnualVacationRule {
 	private static final Positive STATUTORY_INCREASE_YEAR = new Positive(2);
 	private static final Positive STATUTORY_INCREASE_DAYS = new Positive(1);
 	private static final Positive STATUTORY_INITIAL_GRANT_DAYS = new Positive(15);
-	private static final Positive STATUTORY_MAX_GRANT_DAYS = new Positive(25);
 	private static final VacationCode TYPE = VacationCode.ANNUAL;
 
 	private final Positive boundaryYear;
@@ -46,10 +47,6 @@ public final class AnnualVacationRule {
 
 	private int calculateAdditionalVacationDays(int yearsOfService) {
 		return (((yearsOfService - boundaryYear.toInt()) / increaseYear.toInt()) * vacationIncreaseDays.toInt());
-	}
-
-	public boolean isNonOverMaxVacation(Positive totalCount) {
-		return !this.maxGrantDays.isLessThan(totalCount);
 	}
 
 	public VacationInfo vacationInfo(Long memberId) {
