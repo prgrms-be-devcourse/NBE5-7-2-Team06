@@ -16,12 +16,10 @@ public interface CodeRepository extends JpaRepository<Code, Long> {
 
 	Optional<Code> findByGroupCodeAndCode(String groupCode, String code);
 
-<<<<<<< HEAD
 	List<Code> findByGroupCode(String vacationType);
-=======
+
 	@Query(value = "select new programmers.team6.domain.member.dto.CodeReadResponse(c.id,c.groupCode,c.code,c.name) "
 		+ "from Code c")
 	Page<CodeReadResponse> findCodePage(Pageable pageable);
 
->>>>>>> 067c4e9c1f78cd4520d689a0a70937fec0a20b55
 }

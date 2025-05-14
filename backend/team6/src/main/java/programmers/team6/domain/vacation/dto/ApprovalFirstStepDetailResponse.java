@@ -1,6 +1,6 @@
 package programmers.team6.domain.vacation.dto;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import programmers.team6.domain.vacation.enums.ApprovalStatus;
 
@@ -11,8 +11,8 @@ public record ApprovalFirstStepDetailResponse(
 	String positionName,
 	ApprovalStatus status,
 	String type,
-	LocalDate from,
-	LocalDate to,
+	LocalDateTime from,
+	LocalDateTime to,
 	String reason,
 	String approverName
 ) {
