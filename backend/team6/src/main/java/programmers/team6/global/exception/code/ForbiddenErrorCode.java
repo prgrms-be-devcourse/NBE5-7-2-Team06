@@ -9,6 +9,7 @@ public enum ForbiddenErrorCode implements ErrorCode {
 	FORBIDDEN_PENDING("회원가입 승인 대기중입니다");
 
 	private final String message;
+	private final HttpStatus httpStatus = HttpStatus.FORBIDDEN;
 
 	ForbiddenErrorCode(String message) {
 		this.message = message;
@@ -21,11 +22,17 @@ public enum ForbiddenErrorCode implements ErrorCode {
 
 	@Override
 	public HttpStatus getHttpStatus() {
-		return HttpStatus.FORBIDDEN;
+		return httpStatus;
+	}
+
+	@Override
+	public int getHttpStatusCode() {
+		return httpStatus.value();
 	}
 
 	@Override
 	public String getMessage() {
 		return message;
 	}
+
 }

@@ -17,6 +17,7 @@ public enum UnauthorizedErrorCode implements ErrorCode {
 	UNAUTHORIZED_EXPIRED_TOKEN("만료된 토큰입니다.");
 
 	private final String message;
+	private final HttpStatus httpStatus = HttpStatus.UNAUTHORIZED;
 
 	UnauthorizedErrorCode(String message) {
 		this.message = message;
@@ -29,7 +30,12 @@ public enum UnauthorizedErrorCode implements ErrorCode {
 
 	@Override
 	public HttpStatus getHttpStatus() {
-		return HttpStatus.UNAUTHORIZED;
+		return httpStatus;
+	}
+
+	@Override
+	public int getHttpStatusCode() {
+		return httpStatus.value();
 	}
 
 	@Override

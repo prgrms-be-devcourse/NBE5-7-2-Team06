@@ -9,6 +9,7 @@ public enum ConflictErrorCode implements ErrorCode {
 	CONFLICT_EMAIL("중복된 이메일입니다.");
 
 	private final String message;
+	private final HttpStatus httpStatus = HttpStatus.CONFLICT;
 
 	ConflictErrorCode(String message) {
 		this.message = message;
@@ -21,11 +22,17 @@ public enum ConflictErrorCode implements ErrorCode {
 
 	@Override
 	public HttpStatus getHttpStatus() {
-		return HttpStatus.CONFLICT;
+		return httpStatus;
+	}
+
+	@Override
+	public int getHttpStatusCode() {
+		return httpStatus.value();
 	}
 
 	@Override
 	public String getMessage() {
 		return message;
 	}
+
 }
