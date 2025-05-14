@@ -67,7 +67,8 @@ public class VacationService {
 	@Transactional
 	public VacationCreateResponseDto requestVacation(Long memberId, VacationCreateRequestDto requestDto) {
 		// 신청자 정보 조회
-		Member requester = getMemberById(memberId);
+		Member requester = memberRepository.findByIdWithDeptAndLeader(memberId)
+			.orElseThrow(() -> new RuntimeException("멤버 정보를 찾을 수 없습니다."));
 
 		// 부서장 조회 (결재자)
 		Dept dept = requester.getDept();
