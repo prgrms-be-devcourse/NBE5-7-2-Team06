@@ -4,6 +4,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import programmers.team6.domain.auth.dto.TokenBody;
 import programmers.team6.domain.vacation.dto.ApprovalFirstStepDetailResponse;
 import programmers.team6.domain.vacation.dto.ApprovalFirstStepSelectResponse;
 import programmers.team6.domain.vacation.dto.ApprovalSecondStepDetailResponse;
@@ -32,83 +34,72 @@ public class ApprovalStepController {
 	@GetMapping("/first")
 	@ResponseStatus(HttpStatus.OK)
 	public Page<ApprovalFirstStepSelectResponse> getFirstStep(
+		@AuthenticationPrincipal TokenBody tokenBody,
 		ApprovalStepSelectRequest request, @PageableDefault(size = 20) Pageable pageable) {
-		// todo: jwt 에서 memberId 꺼내야함
-		Long memberId = 2L;
 
 		if (!request.hasFilter()) {
-			return approvalStepService.findFirstStepByMemberId(memberId, pageable);
+			return approvalStepService.findFirstStepByMemberId(tokenBody.id(), pageable);
 		} else {
-			return approvalStepService.findFirstStepByFilter(request, memberId, pageable);
+			return approvalStepService.findFirstStepByFilter(request, tokenBody.id(), pageable);
 		}
 	}
 
 	@GetMapping("/first/{approvalStepId}")
 	@ResponseStatus(HttpStatus.OK)
-	public ApprovalFirstStepDetailResponse getFirstStepDetail(@PathVariable Long approvalStepId) {
-		// todo : jwt 에서 memberId 꺼내야함
-		Long memberId = 2L;
+	public ApprovalFirstStepDetailResponse getFirstStepDetail(@AuthenticationPrincipal TokenBody tokenBody,
+		@PathVariable Long approvalStepId) {
 
-		return approvalStepService.findFirstStepDetailById(approvalStepId, memberId);
+		return approvalStepService.findFirstStepDetailById(approvalStepId, tokenBody.id());
 	}
 
 	@GetMapping("/second")
 	@ResponseStatus(HttpStatus.OK)
 	public Page<ApprovalSecondStepSelectResponse> getSecondStep(
+		@AuthenticationPrincipal TokenBody tokenBody,
 		ApprovalStepSelectRequest request, @PageableDefault(size = 20) Pageable pageable) {
-		// todo: jwt 에서 memberId 꺼내야함
-		Long memberId = 4L;
 
 		if (!request.hasFilter()) {
-			return approvalStepService.findSecondStepByMemberId(memberId, pageable);
+			return approvalStepService.findSecondStepByMemberId(tokenBody.id(), pageable);
 		} else {
-			return approvalStepService.findSecondStepByFilter(request, memberId, pageable);
+			return approvalStepService.findSecondStepByFilter(request, tokenBody.id(), pageable);
 		}
 	}
 
 	@GetMapping("/second/{approvalStepId}")
 	@ResponseStatus(HttpStatus.OK)
-	public ApprovalSecondStepDetailResponse getSecondStepDetail(@PathVariable Long approvalStepId) {
-		// todo : jwt 에서 memberId 꺼내야함
-		Long memberId = 4L;
+	public ApprovalSecondStepDetailResponse getSecondStepDetail(@AuthenticationPrincipal TokenBody tokenBody,
+		@PathVariable Long approvalStepId) {
 
-		return approvalStepService.findSecondStepDetailById(approvalStepId, memberId);
+		return approvalStepService.findSecondStepDetailById(approvalStepId, tokenBody.id());
 	}
 
 	@PatchMapping("/first/{approvalStepId}/approve")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public void approveFirstStep(@PathVariable Long approvalStepId) {
-		// todo : jwt 에서 memberId 꺼내야함
-		Long memberId = 2L;
+	public void approveFirstStep(@AuthenticationPrincipal TokenBody tokenBody, @PathVariable Long approvalStepId) {
 
-		approvalStepService.approveFirstStep(approvalStepId, memberId);
+		approvalStepService.approveFirstStep(approvalStepId, tokenBody.id());
 	}
 
 	@PatchMapping("/first/{approvalStepId}/reject")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public void rejectFirstStep(@PathVariable Long approvalStepId,
+	public void rejectFirstStep(@AuthenticationPrincipal TokenBody tokenBody, @PathVariable Long approvalStepId,
 		@Valid @RequestBody ApprovalStepRejectRequest request) {
-		// todo : jwt 에서 memberId 꺼내야함
-		Long memberId = 2L;
-		approvalStepService.rejectFirstStep(approvalStepId, memberId, request);
+		approvalStepService.rejectFirstStep(approvalStepId, tokenBody.id(), request);
 	}
 
 	@PatchMapping("/second/{approvalStepId}/approve")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public void approveSecondStep(@PathVariable Long approvalStepId) {
-		// todo : jwt 에서 memberId 꺼내야함
-		Long memberId = 4L;
+	public void approveSecondStep(@AuthenticationPrincipal TokenBody tokenBody, @PathVariable Long approvalStepId) {
 
-		approvalStepService.approveSecondStep(approvalStepId, memberId);
+		approvalStepService.approveSecondStep(approvalStepId, tokenBody.id());
 	}
 
 	@PatchMapping("/second/{approvalStepId}/reject")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public void rejectSecondStep(@PathVariable Long approvalStepId,
+	public void rejectSecondStep(@AuthenticationPrincipal TokenBody tokenBody, @PathVariable Long approvalStepId,
 		@Valid @RequestBody ApprovalStepRejectRequest request) {
-		// todo : jwt 에서 memberId 꺼내야함
-		Long memberId = 4L;
-		approvalStepService.rejectSecondStep(approvalStepId, memberId, request);
+
+		approvalStepService.rejectSecondStep(approvalStepId, tokenBody.id(), request);
 	}
 
 }
