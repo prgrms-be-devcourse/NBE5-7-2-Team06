@@ -43,9 +43,17 @@ public class VacationService {
 	private final MemberRepository memberRepository;
 	private final CodeRepository codeRepository;
 
+	// 멤버 ID로 멤버를 조회, 멤버가 존재하지 않으면 예외 발생
+	private Member getMemberById(Long memberId) {
+		return memberRepository.findById(memberId)
+			.orElseThrow(() -> new RuntimeException("멤버 정보를 찾을 수 없습니다."));
+	}
+
 	// 본인 연차 조회
 	@Transactional
 	public VacationInfoSelectResponseDto getMyVacationInfo(Long memberId) {
+		getMemberById(memberId);
+
 		VacationInfo vacationInfo = vacationRepository.findByMemberId(memberId)
 			.orElseThrow(() -> new RuntimeException("휴가 정보를 찾을 수 없습니다."));
 
@@ -56,8 +64,7 @@ public class VacationService {
 	@Transactional
 	public VacationCreateResponseDto requestVacation(Long memberId, VacationCreateRequestDto requestDto) {
 		// 신청자 정보 조회
-		Member requester = memberRepository.findById(memberId)
-			.orElseThrow(() -> new RuntimeException("멤버 정보를 찾을 수 없습니다."));
+		Member requester = getMemberById(memberId);
 
 		// 부서장 조회 (결재자)
 		Dept dept = requester.getDept();
@@ -92,8 +99,7 @@ public class VacationService {
 	@Transactional
 	public VacationListResponseDto getVacationRequestList(Long memberId, int page) {
 		// 사용자 존재 여부 확인
-		memberRepository.findById(memberId)
-			.orElseThrow(() -> new RuntimeException("멤버 정보를 찾을 수 없습니다."));
+		getMemberById(memberId);
 
 		// 페이지 요청 객체 생성 (페이지 번호는 0부터 시작)
 		Pageable pageable = PageRequest.of(page, 20);
@@ -130,8 +136,7 @@ public class VacationService {
 	public VacationUpdateResponseDto updateVacationRequest(Long memberId, Long requestId,
 		VacationUpdateRequestDto requestDto) {
 		// 요청자 확인
-		Member requester = memberRepository.findById(memberId)
-			.orElseThrow(() -> new RuntimeException("멤버 정보를 찾을 수 없습니다."));
+		getMemberById(memberId);
 
 		// 휴가 신청 조회
 		VacationRequest vacationRequest = vacationRequestRepository.findById(requestId)
@@ -166,8 +171,7 @@ public class VacationService {
 	@Transactional
 	public boolean cancelVacationRequest(Long memberId, Long requestId) {
 		// 멤버 존재 여부 먼저 확인
-		memberRepository.findById(memberId)
-			.orElseThrow(() -> new RuntimeException("멤버 정보를 찾을 수 없습니다."));
+		getMemberById(memberId);
 
 		// 휴가 신청 조회
 		VacationRequest vacationRequest = vacationRequestRepository.findById(requestId)
