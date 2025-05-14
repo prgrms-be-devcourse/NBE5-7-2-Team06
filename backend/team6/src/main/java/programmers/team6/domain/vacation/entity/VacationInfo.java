@@ -23,10 +23,10 @@ public class VacationInfo extends BaseEntity {
 	private int vacationId;
 
 	@Getter
-	private int totalCount;
+	private double totalCount;
 
 	@Getter
-	private int useCount;
+	private double useCount;
 
 	@Getter
 	private String vacationType;
@@ -38,11 +38,11 @@ public class VacationInfo extends BaseEntity {
 	@Version
 	private int version;
 
-	public VacationInfo(int totalCount, String vacationType,Long memberId) {
+	public VacationInfo(double totalCount, String vacationType, Long memberId) {
 		this(totalCount, 0, vacationType, memberId);
 	}
 
-	public VacationInfo(int totalCount, int useCount, String vacationType, Long memberId) {
+	public VacationInfo(double totalCount, double useCount, String vacationType, Long memberId) {
 		this.totalCount = totalCount;
 		this.useCount = useCount;
 		this.vacationType = vacationType;
@@ -51,7 +51,7 @@ public class VacationInfo extends BaseEntity {
 	}
 
 	@CheckReturnValue
-	public VacationInfoUpdateResult updateTotalCount(Integer version, Integer totalCount) {
+	public VacationInfoUpdateResult updateTotalCount(Integer version, double totalCount) {
 		if (!isSameVersion(version)) {
 			return VacationInfoUpdateResult.MISS_VERSION;
 		}
@@ -62,11 +62,20 @@ public class VacationInfo extends BaseEntity {
 		return VacationInfoUpdateResult.SUCCESS;
 	}
 
-	private boolean isOverUseCount(int totalCount) {
+	private boolean isOverUseCount(double totalCount) {
 		return this.useCount > totalCount;
 	}
 
 	public boolean isSameVersion(Integer version) {
 		return this.version == version;
 	}
+
+	public void useVacation(int count) {
+		this.useCount += count;
+	}
+
+	public boolean canUseVacation(int count) {
+		return this.useCount + count <= totalCount;
+	}
+
 }

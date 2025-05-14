@@ -2,6 +2,7 @@ package programmers.team6.domain.vacation.repository;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -14,6 +15,8 @@ public interface VacationInfoRepository extends JpaRepository<VacationInfo, Inte
 
 	@Query(value = "SELECT COUNT(DISTINCT vi.memberId) FROM VacationInfo vi")
 	long countAllMemberIds();
+
+	Optional<VacationInfo> findByMemberIdAndVacationType(Long memberId, String vacationType);
 
 	@Query("SELECT new programmers.team6.domain.vacation.rule.vacationgranteligiblities.VacationGrantEligibility("
 		+ "vi.vacationId, m.joinDate, vi.totalCount, vi.version) "

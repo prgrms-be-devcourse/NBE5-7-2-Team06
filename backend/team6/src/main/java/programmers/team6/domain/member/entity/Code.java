@@ -44,4 +44,10 @@ public class Code extends BaseEntity {
 		this.code = code;
 		this.name = name;
 	}
+
+	public void updateCode(String groupCode, String code, String name) {
+		this.groupCode = groupCode;
+		this.code = code;
+		this.name = name;
+	}
 }

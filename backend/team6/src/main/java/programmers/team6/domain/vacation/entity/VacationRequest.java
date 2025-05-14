@@ -1,7 +1,18 @@
 package programmers.team6.domain.vacation.entity;
 
-import java.time.LocalDate;
-import jakarta.persistence.*;
+import java.time.LocalDateTime;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Version;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,8 +22,8 @@ import programmers.team6.domain.vacation.enums.VacationRequestStatus;
 import programmers.team6.global.entity.BaseEntity;
 
 @Entity
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class VacationRequest extends BaseEntity {
 
 	@Id
@@ -25,10 +36,10 @@ public class VacationRequest extends BaseEntity {
 	private Member member;
 
 	@Column(name = "from_date", nullable = false)
-	private LocalDate from;
+	private LocalDateTime from;
 
 	@Column(name = "to_date", nullable = false)
-	private LocalDate to;
+	private LocalDateTime to;
 
 	private String reason;
 
@@ -36,14 +47,14 @@ public class VacationRequest extends BaseEntity {
 	@JoinColumn(name = "type_code")
 	private Code type;
 
-	@Version
-	private Integer version;
-
 	@Enumerated(value = EnumType.STRING)
 	private VacationRequestStatus status;
 
-	public VacationRequest(Member member, LocalDate from, LocalDate to, String reason, Code type, Integer version,
-		VacationRequestStatus status) {
+	@Version
+	private Integer version;
+
+	public VacationRequest(Member member, LocalDateTime from, LocalDateTime to, String reason, Code type,
+		Integer version) {
 		this.member = member;
 		this.from = from;
 		this.to = to;
@@ -53,11 +64,15 @@ public class VacationRequest extends BaseEntity {
 		this.status = VacationRequestStatus.IN_PROGRESS;
 	}
 
-	public void update(Code type, LocalDate from, LocalDate to, VacationRequestStatus status, String reason) {
+	public void update(Code type, LocalDateTime from, LocalDateTime to, VacationRequestStatus status, String reason) {
 		this.type = type;
 		this.from = from;
 		this.to = to;
 		this.status = status;
 		this.reason = reason;
+	}
+
+	public void updateStatus(VacationRequestStatus vacationRequestStatus) {
+		this.status = vacationRequestStatus;
 	}
 }
