@@ -60,14 +60,14 @@ public class ApprovalStepService {    // todo : 비즈니스 로직 분리 또�
 	}
 
 	public ApprovalFirstStepDetailResponse findFirstStepDetailById(Long approvalStepId, Long memberId) {
-		ApprovalStep findApprovalStep = approvalStepRepository.findByIdAndMemberIdAndStep(approvalStepId,
+		ApprovalStep findApprovalStep = approvalStepRepository.findByIdAndMember_IdAndStep(approvalStepId,
 				memberId, STEP1)
 			.orElseThrow(() -> new NotFoundException(NotFoundErrorCode.NOT_FOUND_FIRST_APPROVAL_STEP));
 		return ApprovalStepMapper.fromFirstStepEntity(findApprovalStep);
 	}
 
 	public ApprovalSecondStepDetailResponse findSecondStepDetailById(Long approvalStepId, Long memberId) {
-		ApprovalStep findApprovalStep = approvalStepRepository.findByIdAndMemberIdAndStep(approvalStepId,
+		ApprovalStep findApprovalStep = approvalStepRepository.findByIdAndMember_IdAndStep(approvalStepId,
 				memberId, STEP2)
 			.orElseThrow(() -> new NotFoundException(NotFoundErrorCode.NOT_FOUND_SECOND_APPROVAL_STEP));
 		return ApprovalStepMapper.fromSecondStepEntity(findApprovalStep);
@@ -75,13 +75,13 @@ public class ApprovalStepService {    // todo : 비즈니스 로직 분리 또�
 
 	@Transactional
 	public void approveFirstStep(Long approvalStepId, Long memberId) {
-		ApprovalStep firstStepApproval = approvalStepRepository.findByIdAndMemberIdAndStep(approvalStepId,
+		ApprovalStep firstStepApproval = approvalStepRepository.findByIdAndMember_IdAndStep(approvalStepId,
 				memberId, STEP1)
 			.orElseThrow(() -> new NotFoundException(NotFoundErrorCode.NOT_FOUND_FIRST_APPROVAL_STEP));
 
 		firstStepApproval.validateApprovable();
 
-		ApprovalStep secondStepApproval = approvalStepRepository.findByVacationRequestIdAndStep(
+		ApprovalStep secondStepApproval = approvalStepRepository.findByVacationRequest_IdAndStep(
 				firstStepApproval.getVacationRequestId(), STEP2)
 			.orElseThrow(() -> new NotFoundException(NotFoundErrorCode.NOT_FOUND_SECOND_APPROVAL_STEP));
 
@@ -92,13 +92,13 @@ public class ApprovalStepService {    // todo : 비즈니스 로직 분리 또�
 
 	@Transactional
 	public void rejectFirstStep(Long approvalStepId, Long memberId, ApprovalStepRejectRequest request) {
-		ApprovalStep firstStepApproval = approvalStepRepository.findByIdAndMemberIdAndStep(approvalStepId,
+		ApprovalStep firstStepApproval = approvalStepRepository.findByIdAndMember_IdAndStep(approvalStepId,
 				memberId, STEP1)
 			.orElseThrow(() -> new NotFoundException(NotFoundErrorCode.NOT_FOUND_FIRST_APPROVAL_STEP));
 
 		firstStepApproval.validateRejectable();
 
-		ApprovalStep secondStepApproval = approvalStepRepository.findByVacationRequestIdAndStep(
+		ApprovalStep secondStepApproval = approvalStepRepository.findByVacationRequest_IdAndStep(
 				firstStepApproval.getVacationRequestId(), STEP2)
 			.orElseThrow(() -> new NotFoundException(NotFoundErrorCode.NOT_FOUND_SECOND_APPROVAL_STEP));
 
@@ -110,7 +110,7 @@ public class ApprovalStepService {    // todo : 비즈니스 로직 분리 또�
 
 	@Transactional
 	public void approveSecondStep(Long approvalStepId, Long memberId) {
-		ApprovalStep findApprovalStep = approvalStepRepository.findByIdAndMemberIdAndStep(approvalStepId,
+		ApprovalStep findApprovalStep = approvalStepRepository.findByIdAndMember_IdAndStep(approvalStepId,
 				memberId, STEP2)
 			.orElseThrow(() -> new NotFoundException(NotFoundErrorCode.NOT_FOUND_SECOND_APPROVAL_STEP));
 
@@ -118,7 +118,7 @@ public class ApprovalStepService {    // todo : 비즈니스 로직 분리 또�
 
 		VacationInfo findVacationInfo = vacationInfoRepository.findByMemberIdAndVacationType(
 				findApprovalStep.getVacationMemberId(),
-				findApprovalStep.getVacationCode())
+				findApprovalStep.isHalfDay() ? "01" : findApprovalStep.getVacationCode())
 			.orElseThrow(() -> new NotFoundException(NotFoundErrorCode.NOT_FOUND_VACATION_INFO));
 
 		double count = findApprovalStep.isHalfDay() ? 0.5 : findApprovalStep.calcVacationDays();
@@ -144,7 +144,7 @@ public class ApprovalStepService {    // todo : 비즈니스 로직 분리 또�
 
 	@Transactional
 	public void rejectSecondStep(Long approvalStepId, Long memberId, ApprovalStepRejectRequest request) {
-		ApprovalStep findApprovalStep = approvalStepRepository.findByIdAndMemberIdAndStep(approvalStepId,
+		ApprovalStep findApprovalStep = approvalStepRepository.findByIdAndMember_IdAndStep(approvalStepId,
 				memberId, STEP2)
 			.orElseThrow(() -> new NotFoundException(NotFoundErrorCode.NOT_FOUND_SECOND_APPROVAL_STEP));
 
@@ -167,7 +167,7 @@ public class ApprovalStepService {    // todo : 비즈니스 로직 분리 또�
 
 	// 휴가 요청 취소될 경우, 관련 결재 단계 상태 CANCELED
 	public void cancelApprovalStep(Long vacationStepId) {
-		List<ApprovalStep> findApprovalSteps = approvalStepRepository.findByVacationRequestId(vacationStepId);
+		List<ApprovalStep> findApprovalSteps = approvalStepRepository.findByVacationRequest_Id(vacationStepId);
 		for (ApprovalStep findApprovalStep : findApprovalSteps) {
 			findApprovalStep.cancel();
 		}
