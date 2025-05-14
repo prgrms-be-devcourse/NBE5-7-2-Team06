@@ -21,7 +21,7 @@ public interface VacationRequestRepository extends JpaRepository<VacationRequest
     List<VacationMonthlyStatisticsResponse> getMonthlyVacationStatistics(@Param("target_year") Integer targetYear, @Param("limit") int limit, @Param("offset") int offset);
   
   	@Query(value =
-		"select new programmers.team6.domain.admin.dto.VacationRequestDetailReadResponse(vr.from, vr.to, m.name, d.deptName,p.name,vr.reason,t.name,vr.status) "
+		"select new programmers.team6.domain.admin.dto.VacationRequestDetailReadResponse(vr.id,vr.from, vr.to, m.name, d.deptName,p.name,vr.reason,t.name,vr.status) "
 			+ "from VacationRequest vr join vr.type t " + "join vr.member m join m.dept d join m.position p "
 			+ "where vr.id = :id")
 	  Optional<VacationRequestDetailReadResponse> findVacationRequestDetailById(@Param("id") Long id);

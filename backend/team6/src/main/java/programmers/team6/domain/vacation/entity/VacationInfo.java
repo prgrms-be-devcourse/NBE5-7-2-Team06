@@ -1,5 +1,7 @@
 package programmers.team6.domain.vacation.entity;
 
+import org.springframework.lang.CheckReturnValue;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -8,6 +10,7 @@ import jakarta.persistence.Version;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import programmers.team6.domain.vacation.enums.VacationInfoUpdateResult;
 import programmers.team6.global.entity.BaseEntity;
 
 @Entity
@@ -25,8 +28,10 @@ public class VacationInfo extends BaseEntity {
 	@Getter
 	private int useCount;
 
+	@Getter
 	private String vacationType;
 
+	@Getter
 	private Long memberId;
 
 	@Getter
@@ -38,6 +43,27 @@ public class VacationInfo extends BaseEntity {
 		this.useCount = useCount;
 		this.vacationType = vacationType;
 		this.memberId = memberId;
+		this.version = 0;
+	}
+
+	@CheckReturnValue
+	public VacationInfoUpdateResult updateTotalCount(Integer version, Integer totalCount) {
+		if (!isSameVersion(version)) {
+			return VacationInfoUpdateResult.MISS_VERSION;
+		}
+		if (isOverUseCount(totalCount)) {
+			return VacationInfoUpdateResult.MISS_RULES;
+		}
+		this.totalCount = totalCount;
+		return VacationInfoUpdateResult.SUCCESS;
+	}
+
+	private boolean isOverUseCount(int totalCount) {
+		return this.useCount > totalCount;
+	}
+
+	public boolean isSameVersion(Integer version) {
+		return this.version == version;
 	}
 
 	public void useVacation(int count) {

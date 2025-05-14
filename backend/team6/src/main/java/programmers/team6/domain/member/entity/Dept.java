@@ -13,8 +13,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import programmers.team6.global.entity.BaseEntity;
 
-@Entity
 @Getter
+@Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Dept extends BaseEntity {
 	@Id

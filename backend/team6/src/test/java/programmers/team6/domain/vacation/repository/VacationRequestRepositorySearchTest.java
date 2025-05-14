@@ -131,6 +131,7 @@ class VacationRequestRepositorySearchTest {
 		assertThat(defaultPageableResult).hasSize(3);
 
 		for (VacationRequestSearchResponse vacationRequestReadResponse : defaultPageableResult) {
+			assertThat(vacationRequestReadResponse.id()).isNotNull();
 			assertThat(vacationRequestReadResponse.type()).isNotNull();
 			assertThat(vacationRequestReadResponse.from()).isNotNull();
 			assertThat(vacationRequestReadResponse.to()).isNotNull();
