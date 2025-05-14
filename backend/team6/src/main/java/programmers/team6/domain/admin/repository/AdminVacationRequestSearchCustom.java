@@ -1,4 +1,4 @@
-package programmers.team6.domain.admin.dto;
+package programmers.team6.domain.admin.repository;
 
 import java.util.List;
 
@@ -15,6 +15,8 @@ import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import lombok.RequiredArgsConstructor;
+import programmers.team6.domain.admin.dto.AdminVacationSearchCondition;
+import programmers.team6.domain.admin.dto.VacationRequestSearchResponse;
 import programmers.team6.domain.admin.utils.CriteriaCustomPredicateBuilder;
 import programmers.team6.domain.admin.utils.CriteriaCustomQueryBuilder;
 import programmers.team6.domain.admin.utils.QueryUtils;
