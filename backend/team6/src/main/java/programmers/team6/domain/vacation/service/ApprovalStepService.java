@@ -23,6 +23,8 @@ import programmers.team6.domain.vacation.entity.VacationRequest;
 import programmers.team6.domain.vacation.repository.ApprovalStepRepository;
 import programmers.team6.domain.vacation.repository.VacationInfoRepository;
 import programmers.team6.domain.vacation.util.mapper.ApprovalStepMapper;
+import programmers.team6.global.exception.code.NotFoundErrorCode;
+import programmers.team6.global.exception.customException.NotFoundException;
 
 @Slf4j
 @Service
@@ -60,14 +62,14 @@ public class ApprovalStepService {    // todo : 비즈니스 로직 분리 또�
 	public ApprovalFirstStepDetailResponse findFirstStepDetailById(Long approvalStepId, Long memberId) {
 		ApprovalStep findApprovalStep = approvalStepRepository.findByIdAndMemberIdAndStep(approvalStepId,
 				memberId, STEP1)
-			.orElseThrow(() -> new IllegalArgumentException("해당 1차 결재 목록이 없습니다."));
+			.orElseThrow(() -> new NotFoundException(NotFoundErrorCode.NOT_FOUND_FIRST_APPROVAL_STEP));
 		return ApprovalStepMapper.fromFirstStepEntity(findApprovalStep);
 	}
 
 	public ApprovalSecondStepDetailResponse findSecondStepDetailById(Long approvalStepId, Long memberId) {
 		ApprovalStep findApprovalStep = approvalStepRepository.findByIdAndMemberIdAndStep(approvalStepId,
 				memberId, STEP2)
-			.orElseThrow(() -> new IllegalArgumentException("해당 2차 결재 목록이 없습니다."));
+			.orElseThrow(() -> new NotFoundException(NotFoundErrorCode.NOT_FOUND_SECOND_APPROVAL_STEP));
 		return ApprovalStepMapper.fromSecondStepEntity(findApprovalStep);
 	}
 
@@ -75,13 +77,13 @@ public class ApprovalStepService {    // todo : 비즈니스 로직 분리 또�
 	public void approveFirstStep(Long approvalStepId, Long memberId) {
 		ApprovalStep firstStepApproval = approvalStepRepository.findByIdAndMemberIdAndStep(approvalStepId,
 				memberId, STEP1)
-			.orElseThrow(() -> new IllegalArgumentException("해당 1차 결재 목록이 없습니다."));
+			.orElseThrow(() -> new NotFoundException(NotFoundErrorCode.NOT_FOUND_FIRST_APPROVAL_STEP));
 
 		firstStepApproval.validateApprovable();
 
 		ApprovalStep secondStepApproval = approvalStepRepository.findByVacationRequestIdAndStep(
 				firstStepApproval.getVacationRequestId(), STEP2)
-			.orElseThrow(() -> new IllegalArgumentException("해당 2차 결재 목록이 없습니다."));
+			.orElseThrow(() -> new NotFoundException(NotFoundErrorCode.NOT_FOUND_SECOND_APPROVAL_STEP));
 
 		firstStepApproval.approve();
 		secondStepApproval.pending();
@@ -92,13 +94,13 @@ public class ApprovalStepService {    // todo : 비즈니스 로직 분리 또�
 	public void rejectFirstStep(Long approvalStepId, Long memberId, ApprovalStepRejectRequest request) {
 		ApprovalStep firstStepApproval = approvalStepRepository.findByIdAndMemberIdAndStep(approvalStepId,
 				memberId, STEP1)
-			.orElseThrow(() -> new IllegalArgumentException("해당 1차 결재 목록이 없습니다."));
+			.orElseThrow(() -> new NotFoundException(NotFoundErrorCode.NOT_FOUND_FIRST_APPROVAL_STEP));
 
 		firstStepApproval.validateRejectable();
 
 		ApprovalStep secondStepApproval = approvalStepRepository.findByVacationRequestIdAndStep(
 				firstStepApproval.getVacationRequestId(), STEP2)
-			.orElseThrow(() -> new IllegalArgumentException("해당 2차 결재 목록이 없습니다."));
+			.orElseThrow(() -> new NotFoundException(NotFoundErrorCode.NOT_FOUND_SECOND_APPROVAL_STEP));
 
 		firstStepApproval.reject(request.reason());
 		secondStepApproval.reject();
@@ -110,14 +112,14 @@ public class ApprovalStepService {    // todo : 비즈니스 로직 분리 또�
 	public void approveSecondStep(Long approvalStepId, Long memberId) {
 		ApprovalStep findApprovalStep = approvalStepRepository.findByIdAndMemberIdAndStep(approvalStepId,
 				memberId, STEP2)
-			.orElseThrow(() -> new IllegalArgumentException("해당 2차 결재 목록이 없습니다."));
+			.orElseThrow(() -> new NotFoundException(NotFoundErrorCode.NOT_FOUND_SECOND_APPROVAL_STEP));
 
 		findApprovalStep.validateApprovable();
 
 		VacationInfo findVacationInfo = vacationInfoRepository.findByMemberIdAndVacationType(
 				findApprovalStep.getVacationMemberId(),
 				findApprovalStep.getVacationCode())
-			.orElseThrow(() -> new IllegalArgumentException("해당 휴가 유형 정보가 없습니다."));
+			.orElseThrow(() -> new NotFoundException(NotFoundErrorCode.NOT_FOUND_VACATION_INFO));
 
 		double count = findApprovalStep.isHalfDay() ? 0.5 : findApprovalStep.calcVacationDays();
 		if (findVacationInfo.canUseVacation(count)) {
@@ -128,13 +130,13 @@ public class ApprovalStepService {    // todo : 비즈니스 로직 분리 또�
 			findApprovalStep.cancel();
 			findApprovalStep.cancelVacation();
 
-			// throw new IllegalArgumentException("잔여 연차 부족으로 취소되었습니다.");
+			// throw new 예외("잔여 연차 부족으로 취소되었습니다.");
 			/*
 				todo
 				? : 예외를 터트리면 롤백됨.
-				1. 해당 예외는 트랜잭션에서 제외 시키는 방법
-				2. 예외처리를 하지말고, 해당 응답을 void가 아닌 상태, 메시지를 반환해주는 방법
-					(성공이면 상태 + 휴가 결재 완료, 실패면 실패 + 잔여 연차 부족 ~~)
+				1. 예외 터트리고 해당 예외는 트랜잭션에서 제외 시키는 방법
+				2. 예외처리를 하지말고, 응답을 void가 아닌 상태, dto를 반환해주는 방법
+					(성공이면 상태 + "휴가 결재 완료", 실패면 실패 + "잔여 연차 부족 ~~")
 			 */
 		}
 
@@ -144,7 +146,7 @@ public class ApprovalStepService {    // todo : 비즈니스 로직 분리 또�
 	public void rejectSecondStep(Long approvalStepId, Long memberId, ApprovalStepRejectRequest request) {
 		ApprovalStep findApprovalStep = approvalStepRepository.findByIdAndMemberIdAndStep(approvalStepId,
 				memberId, STEP2)
-			.orElseThrow(() -> new IllegalArgumentException("해당 2차 결재 목록이 없습니다."));
+			.orElseThrow(() -> new NotFoundException(NotFoundErrorCode.NOT_FOUND_SECOND_APPROVAL_STEP));
 
 		findApprovalStep.validateRejectable();
 		findApprovalStep.reject(request.reason());
@@ -155,9 +157,9 @@ public class ApprovalStepService {    // todo : 비즈니스 로직 분리 또�
 	// 휴가 신청 시 호출되어, 해당 멤버의 결재 단계 생성
 	public void saveApprovalStep(Long firstApproverId, Long secondApproverId, VacationRequest vacationRequest) {
 		Member findFirstMember = memberRepository.findById(firstApproverId)
-			.orElseThrow(() -> new IllegalArgumentException("해당 멤버가 존재하지 않습니다."));
+			.orElseThrow(() -> new NotFoundException(NotFoundErrorCode.NOT_FOUND_MEMBER));
 		Member findSecondMember = memberRepository.findById(secondApproverId)
-			.orElseThrow(() -> new IllegalArgumentException("해당 멤버가 존재하지 않습니다."));
+			.orElseThrow(() -> new NotFoundException(NotFoundErrorCode.NOT_FOUND_MEMBER));
 
 		approvalStepRepository.save(ApprovalStepMapper.toEntity(findFirstMember, vacationRequest, STEP1));
 		approvalStepRepository.save(ApprovalStepMapper.toEntity(findSecondMember, vacationRequest, STEP2));

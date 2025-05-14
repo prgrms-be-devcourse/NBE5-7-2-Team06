@@ -8,7 +8,12 @@ public enum NotFoundErrorCode implements ErrorCode {
 
 	NOT_FOUND_DEPT("부서 정보를 찾을 수 없습니다."),
 	NOT_FOUND_POSITION("직위 정보를 찾을 수 없습니다."),
-	NOT_FOUND_EMAIL("이메일 정보를 찾을 수 없습니다.");
+	NOT_FOUND_EMAIL("이메일 정보를 찾을 수 없습니다."),
+	NOT_FOUND_MEMBER("멤버 정보를 찾을 수 없습니다."),
+
+	NOT_FOUND_FIRST_APPROVAL_STEP("1차 결재 정보를 찾을 수 없습니다."),
+	NOT_FOUND_SECOND_APPROVAL_STEP("2차 결재 정보를 찾을 수 없습니다."),
+	NOT_FOUND_VACATION_INFO("휴가 정보를 찾을 수 없습니다.");
 
 	private final String message;
 	private final HttpStatus httpStatus = HttpStatus.NOT_FOUND;

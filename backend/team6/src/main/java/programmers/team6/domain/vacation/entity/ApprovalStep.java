@@ -16,6 +16,8 @@ import lombok.NoArgsConstructor;
 import programmers.team6.domain.member.entity.Member;
 import programmers.team6.domain.vacation.enums.ApprovalStatus;
 import programmers.team6.global.entity.BaseEntity;
+import programmers.team6.global.exception.code.BadRequestErrorCode;
+import programmers.team6.global.exception.customException.BadRequestException;
 
 @Entity
 @Getter
@@ -99,13 +101,13 @@ public class ApprovalStep extends BaseEntity {
 
 	public void validateApprovable() {
 		if (this.approvalStatus != ApprovalStatus.PENDING) {
-			throw new IllegalArgumentException("해당 결재를 승인할 수 없습니다.");
+			throw new BadRequestException(BadRequestErrorCode.BAD_REQUEST_APPROVE);
 		}
 	}
 
 	public void validateRejectable() {
 		if (this.approvalStatus != ApprovalStatus.PENDING) {
-			throw new IllegalArgumentException("해당 결재를 반려할 수 없습니다.");
+			throw new BadRequestException(BadRequestErrorCode.BAD_REQUEST_REJECT);
 		}
 	}
 
