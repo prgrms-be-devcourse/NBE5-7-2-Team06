@@ -2,8 +2,6 @@ package programmers.team6.domain.vacation.entity;
 
 import java.time.LocalDateTime;
 
-import jakarta.persistence.*;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -56,7 +54,7 @@ public class VacationRequest extends BaseEntity {
 	private Integer version;
 
 	public VacationRequest(Member member, LocalDateTime from, LocalDateTime to, String reason, Code type,
-		Integer version)
+		Integer version) {
 		this.member = member;
 		this.from = from;
 		this.to = to;

@@ -38,6 +38,10 @@ public class VacationInfo extends BaseEntity {
 	@Version
 	private int version;
 
+	public VacationInfo(double totalCount, String vacationType, Long memberId) {
+		this(totalCount, 0, vacationType, memberId);
+	}
+
 	public VacationInfo(double totalCount, double useCount, String vacationType, Long memberId) {
 		this.totalCount = totalCount;
 		this.useCount = useCount;

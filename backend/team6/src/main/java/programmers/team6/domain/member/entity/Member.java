@@ -63,4 +63,18 @@ public class Member extends BaseEntity {
 		this.joinDate = joinDate;
 		this.role = role;
 	}
+
+	public void approve() {
+		if (this.role != Role.PENDING) {
+			throw new IllegalArgumentException("승인 대기 상태가 아닌 멤버는 권한을 변경할 수 없습니다.");
+		}
+		this.role = Role.USER;
+	}
+
+	public void validateDeletable() {
+		if (this.role != Role.PENDING) {
+			throw new IllegalArgumentException("해당 멤버는 승인된 멤버이므로 삭제할 수 없습니다.");
+		}
+	}
+
 }

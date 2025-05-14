@@ -63,8 +63,8 @@ class VacationInfoServiceTest {
 	@Test
 	void 휴가총합수정테스트() {
 		VacationInfoService service = new VacationInfoService(repository, factory, null, new VacationGrantRuleFinder());
-		VacationInfoUpdateTotalCountRequest vacationInfoUpdateTotalCountRequest1 = createVacationDto(1, 12, "test1", 0);
-		VacationInfoUpdateTotalCountRequest vacationInfoUpdateTotalCountRequest2 = createVacationDto(2, 13, "test2", 0);
+		VacationInfoUpdateTotalCountRequest vacationInfoUpdateTotalCountRequest1 = createVacationDto(1, 12, "01", 0);
+		VacationInfoUpdateTotalCountRequest vacationInfoUpdateTotalCountRequest2 = createVacationDto(2, 13, "02", 0);
 		VacationInfoUpdateTotalCountRequests request = createUpdateTotalCountRequest(
 			vacationInfoUpdateTotalCountRequest1, vacationInfoUpdateTotalCountRequest2);
 		VacationInfo vacationInfo1 = createVacationInfo(vacationInfoUpdateTotalCountRequest1,

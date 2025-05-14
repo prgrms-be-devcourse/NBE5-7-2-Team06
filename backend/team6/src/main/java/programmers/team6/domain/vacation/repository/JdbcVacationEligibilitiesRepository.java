@@ -47,7 +47,7 @@ public class JdbcVacationEligibilitiesRepository {
 			@Override
 			public void setValues(PreparedStatement ps, int i) throws SQLException {
 				VacationGrantInfo vacationGrantInfo = eligibilities.get(i);
-				ps.setInt(1, vacationGrantInfo.totalCount());
+				ps.setDouble(1, vacationGrantInfo.totalCount());
 				ps.setInt(2, vacationGrantInfo.vacationInfoId());
 				ps.setInt(3, vacationGrantInfo.version());
 			}
