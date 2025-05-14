@@ -15,26 +15,21 @@ import programmers.team6.global.entity.BaseEntity;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter
 public class VacationInfo extends BaseEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Getter
 	private int vacationId;
 
-	@Getter
 	private double totalCount;
 
-	@Getter
 	private double useCount;
 
-	@Getter
 	private String vacationType;
 
-	@Getter
 	private Long memberId;
 
-	@Getter
 	@Version
 	private int version;
 
@@ -51,14 +46,18 @@ public class VacationInfo extends BaseEntity {
 	}
 
 	@CheckReturnValue
-	public VacationInfoUpdateResult updateTotalCount(Integer version, double totalCount) {
-		if (!isSameVersion(version)) {
-			return VacationInfoUpdateResult.MISS_VERSION;
-		}
+	public VacationInfoUpdateResult updateTotalCount(double totalCount) {
 		if (isOverUseCount(totalCount)) {
 			return VacationInfoUpdateResult.MISS_RULES;
 		}
 		this.totalCount = totalCount;
+		return VacationInfoUpdateResult.SUCCESS;
+	}
+
+	@CheckReturnValue
+	public VacationInfoUpdateResult init(double totalCount) {
+		this.totalCount = totalCount;
+		this.useCount = 0;
 		return VacationInfoUpdateResult.SUCCESS;
 	}
 
