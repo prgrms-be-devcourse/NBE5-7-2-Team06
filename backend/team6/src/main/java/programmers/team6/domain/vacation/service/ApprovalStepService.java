@@ -133,7 +133,7 @@ public class ApprovalStepService {    // todo : 비즈니스 로직 분리 또�
 
 		VacationInfo findVacationInfo = vacationInfoRepository.findByMemberIdAndVacationType(
 				findApprovalStep.getVacationRequest().getMember().getId(),
-				findApprovalStep.getVacationRequest().getType().getName())
+				findApprovalStep.getVacationRequest().getType().getCode())
 			.orElseThrow(() -> new IllegalArgumentException("해당 휴가 유형 정보가 없습니다."));
 
 		int count = (int)ChronoUnit.DAYS.between(findApprovalStep.getVacationRequest().getFrom(),
