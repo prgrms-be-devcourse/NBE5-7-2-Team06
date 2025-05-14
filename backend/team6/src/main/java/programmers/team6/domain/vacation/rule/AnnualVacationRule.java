@@ -44,7 +44,7 @@ public final class AnnualVacationRule {
 	public VacationGrantInfo toGrantInfo(LocalDate now, VacationGrantEligibility vacationGrantEligibility) {
 		int yearsOfService = calcYearsOfService(now, vacationGrantEligibility.joinDateAsLocalDate());
 		return new VacationGrantInfo(vacationGrantEligibility.id(),
-			vacationGrantEligibility.vacationCount() + calcIncreaseDays(yearsOfService),
+			(int)vacationGrantEligibility.vacationCount() + calcIncreaseDays(yearsOfService),
 			vacationGrantEligibility.version());
 	}
 
