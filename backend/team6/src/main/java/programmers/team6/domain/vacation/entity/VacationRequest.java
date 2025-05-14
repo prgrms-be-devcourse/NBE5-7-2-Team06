@@ -1,7 +1,18 @@
 package programmers.team6.domain.vacation.entity;
 
-import java.time.LocalDate;
-import jakarta.persistence.*;
+import java.time.LocalDateTime;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Version;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -25,10 +36,10 @@ public class VacationRequest extends BaseEntity {
 	private Member member;
 
 	@Column(name = "from_date", nullable = false)
-	private LocalDate from;
+	private LocalDateTime from;
 
 	@Column(name = "to_date", nullable = false)
-	private LocalDate to;
+	private LocalDateTime to;
 
 	private String reason;
 
@@ -42,7 +53,8 @@ public class VacationRequest extends BaseEntity {
 	@Enumerated(value = EnumType.STRING)
 	private VacationRequestStatus status;
 
-	public VacationRequest(Member member, LocalDate from, LocalDate to, String reason, Code type, Integer version,
+	public VacationRequest(Member member, LocalDateTime from, LocalDateTime to, String reason, Code type,
+		Integer version,
 		VacationRequestStatus status) {
 		this.member = member;
 		this.from = from;
@@ -53,7 +65,7 @@ public class VacationRequest extends BaseEntity {
 		this.status = VacationRequestStatus.IN_PROGRESS;
 	}
 
-	public void update(Code type, LocalDate from, LocalDate to, VacationRequestStatus status, String reason) {
+	public void update(Code type, LocalDateTime from, LocalDateTime to, VacationRequestStatus status, String reason) {
 		this.type = type;
 		this.from = from;
 		this.to = to;
