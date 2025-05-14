@@ -30,18 +30,24 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
 		FilterChain filterChain) throws ServletException, IOException {
 
+		String uri = request.getRequestURI();
+		if (uri.startsWith("/auth")) {
+			filterChain.doFilter(request, response);
+			return;
+		}
+
 		String token = jwtTokenProvider.extractToken(request);
 
-		if (token != null && jwtTokenProvider.validate(token)) {
+		jwtTokenProvider.validate(token);
 
-			TokenBody tokenbody = jwtTokenProvider.parseClaims(token);
+		TokenBody tokenbody = jwtTokenProvider.parseClaims(token);
 
-			Authentication auth = new UsernamePasswordAuthenticationToken(
-				tokenbody, null, List.of(new SimpleGrantedAuthority(tokenbody.role().toString()))
-			);
+		Authentication auth = new UsernamePasswordAuthenticationToken(
+			tokenbody, null, List.of(new SimpleGrantedAuthority(tokenbody.role().toString()))
+		);
 
-			SecurityContextHolder.getContext().setAuthentication(auth);
-		}
+		SecurityContextHolder.getContext().setAuthentication(auth);
+
 		filterChain.doFilter(request, response);
 	}
 }
