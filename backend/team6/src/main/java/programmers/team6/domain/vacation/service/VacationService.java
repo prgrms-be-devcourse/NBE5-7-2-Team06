@@ -7,8 +7,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import programmers.team6.domain.member.entity.Code;
 import programmers.team6.domain.member.entity.Dept;
@@ -24,7 +24,7 @@ import programmers.team6.domain.vacation.dto.VacationUpdateResponseDto;
 import programmers.team6.domain.vacation.entity.ApprovalStep;
 import programmers.team6.domain.vacation.entity.VacationInfo;
 import programmers.team6.domain.vacation.entity.VacationRequest;
-import programmers.team6.domain.vacation.enums.ApprovalStatus;
+import programmers.team6.domain.vacation.enums.VacationRequestStatus;
 import programmers.team6.domain.vacation.repository.ApprovalStepRepository;
 import programmers.team6.domain.vacation.repository.VacationRepository;
 import programmers.team6.domain.vacation.repository.VacationRequestRepository;
@@ -68,14 +68,15 @@ public class VacationService {
 			.orElseThrow(() -> new RuntimeException("잘못된 휴가 유형입니다."));
 
 		// 휴가 요청 상태 코드 (기본 대기 상태)
-		ApprovalStatus status = ApprovalStatus.PENDING;
+		VacationRequestStatus status = VacationRequestStatus.IN_PROGRESS;
 
 		// 휴가 요청 생성
 		VacationRequest vacationRequest = vacationMapper.toVacationRequest(requestDto, vacationType, status, requester);
 		vacationRequestRepository.save(vacationRequest);
 
 		// 결재 단계 생성
-		ApprovalStep approvalStep = vacationMapper.toApprovalStep(approver, vacationRequest, 1, ApprovalStatus.PENDING);
+		ApprovalStep approvalStep = vacationMapper.toApprovalStep(approver, vacationRequest, 1,
+			VacationRequestStatus.IN_PROGRESS);
 		approvalStepRepository.save(approvalStep);
 
 		// 응답 DTO 생성
@@ -149,7 +150,8 @@ public class VacationService {
 		vacationRequest.update(requestDto.getFrom(), requestDto.getTo(), requestDto.getReason(), vacationType);
 
 		// 결재자 정보 조회
-		ApprovalStep approvalStep = approvalStepRepository.findFirstByVacationRequestOrderByStepAsc(vacationRequest)
+		ApprovalStep approvalStep = approvalStepRepository.findFirstByVacationRequestOrderByStepAsc(
+				vacationRequest)
 			.orElseThrow(() -> new RuntimeException("결재 단계 정보를 찾을 수 없습니다."));
 
 		// 응답 DTO 생성
@@ -172,7 +174,7 @@ public class VacationService {
 			.orElseThrow(() -> new RuntimeException("휴가 신청 정보를 찾을 수 없습니다."));
 
 		// 이미 취소된 상태인지 확인
-		if (vacationRequest.getStatus() == ApprovalStatus.CANCELED) {
+		if (vacationRequest.getStatus() == VacationRequestStatus.CANCELED) {
 			throw new IllegalStateException("이미 취소된 휴가 신청입니다.");
 		}
 

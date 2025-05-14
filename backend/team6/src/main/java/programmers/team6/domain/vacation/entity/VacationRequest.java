@@ -19,7 +19,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import programmers.team6.domain.member.entity.Code;
 import programmers.team6.domain.member.entity.Member;
-import programmers.team6.domain.vacation.enums.ApprovalStatus;
+import programmers.team6.domain.vacation.enums.VacationRequestStatus;
 import programmers.team6.global.entity.BaseEntity;
 
 @Entity
@@ -44,13 +44,9 @@ public class VacationRequest extends BaseEntity {
 	@JoinColumn(name = "type_code", nullable = false)
 	private Code type;
 
-	// @ManyToOne(fetch = FetchType.LAZY)
-	// @JoinColumn(name = "status_code", nullable = false)
-	// private Code status;
-
 	@Column(name = "status", nullable = false)
 	@Enumerated(EnumType.STRING)
-	private ApprovalStatus status;
+	private VacationRequestStatus status;
 
 	// 추가: 휴가 신청자
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -60,7 +56,7 @@ public class VacationRequest extends BaseEntity {
 	private Integer version;
 
 	@Builder
-	public VacationRequest(LocalDateTime from, LocalDateTime to, String reason, Code type, ApprovalStatus status,
+	public VacationRequest(LocalDateTime from, LocalDateTime to, String reason, Code type, VacationRequestStatus status,
 		Member requester) {
 		this.from = from;
 		this.to = to;
@@ -73,8 +69,8 @@ public class VacationRequest extends BaseEntity {
 	// 휴가 요청 정보 수정
 	public void update(LocalDateTime from, LocalDateTime to, String reason, Code type) {
 		// 대기 중인 상태만 수정 가능
-		if (this.status != ApprovalStatus.PENDING) {
-			throw new IllegalStateException("대기 중인 휴가 요청만 수정할 수 있습니다.");
+		if (this.status != VacationRequestStatus.IN_PROGRESS) {
+			throw new IllegalStateException("진행 중인 휴가 요청만 수정할 수 있습니다.");
 		}
 
 		this.from = from;
@@ -85,20 +81,31 @@ public class VacationRequest extends BaseEntity {
 
 	// 현재 요청자가 수정 권한을 가지고 있는지 확인
 	public boolean canUpdate(Long memberId) {
-		return this.requester.getId().equals(memberId) && this.status == ApprovalStatus.PENDING;
+		return this.requester.getId().equals(memberId) && this.status == VacationRequestStatus.IN_PROGRESS;
 	}
 
 	// 휴가 요청 취소
 	public void cancel() {
-		if (this.status != ApprovalStatus.PENDING) {
-			throw new IllegalStateException("대기 중인 휴가 요청만 취소할 수 있습니다.");
+		if (this.status != VacationRequestStatus.IN_PROGRESS) {
+			throw new IllegalStateException("진행 중인 휴가 요청만 취소할 수 있습니다.");
 		}
 
-		this.status = ApprovalStatus.CANCELED;
+		this.status = VacationRequestStatus.CANCELED;
 	}
 
 	// 현재 요청자가 취소 권한을 가지고 있는지 학인
 	public boolean canCancel(Long memberId) {
-		return this.requester.getId().equals(memberId) && this.status == ApprovalStatus.PENDING;
+		return this.requester.getId().equals(memberId) && this.status == VacationRequestStatus.IN_PROGRESS;
 	}
+
+	// 상태 검사 (취소)
+	private void validateCanBeCanceled() {
+		if (this.status == VacationRequestStatus.CANCELED) {
+			throw new IllegalStateException("이미 취소된 휴가 신청입니다.");
+		}
+		if (this.status != VacationRequestStatus.IN_PROGRESS) {
+			throw new IllegalStateException("진행 중인 휴가 요청만 취소할 수 있습니다.");
+		}
+	}
+
 }

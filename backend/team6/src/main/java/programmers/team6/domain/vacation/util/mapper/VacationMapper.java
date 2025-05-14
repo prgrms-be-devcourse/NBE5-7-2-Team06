@@ -15,7 +15,7 @@ import programmers.team6.domain.vacation.dto.VacationUpdateResponseDto;
 import programmers.team6.domain.vacation.entity.ApprovalStep;
 import programmers.team6.domain.vacation.entity.VacationInfo;
 import programmers.team6.domain.vacation.entity.VacationRequest;
-import programmers.team6.domain.vacation.enums.ApprovalStatus;
+import programmers.team6.domain.vacation.enums.VacationRequestStatus;
 
 @Component
 public class VacationMapper {
@@ -30,7 +30,7 @@ public class VacationMapper {
 
 	// VacationCreateRequestDto → VacationRequest
 	public VacationRequest toVacationRequest(VacationCreateRequestDto requestDto, Code vacationType,
-		ApprovalStatus status, Member requester) {
+		VacationRequestStatus status, Member requester) {
 		return VacationRequest.builder()
 			.from(requestDto.getFrom())
 			.to(requestDto.getTo())
@@ -43,7 +43,7 @@ public class VacationMapper {
 
 	// 매개변수 → ApprovalStep
 	public ApprovalStep toApprovalStep(Member approver, VacationRequest vacationRequest, int step,
-		ApprovalStatus status) {
+		VacationRequestStatus status) {
 		return ApprovalStep.builder()
 			.member(approver)
 			.vacationRequest(vacationRequest)
@@ -56,7 +56,7 @@ public class VacationMapper {
 	public VacationCreateResponseDto toVacationCreateResponseDto(
 		VacationRequest vacationRequest,
 		String vacationTypeName,
-		ApprovalStatus approvalStatus,
+		VacationRequestStatus vacationRequestStatus,
 		String approverName) {
 		return VacationCreateResponseDto.builder()
 			.requestId(vacationRequest.getId())
@@ -64,7 +64,7 @@ public class VacationMapper {
 			.to(vacationRequest.getTo())
 			.reason(vacationRequest.getReason())
 			.vacationType(vacationTypeName)
-			.approvalStatus(approvalStatus.name())
+			.approvalStatus(vacationRequestStatus.name())
 			.approverName(approverName)
 			.createdAt(vacationRequest.getCreatedAt())
 			.updatedAt(vacationRequest.getUpdatedAt())

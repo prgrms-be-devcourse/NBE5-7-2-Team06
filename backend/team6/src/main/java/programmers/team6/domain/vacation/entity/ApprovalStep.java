@@ -15,7 +15,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import programmers.team6.domain.member.entity.Member;
-import programmers.team6.domain.vacation.enums.ApprovalStatus;
+import programmers.team6.domain.vacation.enums.VacationRequestStatus;
 
 @Entity
 @Getter
@@ -37,13 +37,13 @@ public class ApprovalStep {
 
 	@Column(name = "approval_status", nullable = false)
 	@Enumerated(EnumType.STRING)
-	private ApprovalStatus status;
+	private VacationRequestStatus status;
 
 	private String reason;
 
 	@Builder
 	public ApprovalStep(Member member, VacationRequest vacationRequest, int step,
-		ApprovalStatus status, String reason) {
+		VacationRequestStatus status, String reason) {
 		this.member = member;
 		this.vacationRequest = vacationRequest;
 		this.step = step;
