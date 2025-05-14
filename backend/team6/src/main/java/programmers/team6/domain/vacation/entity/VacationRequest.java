@@ -1,6 +1,8 @@
 package programmers.team6.domain.vacation.entity;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
+
+import jakarta.persistence.*;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -36,10 +38,10 @@ public class VacationRequest extends BaseEntity {
 	private Member member;
 
 	@Column(name = "from_date", nullable = false)
-	private LocalDate from;
+	private LocalDateTime from;
 
 	@Column(name = "to_date", nullable = false)
-	private LocalDate to;
+	private LocalDateTime to;
 
 	private String reason;
 
@@ -53,8 +55,8 @@ public class VacationRequest extends BaseEntity {
 	@Version
 	private Integer version;
 
-	public VacationRequest(Member member, LocalDate from, LocalDate to, String reason, Code type, Integer version,
-		VacationRequestStatus status) {
+	public VacationRequest(Member member, LocalDateTime from, LocalDateTime to, String reason, Code type,
+		Integer version)
 		this.member = member;
 		this.from = from;
 		this.to = to;
@@ -64,7 +66,7 @@ public class VacationRequest extends BaseEntity {
 		this.status = VacationRequestStatus.IN_PROGRESS;
 	}
 
-	public void update(Code type, LocalDate from, LocalDate to, VacationRequestStatus status, String reason) {
+	public void update(Code type, LocalDateTime from, LocalDateTime to, VacationRequestStatus status, String reason) {
 		this.type = type;
 		this.from = from;
 		this.to = to;
