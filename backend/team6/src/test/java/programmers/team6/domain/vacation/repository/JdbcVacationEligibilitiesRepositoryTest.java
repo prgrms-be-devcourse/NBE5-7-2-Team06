@@ -132,8 +132,8 @@ class JdbcVacationEligibilitiesRepositoryTest {
 	}
 
 	private record TestVacationInfo(
-		int totalCount,
-		int useCount,
+		double totalCount,
+		double useCount,
 		int version,
 		int memberId
 	) {
