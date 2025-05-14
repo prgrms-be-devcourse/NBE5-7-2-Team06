@@ -15,26 +15,21 @@ import programmers.team6.global.entity.BaseEntity;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter
 public class VacationInfo extends BaseEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Getter
 	private int vacationId;
 
-	@Getter
 	private int totalCount;
 
-	@Getter
 	private int useCount;
 
-	@Getter
 	private String vacationType;
 
-	@Getter
 	private Long memberId;
 
-	@Getter
 	@Version
 	private int version;
 

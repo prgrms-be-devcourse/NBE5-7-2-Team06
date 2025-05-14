@@ -56,6 +56,14 @@ public class CriteriaCustomPredicateBuilder<T> {
 		return this;
 	}
 
+	public CriteriaCustomPredicateBuilder<T> applyNonEqualFilter(From<T, ?> root, Object conditionValue,
+		SingularAttribute<?, ?>... mappedFields) {
+		if (isProvided(conditionValue)) {
+			this.predicates.add(cb.notEqual(CriteriaUtils.searchPath(root, mappedFields), conditionValue));
+		}
+		return this;
+	}
+
 	public <X, A, B> CriteriaCustomPredicateBuilder<T> applyEqualFilter(From<X, A> root,
 		SingularAttribute<? super A, ?> mappedField,
 		From<X, B> anotherRoot, SingularAttribute<? super B, ?> mappedAnotherField) {
