@@ -2,6 +2,8 @@ package programmers.team6.domain.member.repository;
 
 import java.util.List;
 
+import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -15,4 +17,5 @@ public interface DeptRepository extends JpaRepository<Dept, Long> {
 		  FROM Dept d
 		""")
 	List<DeptDropdownResponse> findAllDept();
+	Optional<Dept> findByDeptName(String deptName);
 }

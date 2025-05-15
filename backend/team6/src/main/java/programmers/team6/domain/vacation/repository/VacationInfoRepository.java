@@ -39,5 +39,20 @@ public interface VacationInfoRepository extends JpaRepository<VacationInfo, Inte
 
 	List<VacationInfo> findAllByMemberId(Long memberId);
 
+	List<VacationInfo> findAllByMemberIdIn(List<Long> memberIds);
+
+	// 특정 member_id에 대해서만 최신 데이터를 가져오고 싶다면 다음과 같이 WHERE 절을 추가할 수 있습니다.
+	@Query(value = "SELECT * "
+		+ "FROM "
+		+ "("
+		+ "SELECT *, RANK() OVER (PARTITION BY member_id, vacation_type ORDER BY created_at DESC) AS ranking "
+		+ "FROM vacation_info WHERE member_id in :memberIds"
+		+ ") AS ranked_vacation "
+		+ "WHERE ranking = 1 "
+		, nativeQuery = true)
+	List<VacationInfo> findLatestByMemberIdsAndVacationType(List<Long> memberIds);
+
 	List<VacationInfo> findAllByVacationIdIn(List<Integer> ids);
+
+	List<VacationInfo> findByMemberIdIn(List<Long> memberIds);
 }

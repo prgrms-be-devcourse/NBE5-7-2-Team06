@@ -34,7 +34,7 @@ public class AuthController {
 	private final AuthService authService;
 
 	@PostMapping("/signup")
-	public ResponseEntity<Void> signUp(@RequestBody @Valid MemberSignUpRequest memberSignUpRequest) {
+	public ResponseEntity<Void> signUp(@RequestBody MemberSignUpRequest memberSignUpRequest) {
 
 		authService.signUp(memberSignUpRequest);
 
@@ -44,7 +44,8 @@ public class AuthController {
 	@GetMapping("/email-duplicate-check")
 	public ResponseEntity<Map<String, Boolean>> isEmailDuplicated(@RequestParam String email) {
 
-		boolean isEmailDuplicated = authService.isEmailDuplicated(email);
+		boolean isEmailDuplicated = authService.isExistsByEmail(email);
+
 		return ResponseEntity.ok(Map.of("isEmailDuplicated", isEmailDuplicated));
 	}
 
@@ -56,27 +57,21 @@ public class AuthController {
 
 		String refreshToken = loginResponse.refreshToken();
 
-		ResponseCookie refreshCookie = ResponseCookie.from("refreshToken", refreshToken)
-			.httpOnly(true)
-			.secure(true)
-			.path("/")
-			.sameSite("Strict")
-			.maxAge(JwtUtils.calculateTtlMillis(loginResponse.refreshTokenExpiresIn()))
-			.build();
-
-		response.setHeader("Set-Cookie", refreshCookie.toString());
+		JwtUtils.addRefreshTokenCookie(response, refreshToken, loginResponse.refreshTokenExpiresIn());
 
 		return ResponseEntity.ok(Map.of("token", loginResponse.authTokenResponse()));
 	}
 
 	@PostMapping("/reissue")
-	public ResponseEntity<TokenPairWithExpiration> refresh(
-		@RequestBody @Valid RefreshTokenRequest refreshTokenRequest) {
-		String refreshToken = refreshTokenRequest.refreshToken();
+	public ResponseEntity<AccessTokenResponse> refresh(
+		@CookieValue("refreshToken") String refreshToken, HttpServletResponse response) {
 
 		TokenPairWithExpiration tokenPair = authService.reissue(refreshToken);
 
-		return ResponseEntity.ok(tokenPair);
+		JwtUtils.addRefreshTokenCookie(response, tokenPair.refreshToken(), tokenPair.refreshTokenExpiresIn());
+
+		return ResponseEntity.ok(
+			new AccessTokenResponse(tokenPair.accessToken(), JwtUtils.toSeconds(tokenPair.accessTokenExpiresIn())));
 	}
 
 	@PostMapping("/logout")

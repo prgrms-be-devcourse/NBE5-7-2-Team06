@@ -29,4 +29,5 @@ public interface CodeRepository extends JpaRepository<Code, Long> {
 		+ "from Code c")
 	Page<CodeReadResponse> findCodePage(Pageable pageable);
 
+	boolean existsByGroupCodeAndCode(String groupCode, String code);
 }
