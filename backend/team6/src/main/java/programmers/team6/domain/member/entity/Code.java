@@ -15,7 +15,6 @@ import programmers.team6.global.entity.BaseEntity;
 
 @Getter
 @Entity
-@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(
 	name = "code",

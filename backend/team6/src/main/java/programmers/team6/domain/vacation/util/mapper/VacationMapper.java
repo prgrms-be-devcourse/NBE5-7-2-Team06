@@ -12,7 +12,6 @@ import programmers.team6.domain.vacation.dto.VacationCreateResponseDto;
 import programmers.team6.domain.vacation.dto.VacationInfoSelectResponseDto;
 import programmers.team6.domain.vacation.dto.VacationListResponseDto;
 import programmers.team6.domain.vacation.dto.VacationUpdateResponseDto;
-import programmers.team6.domain.vacation.entity.ApprovalStep;
 import programmers.team6.domain.vacation.entity.VacationInfo;
 import programmers.team6.domain.vacation.entity.VacationRequest;
 import programmers.team6.domain.vacation.enums.VacationRequestStatus;
@@ -24,7 +23,6 @@ public class VacationMapper {
 		return VacationInfoSelectResponseDto.builder()
 			.totalCount(vacationInfo.getTotalCount())
 			.useCount(vacationInfo.getUseCount())
-			.remainCount(vacationInfo.getRemainCount())
 			.build();
 	}
 
@@ -38,17 +36,6 @@ public class VacationMapper {
 			.type(vacationType)
 			.status(status)
 			.requester(requester)
-			.build();
-	}
-
-	// 매개변수 → ApprovalStep
-	public ApprovalStep toApprovalStep(Member approver, VacationRequest vacationRequest, int step,
-		VacationRequestStatus status) {
-		return ApprovalStep.builder()
-			.member(approver)
-			.vacationRequest(vacationRequest)
-			.step(step)
-			.status(status)
 			.build();
 	}
 

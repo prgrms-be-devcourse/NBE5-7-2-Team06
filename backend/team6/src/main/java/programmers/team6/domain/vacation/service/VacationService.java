@@ -31,6 +31,7 @@ import programmers.team6.domain.vacation.enums.VacationRequestStatus;
 import programmers.team6.domain.vacation.repository.ApprovalStepRepository;
 import programmers.team6.domain.vacation.repository.VacationRepository;
 import programmers.team6.domain.vacation.repository.VacationRequestRepository;
+import programmers.team6.domain.vacation.util.mapper.ApprovalStepMapper;
 import programmers.team6.domain.vacation.util.mapper.VacationMapper;
 
 @Service
@@ -86,15 +87,14 @@ public class VacationService {
 		vacationRequestRepository.save(vacationRequest);
 
 		// 결재 단계 생성
-		ApprovalStep approvalStep = vacationMapper.toApprovalStep(approver, vacationRequest, 1,
-			VacationRequestStatus.IN_PROGRESS);
+		ApprovalStep approvalStep = ApprovalStepMapper.toEntity(approver, vacationRequest, 1);
 		approvalStepRepository.save(approvalStep);
 
 		// 응답 DTO 생성
 		return vacationMapper.toVacationCreateResponseDto(
 			vacationRequest,
 			vacationType.getName(),
-			approvalStep.getStatus(),
+			status,
 			approver.getName()
 		);
 	}

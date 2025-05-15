@@ -6,7 +6,10 @@ import lombok.Getter;
 @Getter
 @Builder
 public class VacationInfoSelectResponseDto {
-	private int totalCount;
-	private int useCount;
-	private int remainCount;
+	private double totalCount;
+	private double useCount;
+
+	public double getRemainCount() {
+		return totalCount - useCount;
+	}
 }
