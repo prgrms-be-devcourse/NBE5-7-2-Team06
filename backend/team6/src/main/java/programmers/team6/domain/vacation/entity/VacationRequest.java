@@ -1,6 +1,7 @@
 package programmers.team6.domain.vacation.entity;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -14,8 +15,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Version;
 import lombok.AccessLevel;
-import lombok.Getter;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import programmers.team6.domain.member.entity.Code;
 import programmers.team6.domain.member.entity.Member;
@@ -150,9 +151,38 @@ public class VacationRequest extends BaseEntity {
 	}
 
 	// 휴가 취소 권한 검증 후 취소 처리
-	public void cancel(Long memberId) {
+	public void validateAndCancel(Long memberId) {
 		validateCancel(memberId);
 		changeStatusToCanceled();
 	}
 
+	public void approve() {
+		updateStatus(VacationRequestStatus.APPROVED);
+	}
+
+	public void reject() {
+		updateStatus(VacationRequestStatus.REJECTED);
+	}
+
+	public void cancel() {
+		updateStatus(VacationRequestStatus.CANCELED);
+	}
+
+	public int calcVacationDays() {
+		return (int)ChronoUnit.DAYS.between(from.toLocalDate(), to.toLocalDate()) + 1;
+	}
+
+	public Long getMemberId() {
+		return this.member.getId();
+	}
+
+	public String getCode() {
+		return this.type.getCode();
+	}
+
+	// todo : code 번호 확정 시 변경 고려
+	public boolean isHalfDay() {
+		return this.type.getName().equals("반차");
+
+	}
 }

@@ -205,7 +205,7 @@ public class VacationService {
 			.orElseThrow(() -> new RuntimeException("휴가 신청 정보를 찾을 수 없습니다."));
 
 		// 휴가 신청 취소
-		vacationRequest.cancel(memberId);
+		vacationRequest.validateAndCancel(memberId);
 
 		return true;
 	}
