@@ -19,7 +19,6 @@ import lombok.RequiredArgsConstructor;
 import programmers.team6.domain.member.entity.Member;
 import programmers.team6.domain.member.repository.MemberSearchRepository;
 import programmers.team6.domain.vacation.dto.MemberVacationInfoSelectResponse;
-import programmers.team6.domain.vacation.dto.VacationInfoUpdateTotalCountRequests;
 import programmers.team6.domain.vacation.dto.VacationInfoUpdateTotalCountRequestsList;
 import programmers.team6.domain.vacation.entity.VacationInfo;
 import programmers.team6.domain.vacation.repository.VacationInfoRepository;
@@ -41,7 +40,7 @@ public class VacationInfoController {
 	public Page<MemberVacationInfoSelectResponse> selectVacationInfos(@PageableDefault(sort = "id") Pageable pageable,
 		@RequestParam(required = false) String name) {
 		Page<Member> members = memberSearchRepository.searchFrom(name, pageable);
-		List<VacationInfo> vacationInfos = vacationInfoRepository.findLatestByMemberIdsAndVacationType(toIds(members));
+		List<VacationInfo> vacationInfos = vacationInfoRepository.findByMemberIdIn(toIds(members));
 		return vacationInfoMapper.toMemberVacationInfoSelectResponsePageFrom(members, vacationInfos);
 	}
 

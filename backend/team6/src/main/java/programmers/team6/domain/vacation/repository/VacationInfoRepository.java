@@ -52,4 +52,7 @@ public interface VacationInfoRepository extends JpaRepository<VacationInfo, Inte
 		, nativeQuery = true)
 	List<VacationInfo> findLatestByMemberIdsAndVacationType(List<Long> memberIds);
 
+	List<VacationInfo> findAllByVacationIdIn(List<Integer> ids);
+
+	List<VacationInfo> findByMemberIdIn(List<Long> memberIds);
 }
