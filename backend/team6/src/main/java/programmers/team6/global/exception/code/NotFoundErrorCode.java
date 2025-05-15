@@ -15,7 +15,8 @@ public enum NotFoundErrorCode implements ErrorCode {
 	NOT_FOUND_CODE("존재하지 않는 코드입니다."),
 	NOT_FOUND_FIRST_APPROVAL_STEP("1차 결재 정보를 찾을 수 없습니다."),
 	NOT_FOUND_SECOND_APPROVAL_STEP("2차 결재 정보를 찾을 수 없습니다."),
-	NOT_FOUND_VACATION_INFO("휴가 정보를 찾을 수 없습니다.");
+	NOT_FOUND_VACATION_INFO("휴가 정보를 찾을 수 없습니다."),
+	NOT_FOUND_DEPT_LEADER("부서장 정보를 찾을 수 없습니다.");
 
 	private final String message;
 	private final HttpStatus httpStatus = HttpStatus.NOT_FOUND;
