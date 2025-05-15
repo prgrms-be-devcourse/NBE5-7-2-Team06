@@ -30,7 +30,7 @@ import programmers.team6.global.exception.customException.NotFoundException;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class ApprovalStepService {    // todo : 비즈니스 로직 분리 또는 엔티티 도메인 메서드로 리팩토링 고려
+public class ApprovalStepService {
 
 	private static final int STEP1 = 1;
 	private static final int STEP2 = 2;
