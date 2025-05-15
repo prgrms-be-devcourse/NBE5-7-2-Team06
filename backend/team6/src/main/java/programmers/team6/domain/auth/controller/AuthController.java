@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.cors.PreFlightRequestHandler;
 
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +31,6 @@ import programmers.team6.domain.auth.util.JwtUtils;
 public class AuthController {
 
 	private final AuthService authService;
-	private final PreFlightRequestHandler preFlightRequestHandler;
 
 	@PostMapping("/signup")
 	public ResponseEntity<Void> signUp(@RequestBody MemberSignUpRequest memberSignUpRequest) {
