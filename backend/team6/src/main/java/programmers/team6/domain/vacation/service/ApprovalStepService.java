@@ -9,7 +9,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import programmers.team6.domain.member.entity.Dept;
 import programmers.team6.domain.member.entity.Member;
+import programmers.team6.domain.member.repository.DeptRepository;
 import programmers.team6.domain.member.repository.MemberRepository;
 import programmers.team6.domain.vacation.dto.ApprovalFirstStepDetailResponse;
 import programmers.team6.domain.vacation.dto.ApprovalFirstStepSelectResponse;
@@ -38,6 +40,7 @@ public class ApprovalStepService {
 	private final ApprovalStepRepository approvalStepRepository;
 	private final MemberRepository memberRepository;
 	private final VacationInfoRepository vacationInfoRepository;
+	private final DeptRepository deptRepository;
 
 	public Page<ApprovalFirstStepSelectResponse> findFirstStepByMemberId(Long memberId, Pageable pageable) {
 		return approvalStepRepository.findFirstStepByMemberId(memberId, STEP1, pageable);
@@ -155,14 +158,12 @@ public class ApprovalStepService {
 	}
 
 	// 휴가 신청 시 호출되어, 해당 멤버의 결재 단계 생성
-	public void saveApprovalStep(Long firstApproverId, Long secondApproverId, VacationRequest vacationRequest) {
-		Member findFirstMember = memberRepository.findById(firstApproverId)
-			.orElseThrow(() -> new NotFoundException(NotFoundErrorCode.NOT_FOUND_MEMBER));
-		Member findSecondMember = memberRepository.findById(secondApproverId)
-			.orElseThrow(() -> new NotFoundException(NotFoundErrorCode.NOT_FOUND_MEMBER));
-
-		approvalStepRepository.save(ApprovalStepMapper.toEntity(findFirstMember, vacationRequest, STEP1));
-		approvalStepRepository.save(ApprovalStepMapper.toEntity(findSecondMember, vacationRequest, STEP2));
+	public void saveApprovalStep(Member firstApprover, VacationRequest vacationRequest) {
+		// todo: 2차 결재자 지정 기능 (시스템상 구현 필요)
+		Dept findDept = deptRepository.findByDeptName("인사팀")
+			.orElseThrow(() -> new NotFoundException(NotFoundErrorCode.NOT_FOUND_DEPT));
+		approvalStepRepository.save(ApprovalStepMapper.toEntity(firstApprover, vacationRequest, STEP1));
+		approvalStepRepository.save(ApprovalStepMapper.toEntity(findDept.getDeptLeader(), vacationRequest, STEP2));
 	}
 
 	// 휴가 요청 취소될 경우, 관련 결재 단계 상태 CANCELED

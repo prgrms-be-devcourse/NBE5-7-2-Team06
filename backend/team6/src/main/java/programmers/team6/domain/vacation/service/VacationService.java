@@ -31,7 +31,6 @@ import programmers.team6.domain.vacation.enums.VacationRequestStatus;
 import programmers.team6.domain.vacation.repository.ApprovalStepRepository;
 import programmers.team6.domain.vacation.repository.VacationRepository;
 import programmers.team6.domain.vacation.repository.VacationRequestRepository;
-import programmers.team6.domain.vacation.util.mapper.ApprovalStepMapper;
 import programmers.team6.domain.vacation.util.mapper.VacationMapper;
 
 @Service
@@ -46,6 +45,8 @@ public class VacationService {
 
 	private final MemberRepository memberRepository;
 	private final CodeRepository codeRepository;
+
+	private final ApprovalStepService approvalStepService;
 
 	// 멤버 ID로 멤버를 조회, 멤버가 존재하지 않으면 예외 발생
 	private Member getMemberById(Long memberId) {
@@ -87,8 +88,7 @@ public class VacationService {
 		vacationRequestRepository.save(vacationRequest);
 
 		// 결재 단계 생성
-		ApprovalStep approvalStep = ApprovalStepMapper.toEntity(approver, vacationRequest, 1);
-		approvalStepRepository.save(approvalStep);
+		approvalStepService.saveApprovalStep(approver, vacationRequest);
 
 		// 응답 DTO 생성
 		return vacationMapper.toVacationCreateResponseDto(
@@ -206,6 +206,9 @@ public class VacationService {
 
 		// 휴가 신청 취소
 		vacationRequest.validateAndCancel(memberId);
+
+		// 1,2차 결재 취소
+		approvalStepService.cancelApprovalStep(vacationRequest.getId());
 
 		return true;
 	}
