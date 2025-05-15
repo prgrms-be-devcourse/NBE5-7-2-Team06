@@ -39,5 +39,5 @@ public interface VacationInfoRepository extends JpaRepository<VacationInfo, Inte
 
 	List<VacationInfo> findAllByMemberId(Long memberId);
 
-	List<VacationInfo> findAllByMemberIdIn(List<Long> memberIds);
+	List<VacationInfo> findAllByVacationIdIn(List<Integer> ids);
 }
