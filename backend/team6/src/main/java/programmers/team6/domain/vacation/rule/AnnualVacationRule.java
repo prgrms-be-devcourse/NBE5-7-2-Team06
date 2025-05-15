@@ -7,8 +7,8 @@ import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
 import programmers.team6.domain.member.entity.Member;
 import programmers.team6.domain.vacation.entity.VacationInfo;
+import programmers.team6.domain.vacation.entity.VacationInfoLog;
 import programmers.team6.domain.vacation.enums.VacationCode;
-import programmers.team6.domain.vacation.enums.VacationInfoUpdateResult;
 import programmers.team6.global.entity.Positive;
 
 @RequiredArgsConstructor
@@ -34,11 +34,9 @@ public final class AnnualVacationRule {
 		return date.minusYears(boundaryYear.toInt());
 	}
 
-	public VacationInfoUpdateResult grant(LocalDate date, Member member, VacationInfo vacationInfo,
-		Positive maxGrantDays) {
+	public VacationInfoLog grant(LocalDate date, Member member, VacationInfo vacationInfo) {
 		int yearsOfService = calcYearsOfService(date, member.getJoinDate().toLocalDate());
-		return vacationInfo.init(
-			Math.min(vacationInfo.getTotalCount() + calcIncreaseDays(yearsOfService), maxGrantDays.toInt()));
+		return vacationInfo.init(vacationInfo.getTotalCount() + calcIncreaseDays(yearsOfService));
 	}
 
 	private int calcIncreaseDays(int yearsOfService) {

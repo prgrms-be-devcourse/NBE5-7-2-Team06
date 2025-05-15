@@ -38,6 +38,7 @@ public class ApprovalStepService {    // todo : 비즈니스 로직 분리 또�
 	private final ApprovalStepRepository approvalStepRepository;
 	private final MemberRepository memberRepository;
 	private final VacationInfoRepository vacationInfoRepository;
+	private final VacationInfoLogPublisher vacationInfoLogPublisher;
 
 	@Transactional(readOnly = true)
 	public Page<ApprovalFirstStepSelectResponse> findFirstStepByMemberId(Long memberId, Pageable pageable) {
@@ -143,7 +144,7 @@ public class ApprovalStepService {    // todo : 비즈니스 로직 분리 또�
 			findApprovalStep.updateStatus(ApprovalStatus.APPROVED);
 
 			findApprovalStep.getVacationRequest().updateStatus(VacationRequestStatus.APPROVED);
-			findVacationInfo.useVacation(count);
+			vacationInfoLogPublisher.publish(findVacationInfo.useVacation(count));
 		} else {
 			findApprovalStep.updateStatus(ApprovalStatus.CANCELED);
 			findApprovalStep.getVacationRequest().updateStatus(VacationRequestStatus.CANCELED);

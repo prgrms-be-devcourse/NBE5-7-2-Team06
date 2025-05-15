@@ -5,7 +5,7 @@ import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
 import programmers.team6.domain.member.entity.Member;
 import programmers.team6.domain.vacation.entity.VacationInfo;
-import programmers.team6.domain.vacation.enums.VacationInfoUpdateResult;
+import programmers.team6.domain.vacation.entity.VacationInfoLog;
 import programmers.team6.global.entity.Positive;
 
 @RequiredArgsConstructor
@@ -27,12 +27,20 @@ public final class AnnualVacationGrantRule implements VacationGrantRule {
 		return annualVacationRule.getAnnualVacationStartJoinDateFrom(date);
 	}
 
-	public VacationInfoUpdateResult grantAnnual(LocalDate date, Member member, VacationInfo vacationInfo) {
-		return annualVacationRule.grant(date, member, vacationInfo, maxGrantDays);
+	public VacationInfoLog grantAnnual(LocalDate date, Member member, VacationInfo vacationInfo) {
+		VacationInfoLog log = annualVacationRule.grant(date, member, vacationInfo);
+		if (maxGrantDays.toInt() < vacationInfo.getTotalCount()) {
+			return vacationInfo.updateTotalCount(maxGrantDays.toInt());
+		}
+		return log;
 	}
 
-	public VacationInfoUpdateResult grantMonthly(VacationInfo vacationInfo) {
-		return monthlyVacationRule.grant(vacationInfo, maxGrantDays);
+	public VacationInfoLog grantMonthly(VacationInfo vacationInfo) {
+		VacationInfoLog log = monthlyVacationRule.grant(vacationInfo);
+		if (maxGrantDays.toInt() < vacationInfo.getTotalCount()) {
+			return vacationInfo.updateTotalCount(maxGrantDays.toInt());
+		}
+		return log;
 	}
 
 	@Override

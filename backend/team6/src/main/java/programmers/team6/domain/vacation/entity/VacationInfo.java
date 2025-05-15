@@ -10,7 +10,6 @@ import jakarta.persistence.Version;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import programmers.team6.domain.vacation.enums.VacationInfoUpdateResult;
 import programmers.team6.global.entity.BaseEntity;
 
 @Entity
@@ -46,35 +45,36 @@ public class VacationInfo extends BaseEntity {
 	}
 
 	@CheckReturnValue
-	public VacationInfoUpdateResult updateTotalCount(double totalCount) {
-		if (isOverUseCount(totalCount)) {
-			return VacationInfoUpdateResult.MISS_RULES;
-		}
-		this.totalCount = totalCount;
-		return VacationInfoUpdateResult.SUCCESS;
+	public VacationInfoLog updateTotalCount(double totalCount) {
+		update(totalCount, this.useCount);
+		return VacationInfoLog.from(this);
 	}
 
 	@CheckReturnValue
-	public VacationInfoUpdateResult init(double totalCount) {
-		this.totalCount = totalCount;
-		this.useCount = 0;
-		return VacationInfoUpdateResult.SUCCESS;
+	public VacationInfoLog init(double totalCount) {
+		update(totalCount, 0);
+		return VacationInfoLog.from(this);
 	}
 
-	private boolean isOverUseCount(double totalCount) {
-		return this.useCount > totalCount;
+	@CheckReturnValue
+	public VacationInfoLog useVacation(int count) {
+		update(totalCount, count);
+		return VacationInfoLog.from(this);
 	}
 
 	public boolean isSameVersion(Integer version) {
 		return this.version == version;
 	}
 
-	public void useVacation(int count) {
-		this.useCount += count;
-	}
-
 	public boolean canUseVacation(int count) {
 		return this.useCount + count <= totalCount;
 	}
 
+	private void update(double totalCount, double useCount) {
+		if (useCount > totalCount) {
+			//TODO : 추후 예외 설정 예정
+			throw new RuntimeException();
+		}
+		this.totalCount = totalCount;
+	}
 }
