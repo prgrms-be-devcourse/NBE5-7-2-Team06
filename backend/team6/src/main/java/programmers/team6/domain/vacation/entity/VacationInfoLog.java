@@ -1,5 +1,7 @@
 package programmers.team6.domain.vacation.entity;
 
+import java.time.LocalDateTime;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -24,11 +26,14 @@ public class VacationInfoLog {
 
 	private Long memberId;
 
+	private LocalDateTime logDate;
+
 	public VacationInfoLog(double totalCount, double useCount, String vacationType, Long memberId) {
 		this.totalCount = totalCount;
 		this.useCount = useCount;
 		this.vacationType = vacationType;
 		this.memberId = memberId;
+		this.logDate = LocalDateTime.now();
 	}
 
 	public static VacationInfoLog from(VacationInfo vacationInfo) {
