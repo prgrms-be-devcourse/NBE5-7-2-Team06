@@ -17,8 +17,8 @@ import programmers.team6.domain.member.enums.Role;
 import programmers.team6.domain.member.repository.MemberRepository;
 import programmers.team6.domain.vacation.dto.VacationInfoUpdateTotalCountRequest;
 import programmers.team6.domain.vacation.dto.VacationInfoUpdateTotalCountRequests;
+import programmers.team6.domain.vacation.dto.VacationInfoUpdateTotalCountRequestsList;
 import programmers.team6.domain.vacation.entity.VacationInfo;
-import programmers.team6.domain.vacation.enums.VacationInfoUpdateResult;
 import programmers.team6.domain.vacation.repository.VacationInfoRepository;
 import programmers.team6.domain.vacation.rule.VacationGrantRuleFinder;
 import programmers.team6.domain.vacation.rule.vacationgranteligiblities.AnnualVacationInfosFactory;
@@ -62,10 +62,9 @@ class VacationInfoServiceTest {
 			vacationInfoUpdateTotalCountRequest1, vacationInfoUpdateTotalCountRequest2);
 		VacationInfo vacationInfo1 = createVacationInfo(vacationInfoUpdateTotalCountRequest1);
 		VacationInfo vacationInfo2 = createVacationInfo(vacationInfoUpdateTotalCountRequest2);
-		long memberId = 1L;
-		when(repository.findAllByMemberId(memberId)).thenReturn(List.of(vacationInfo1, vacationInfo2));
+		when(repository.findAllByVacationIdIn(List.of(1, 2))).thenReturn(List.of(vacationInfo1, vacationInfo2));
 
-		service.updateFrom(memberId, request);
+		service.updateFrom(new VacationInfoUpdateTotalCountRequestsList(List.of(request)));
 
 		assertThat(vacationInfo1.getTotalCount()).isEqualTo(12);
 		assertThat(vacationInfo2.getTotalCount()).isEqualTo(13);
@@ -77,10 +76,10 @@ class VacationInfoServiceTest {
 
 	private VacationInfoUpdateTotalCountRequests createUpdateTotalCountRequest(
 		VacationInfoUpdateTotalCountRequest... vacationInfoUpdateTotalCountRequests) {
-		return new VacationInfoUpdateTotalCountRequests(List.of(vacationInfoUpdateTotalCountRequests));
+		return new VacationInfoUpdateTotalCountRequests(1L, List.of(vacationInfoUpdateTotalCountRequests));
 	}
 
 	private VacationInfo createVacationInfo(VacationInfoUpdateTotalCountRequest infoDto) {
-		return new VacationInfo(infoDto.totalCount(),0,infoDto.type(),1L);
+		return new VacationInfo(infoDto.totalCount(), 0, infoDto.type(), 1L);
 	}
 }

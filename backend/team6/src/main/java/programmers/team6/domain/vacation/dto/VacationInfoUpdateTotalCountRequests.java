@@ -7,7 +7,11 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 
 public record VacationInfoUpdateTotalCountRequests(
-	@NotNull @NotEmpty List<@Valid VacationInfoUpdateTotalCountRequest> vacations) {
+	@NotNull Long memberId, @NotNull @NotEmpty List<@Valid VacationInfoUpdateTotalCountRequest> vacations) {
+
+	public List<Integer> getIds() {
+		return vacations.stream().map(VacationInfoUpdateTotalCountRequest::id).toList();
+	}
 
 	public VacationInfoUpdateTotalCountRequest getTarget(String type) {
 		for (VacationInfoUpdateTotalCountRequest vacation : vacations) {

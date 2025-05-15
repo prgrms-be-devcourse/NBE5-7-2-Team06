@@ -4,21 +4,20 @@ import org.springframework.http.HttpStatus;
 
 import programmers.team6.global.exception.ErrorStatus;
 
-public enum ConflictErrorCode implements ErrorCode {
-
-	CONFLICT_EMAIL("중복된 이메일입니다."),
-	CONFLICT_APPROVAL_STEP("결재 단계 동기화 실패");
+public enum BadRequestErrorCode implements ErrorCode {
+	BAD_REQUEST_APPROVE("해당 결재를 승인할 수 없습니다"),
+	BAD_REQUEST_REJECT("해당 결재를 반려할 수 없습니다");
 
 	private final String message;
-	private final HttpStatus httpStatus = HttpStatus.CONFLICT;
+	private final HttpStatus httpStatus = HttpStatus.BAD_REQUEST;
 
-	ConflictErrorCode(String message) {
+	BadRequestErrorCode(String message) {
 		this.message = message;
 	}
 
 	@Override
 	public ErrorStatus getErrorStatus() {
-		return ErrorStatus.CONFLICT;
+		return ErrorStatus.BAD_REQUEST;
 	}
 
 	@Override
@@ -35,5 +34,4 @@ public enum ConflictErrorCode implements ErrorCode {
 	public String getMessage() {
 		return message;
 	}
-
 }

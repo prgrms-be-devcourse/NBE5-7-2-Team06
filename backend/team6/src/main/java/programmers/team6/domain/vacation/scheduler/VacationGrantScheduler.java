@@ -19,7 +19,6 @@ public class VacationGrantScheduler {
 	@Scheduled(cron = "${schedule.grant-cron}")
 	public void grantJob() {
 		vacationInfoService.grantAnnualEligiblities(LocalDate.now());
-		// vacationInfoService.updateEligiblities(grantEligibilities);
 		log.info("실행");
 	}
 }
