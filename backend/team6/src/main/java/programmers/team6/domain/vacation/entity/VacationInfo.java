@@ -46,20 +46,17 @@ public class VacationInfo extends BaseEntity {
 
 	@CheckReturnValue
 	public VacationInfoLog updateTotalCount(double totalCount) {
-		update(totalCount, this.useCount);
-		return VacationInfoLog.from(this);
+		return update(totalCount, this.useCount);
 	}
 
 	@CheckReturnValue
 	public VacationInfoLog init(double totalCount) {
-		update(totalCount, 0);
-		return VacationInfoLog.from(this);
+		return update(totalCount, 0);
 	}
 
 	@CheckReturnValue
 	public VacationInfoLog useVacation(int count) {
-		update(totalCount, count);
-		return VacationInfoLog.from(this);
+		return update(totalCount, count);
 	}
 
 	public boolean isSameVersion(Integer version) {
@@ -70,11 +67,14 @@ public class VacationInfo extends BaseEntity {
 		return this.useCount + count <= totalCount;
 	}
 
-	private void update(double totalCount, double useCount) {
+	@CheckReturnValue
+	private VacationInfoLog update(double totalCount, double useCount) {
 		if (useCount > totalCount) {
 			//TODO : 추후 예외 설정 예정
 			throw new RuntimeException();
 		}
 		this.totalCount = totalCount;
+		this.useCount = useCount;
+		return VacationInfoLog.from(this);
 	}
 }
