@@ -69,11 +69,11 @@ public class VacationInfo extends BaseEntity {
 		return this.version == version;
 	}
 
-	public void useVacation(int count) {
+	public void useVacation(double count) {
 		this.useCount += count;
 	}
 
-	public boolean canUseVacation(int count) {
+	public boolean canUseVacation(double count) {
 		return this.useCount + count <= totalCount;
 	}
 
