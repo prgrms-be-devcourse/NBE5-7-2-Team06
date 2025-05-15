@@ -86,7 +86,7 @@ public class ApprovalStep extends BaseEntity {
 		updateStatus(ApprovalStatus.CANCELED);
 	}
 
-	public void updateStatus(ApprovalStatus approvalStatus) {
+	private void updateStatus(ApprovalStatus approvalStatus) {
 		this.approvalStatus = approvalStatus;
 	}
 
