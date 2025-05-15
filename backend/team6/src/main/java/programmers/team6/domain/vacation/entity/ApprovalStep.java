@@ -90,15 +90,6 @@ public class ApprovalStep extends BaseEntity {
 		this.approvalStatus = approvalStatus;
 	}
 
-	public void updateStatus(ApprovalStatus approvalStatus, String reason) {
-		this.approvalStatus = approvalStatus;
-		this.reason = reason;
-	}
-
-	public boolean isApprovable() {
-		return this.approvalStatus == ApprovalStatus.PENDING;
-	}
-
 	public void validateApprovable() {
 		if (this.approvalStatus != ApprovalStatus.PENDING) {
 			throw new BadRequestException(BadRequestErrorCode.BAD_REQUEST_APPROVE);
