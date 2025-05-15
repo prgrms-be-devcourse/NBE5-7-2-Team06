@@ -34,7 +34,7 @@ public class AuthController {
 	private final AuthService authService;
 
 	@PostMapping("/signup")
-	public ResponseEntity<Void> signUp(@RequestBody MemberSignUpRequest memberSignUpRequest) {
+	public ResponseEntity<Void> signUp(@RequestBody @Valid MemberSignUpRequest memberSignUpRequest) {
 
 		authService.signUp(memberSignUpRequest);
 
@@ -45,7 +45,6 @@ public class AuthController {
 	public ResponseEntity<Map<String, Boolean>> isEmailDuplicated(@RequestParam String email) {
 
 		boolean isEmailDuplicated = authService.isEmailDuplicated(email);
-
 		return ResponseEntity.ok(Map.of("isEmailDuplicated", isEmailDuplicated));
 	}
 
