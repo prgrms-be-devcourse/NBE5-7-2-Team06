@@ -15,30 +15,29 @@ import programmers.team6.global.entity.BaseEntity;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter
 public class VacationInfo extends BaseEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Getter
 	private int vacationId;
 
-	@Getter
-	private int totalCount;
+	private double totalCount;
 
-	@Getter
-	private int useCount;
+	private double useCount;
 
-	@Getter
 	private String vacationType;
 
-	@Getter
 	private Long memberId;
 
-	@Getter
 	@Version
 	private int version;
 
-	public VacationInfo(int totalCount, int useCount, String vacationType, Long memberId) {
+	public VacationInfo(double totalCount, String vacationType, Long memberId) {
+		this(totalCount, 0, vacationType, memberId);
+	}
+
+	public VacationInfo(double totalCount, double useCount, String vacationType, Long memberId) {
 		this.totalCount = totalCount;
 		this.useCount = useCount;
 		this.vacationType = vacationType;
@@ -47,10 +46,7 @@ public class VacationInfo extends BaseEntity {
 	}
 
 	@CheckReturnValue
-	public VacationInfoUpdateResult updateTotalCount(Integer version, Integer totalCount) {
-		if (!isSameVersion(version)) {
-			return VacationInfoUpdateResult.MISS_VERSION;
-		}
+	public VacationInfoUpdateResult updateTotalCount(double totalCount) {
 		if (isOverUseCount(totalCount)) {
 			return VacationInfoUpdateResult.MISS_RULES;
 		}
@@ -58,11 +54,27 @@ public class VacationInfo extends BaseEntity {
 		return VacationInfoUpdateResult.SUCCESS;
 	}
 
-	private boolean isOverUseCount(int totalCount) {
+	@CheckReturnValue
+	public VacationInfoUpdateResult init(double totalCount) {
+		this.totalCount = totalCount;
+		this.useCount = 0;
+		return VacationInfoUpdateResult.SUCCESS;
+	}
+
+	private boolean isOverUseCount(double totalCount) {
 		return this.useCount > totalCount;
 	}
 
 	public boolean isSameVersion(Integer version) {
 		return this.version == version;
 	}
+
+	public void useVacation(int count) {
+		this.useCount += count;
+	}
+
+	public boolean canUseVacation(int count) {
+		return this.useCount + count <= totalCount;
+	}
+
 }

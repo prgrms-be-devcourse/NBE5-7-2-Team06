@@ -29,7 +29,7 @@ public class Dept extends BaseEntity {
 	@JoinColumn(name = "dept_leader_id")
 	private Member deptLeader;
 
-	@Builder
+	@Builder(toBuilder = true)
 	public Dept(String deptName, Member deptLeader) {
 		this.deptName = deptName;
 		this.deptLeader = deptLeader;
