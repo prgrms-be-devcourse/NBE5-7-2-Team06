@@ -90,6 +90,7 @@ public class ApprovalStep extends BaseEntity {
 		updateStatus(ApprovalStatus.CANCELED);
 	}
 
+	// todo : approve()하고 결합하여 하나의 승인 로직으로 리펙토링
 	public void validateApprovable() {
 		if (this.approvalStatus != ApprovalStatus.PENDING) {
 			throw new BadRequestException(BadRequestErrorCode.BAD_REQUEST_APPROVE);
