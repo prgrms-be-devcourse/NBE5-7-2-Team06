@@ -23,7 +23,7 @@ public class MemberMapper {
 			.dept(dept)
 			.position(position)
 			.joinDate(memberSignUpRequest.joinDate())
-			.role(Role.PENDING)
+			.role(Role.USER)
 			.build();
 
 		member.setMemberInfo(memberInfo);
