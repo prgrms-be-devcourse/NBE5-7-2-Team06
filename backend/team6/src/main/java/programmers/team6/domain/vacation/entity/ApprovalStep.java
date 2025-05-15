@@ -65,6 +65,10 @@ public class ApprovalStep extends BaseEntity {
 		this.reason = reason;
 	}
 
+	private void updateStatus(ApprovalStatus approvalStatus) {
+		this.approvalStatus = approvalStatus;
+	}
+
 	public void approve() {
 		updateStatus(ApprovalStatus.APPROVED);
 	}
@@ -74,8 +78,8 @@ public class ApprovalStep extends BaseEntity {
 	}
 
 	public void reject(String reason) {
-		this.reason = reason;
 		updateStatus(ApprovalStatus.REJECTED);
+		this.reason = reason;
 	}
 
 	public void pending() {
@@ -84,10 +88,6 @@ public class ApprovalStep extends BaseEntity {
 
 	public void cancel() {
 		updateStatus(ApprovalStatus.CANCELED);
-	}
-
-	private void updateStatus(ApprovalStatus approvalStatus) {
-		this.approvalStatus = approvalStatus;
 	}
 
 	public void validateApprovable() {
