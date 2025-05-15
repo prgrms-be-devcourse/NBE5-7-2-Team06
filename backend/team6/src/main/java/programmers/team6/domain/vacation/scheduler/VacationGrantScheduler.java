@@ -7,7 +7,6 @@ import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import programmers.team6.domain.vacation.rule.vacationgranteligiblities.VacationGrantEligibilities;
 import programmers.team6.domain.vacation.service.VacationInfoService;
 
 @Component
@@ -19,8 +18,7 @@ public class VacationGrantScheduler {
 
 	@Scheduled(cron = "${schedule.grant-cron}")
 	public void grantJob() {
-		VacationGrantEligibilities grantEligibilities = vacationInfoService.selectEligiblitiesFrom(LocalDate.now());
-		vacationInfoService.updateEligiblities(grantEligibilities);
+		vacationInfoService.grantAnnualEligiblities(LocalDate.now());
 		log.info("실행");
 	}
 }

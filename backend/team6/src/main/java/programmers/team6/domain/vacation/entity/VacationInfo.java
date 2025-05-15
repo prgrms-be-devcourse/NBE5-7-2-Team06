@@ -22,9 +22,9 @@ public class VacationInfo extends BaseEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int vacationId;
 
-	private int totalCount;
+	private double totalCount;
 
-	private int useCount;
+	private double useCount;
 
 	private String vacationType;
 
@@ -33,7 +33,11 @@ public class VacationInfo extends BaseEntity {
 	@Version
 	private int version;
 
-	public VacationInfo(int totalCount, int useCount, String vacationType, Long memberId) {
+	public VacationInfo(double totalCount, String vacationType, Long memberId) {
+		this(totalCount, 0, vacationType, memberId);
+	}
+
+	public VacationInfo(double totalCount, double useCount, String vacationType, Long memberId) {
 		this.totalCount = totalCount;
 		this.useCount = useCount;
 		this.vacationType = vacationType;
@@ -42,10 +46,7 @@ public class VacationInfo extends BaseEntity {
 	}
 
 	@CheckReturnValue
-	public VacationInfoUpdateResult updateTotalCount(Integer version, Integer totalCount) {
-		if (!isSameVersion(version)) {
-			return VacationInfoUpdateResult.MISS_VERSION;
-		}
+	public VacationInfoUpdateResult updateTotalCount(double totalCount) {
 		if (isOverUseCount(totalCount)) {
 			return VacationInfoUpdateResult.MISS_RULES;
 		}
@@ -53,11 +54,27 @@ public class VacationInfo extends BaseEntity {
 		return VacationInfoUpdateResult.SUCCESS;
 	}
 
-	private boolean isOverUseCount(int totalCount) {
+	@CheckReturnValue
+	public VacationInfoUpdateResult init(double totalCount) {
+		this.totalCount = totalCount;
+		this.useCount = 0;
+		return VacationInfoUpdateResult.SUCCESS;
+	}
+
+	private boolean isOverUseCount(double totalCount) {
 		return this.useCount > totalCount;
 	}
 
 	public boolean isSameVersion(Integer version) {
 		return this.version == version;
 	}
+
+	public void useVacation(int count) {
+		this.useCount += count;
+	}
+
+	public boolean canUseVacation(int count) {
+		return this.useCount + count <= totalCount;
+	}
+
 }

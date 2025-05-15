@@ -3,81 +3,71 @@ package programmers.team6.domain.vacation.service;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import programmers.team6.domain.member.entity.Member;
+import programmers.team6.domain.member.enums.Role;
+import programmers.team6.domain.member.repository.MemberRepository;
 import programmers.team6.domain.vacation.dto.VacationInfoUpdateTotalCountRequest;
 import programmers.team6.domain.vacation.dto.VacationInfoUpdateTotalCountRequests;
+import programmers.team6.domain.vacation.dto.VacationInfoUpdateTotalCountRequestsList;
 import programmers.team6.domain.vacation.entity.VacationInfo;
-import programmers.team6.domain.vacation.enums.VacationInfoUpdateResult;
 import programmers.team6.domain.vacation.repository.VacationInfoRepository;
-import programmers.team6.domain.vacation.repository.dto.JdbcUpdated;
-import programmers.team6.domain.vacation.repository.dto.UpdatedResults;
-import programmers.team6.domain.vacation.repository.VacationEligibilitiesRepository;
 import programmers.team6.domain.vacation.rule.VacationGrantRuleFinder;
-import programmers.team6.domain.vacation.rule.vacationgranteligiblities.VacationGrantEligibilities;
-import programmers.team6.domain.vacation.rule.vacationgranteligiblities.VacationGrantEligibilitiesFactory;
-import programmers.team6.domain.vacation.rule.vacationgranteligiblities.VacationGrantEligibility;
-import programmers.team6.domain.vacation.rule.vacationgranteligiblities.VacationGrantInfo;
+import programmers.team6.domain.vacation.rule.vacationgranteligiblities.AnnualVacationInfosFactory;
 
 @ExtendWith(MockitoExtension.class)
 class VacationInfoServiceTest {
 
 	@Mock
-	private VacationGrantEligibilitiesFactory factory;
+	private AnnualVacationInfosFactory factory;
 
 	@Mock
 	private VacationInfoRepository repository;
 
+	@Mock
+	private MemberRepository memberRepository;
+
 	@Test
 	void 업데이트성공_테스트() {
-		List<VacationGrantInfo> annualGrantInfos = List.of(new VacationGrantInfo(1, 3, 1));
-		List<VacationGrantInfo> monthlyGrantInfos = List.of(new VacationGrantInfo(2, 1, 1));
-		VacationInfoService service = new VacationInfoService(repository, factory,
-			new TestVacationEligibilitiesRepositoryFake(annualGrantInfos, monthlyGrantInfos), null);
-		VacationGrantEligibilities eligibilities = Mockito.mock(VacationGrantEligibilities.class);
-		when(eligibilities.getAnnualVacationGrantInfos()).thenReturn(annualGrantInfos);
-		when(eligibilities.getMonthlyVacationGrantInfos()).thenReturn(monthlyGrantInfos);
+		VacationInfo info = new VacationInfo(3, 0, "test", 1L);
+		List<VacationInfo> infos = List.of(info);
+		when(repository.findAnnualVacationFrom(any(), any())).thenReturn(infos);
+		when(repository.findMonthlyVacationFrom(any(), any())).thenReturn(infos);
+		LocalDateTime joinDate = LocalDateTime.of(2024, 10, 18, 0, 0, 0);
+		when(memberRepository.findById(1L)).thenReturn(Optional.of(new Member("", null, null, joinDate, Role.ADMIN)));
+		VacationInfoService service = new VacationInfoService(memberRepository, repository,
+			new AnnualVacationInfosFactory(), new VacationGrantRuleFinder());
+		LocalDateTime localDateTime = joinDate.plusYears(1);
 
-		assertThatCode(() -> service.updateEligiblities(eligibilities)).doesNotThrowAnyException();
-	}
-
-	@ParameterizedTest
-	@CsvSource({"true,false", "false,true"})
-	void 업데이트_실패테스트(boolean annualSuccess, boolean monthlySuccess) {
-		VacationInfoService service = new VacationInfoService(repository, factory,
-			new SuccessAndFailTestVacationEligibilitiesRepositoryFake(annualSuccess, monthlySuccess), null);
-		VacationGrantEligibilities eligibilities = Mockito.mock(VacationGrantEligibilities.class);
-
-		assertThatThrownBy(() -> service.updateEligiblities(eligibilities)).isInstanceOf(RuntimeException.class);
+		assertThatCode(() -> service.grantAnnualEligiblities(localDateTime.toLocalDate())).doesNotThrowAnyException();
+		assertThat(info.getTotalCount()).isEqualTo(19);
+		assertThat(info.getUseCount()).isZero();
 	}
 
 	@Test
 	void 휴가총합수정테스트() {
-		VacationInfoService service = new VacationInfoService(repository, factory, null, new VacationGrantRuleFinder());
-		VacationInfoUpdateTotalCountRequest vacationInfoUpdateTotalCountRequest1 = createVacationDto(1, 12, "test1", 0);
-		VacationInfoUpdateTotalCountRequest vacationInfoUpdateTotalCountRequest2 = createVacationDto(2, 13, "test2", 0);
+		VacationInfoService service = new VacationInfoService(memberRepository, repository, factory,
+			new VacationGrantRuleFinder());
+		VacationInfoUpdateTotalCountRequest vacationInfoUpdateTotalCountRequest1 = createVacationDto(1, 12, "01", 0);
+		VacationInfoUpdateTotalCountRequest vacationInfoUpdateTotalCountRequest2 = createVacationDto(2, 13, "02", 0);
 		VacationInfoUpdateTotalCountRequests request = createUpdateTotalCountRequest(
 			vacationInfoUpdateTotalCountRequest1, vacationInfoUpdateTotalCountRequest2);
-		VacationInfo vacationInfo1 = createVacationInfo(vacationInfoUpdateTotalCountRequest1,
-			VacationInfoUpdateResult.SUCCESS);
-		VacationInfo vacationInfo2 = createVacationInfo(vacationInfoUpdateTotalCountRequest2,
-			VacationInfoUpdateResult.SUCCESS);
-		long memberId = 1L;
-		when(repository.findAllByMemberId(memberId)).thenReturn(List.of(vacationInfo1, vacationInfo2));
+		VacationInfo vacationInfo1 = createVacationInfo(vacationInfoUpdateTotalCountRequest1);
+		VacationInfo vacationInfo2 = createVacationInfo(vacationInfoUpdateTotalCountRequest2);
+		when(repository.findAllByVacationIdIn(List.of(1, 2))).thenReturn(List.of(vacationInfo1, vacationInfo2));
 
-		service.updateFrom(memberId, request);
+		service.updateFrom(new VacationInfoUpdateTotalCountRequestsList(List.of(request)));
 
-		verify(vacationInfo1, times(1)).updateTotalCount(vacationInfoUpdateTotalCountRequest1.version(), 12);
-		verify(vacationInfo2, times(1)).updateTotalCount(vacationInfoUpdateTotalCountRequest1.version(), 13);
+		assertThat(vacationInfo1.getTotalCount()).isEqualTo(12);
+		assertThat(vacationInfo2.getTotalCount()).isEqualTo(13);
 	}
 
 	private VacationInfoUpdateTotalCountRequest createVacationDto(int id, int totalCount, String type, int version) {
@@ -86,96 +76,10 @@ class VacationInfoServiceTest {
 
 	private VacationInfoUpdateTotalCountRequests createUpdateTotalCountRequest(
 		VacationInfoUpdateTotalCountRequest... vacationInfoUpdateTotalCountRequests) {
-		return new VacationInfoUpdateTotalCountRequests(List.of(vacationInfoUpdateTotalCountRequests));
+		return new VacationInfoUpdateTotalCountRequests(1L, List.of(vacationInfoUpdateTotalCountRequests));
 	}
 
-	private VacationInfo createVacationInfo(VacationInfoUpdateTotalCountRequest infoDto,
-		VacationInfoUpdateResult result) {
-		VacationInfo vacationInfo = mock(VacationInfo.class);
-		when(vacationInfo.updateTotalCount(infoDto.version(), infoDto.totalCount())).thenReturn(result);
-		when(vacationInfo.getVacationType()).thenReturn(infoDto.type());
-		return vacationInfo;
-	}
-
-	private static class SuccessAndFailTestVacationEligibilitiesRepositoryFake
-		extends AbsentTestVacationEligibilitiesRepositoryFake {
-
-		private final boolean annualSuccess;
-		private final boolean mothlySuccess;
-
-		public SuccessAndFailTestVacationEligibilitiesRepositoryFake(boolean annualSuccess, boolean mothlySuccess) {
-			this.annualSuccess = annualSuccess;
-			this.mothlySuccess = mothlySuccess;
-		}
-
-		private static List<VacationGrantInfo> createFackeVacationGrantInfos() {
-			return List.of(new VacationGrantInfo(1, 1, 1));
-		}
-
-		@Override
-		public UpdatedResults<VacationGrantInfo> updateAnnualVacationEligiblities(
-			List<VacationGrantInfo> eligibilities) {
-			if (annualSuccess) {
-				return createSuccessUpdateResult(createFackeVacationGrantInfos());
-			}
-			return createFailUpdateResult(createFackeVacationGrantInfos());
-		}
-
-		@Override
-		public UpdatedResults<VacationGrantInfo> updateMonthlyVacationEligiblities(
-			List<VacationGrantInfo> eligibilities) {
-			if (mothlySuccess) {
-				return createSuccessUpdateResult(createFackeVacationGrantInfos());
-			}
-			return createFailUpdateResult(createFackeVacationGrantInfos());
-		}
-	}
-
-	private static class TestVacationEligibilitiesRepositoryFake extends AbsentTestVacationEligibilitiesRepositoryFake {
-
-		private final List<VacationGrantInfo> annualGrantInfos;
-		private final List<VacationGrantInfo> monthlyGrantInfos;
-
-		public TestVacationEligibilitiesRepositoryFake(List<VacationGrantInfo> annualGrantInfos,
-			List<VacationGrantInfo> monthlyGrantInfos) {
-			this.annualGrantInfos = annualGrantInfos;
-			this.monthlyGrantInfos = monthlyGrantInfos;
-		}
-
-		@Override
-		public UpdatedResults<VacationGrantInfo> updateAnnualVacationEligiblities(
-			List<VacationGrantInfo> eligibilities) {
-			if (annualGrantInfos.equals(eligibilities)) {
-				return createSuccessUpdateResult(eligibilities);
-			}
-			return createFailUpdateResult(eligibilities);
-		}
-
-		@Override
-		public UpdatedResults<VacationGrantInfo> updateMonthlyVacationEligiblities(
-			List<VacationGrantInfo> eligibilities) {
-			if (monthlyGrantInfos.equals(eligibilities)) {
-				return createSuccessUpdateResult(eligibilities);
-			}
-			return createFailUpdateResult(eligibilities);
-		}
-	}
-
-	private abstract static class AbsentTestVacationEligibilitiesRepositoryFake
-		implements VacationEligibilitiesRepository {
-
-		protected UpdatedResults<VacationGrantInfo> createSuccessUpdateResult(
-			List<VacationGrantInfo> annualGrantInfos) {
-			return new UpdatedResults<>(new JdbcUpdated(new int[] {1}), annualGrantInfos);
-		}
-
-		protected UpdatedResults<VacationGrantInfo> createFailUpdateResult(List<VacationGrantInfo> annualGrantInfos) {
-			return new UpdatedResults<>(new JdbcUpdated(new int[] {0}), annualGrantInfos);
-		}
-
-		@Override
-		public List<VacationGrantEligibility> findEligibilities(LocalDate startJoinDate, LocalDate date) {
-			return List.of();
-		}
+	private VacationInfo createVacationInfo(VacationInfoUpdateTotalCountRequest infoDto) {
+		return new VacationInfo(infoDto.totalCount(), 0, infoDto.type(), 1L);
 	}
 }
