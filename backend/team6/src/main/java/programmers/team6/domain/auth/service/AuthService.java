@@ -109,6 +109,8 @@ public class AuthService {
 
 		jwtTokenProvider.validateNotBlackListed(refreshToken);
 
+		addBlackList(refreshToken);
+
 		TokenBody tokenBody = jwtTokenProvider.parseClaims(refreshToken);
 
 		return jwtTokenProvider.generateTokenPair(
