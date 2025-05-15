@@ -14,8 +14,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Version;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
+import lombok.Builder;
 import lombok.NoArgsConstructor;
 import programmers.team6.domain.member.entity.Code;
 import programmers.team6.domain.member.entity.Member;
@@ -32,6 +32,10 @@ public class VacationRequest extends BaseEntity {
 	@Column(name = "vacation_request_id")
 	private Long id;
 
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "member_id")
+	private Member member;
+
 	@Column(name = "from_date", nullable = false)
 	private LocalDateTime from;
 
@@ -41,19 +45,42 @@ public class VacationRequest extends BaseEntity {
 	private String reason;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "type_code", nullable = false)
+	@JoinColumn(name = "type_code")
 	private Code type;
 
-	@Column(name = "status", nullable = false)
-	@Enumerated(EnumType.STRING)
+	@Enumerated(value = EnumType.STRING)
 	private VacationRequestStatus status;
 
 	// 추가: 휴가 신청자
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "requester_id", nullable = false)
 	private Member requester;
+
 	@Version
 	private Integer version;
+
+	public VacationRequest(Member member, LocalDateTime from, LocalDateTime to, String reason, Code type,
+		Integer version) {
+		this.member = member;
+		this.from = from;
+		this.to = to;
+		this.reason = reason;
+		this.type = type;
+		this.version = version;
+		this.status = VacationRequestStatus.IN_PROGRESS;
+	}
+
+	public void update(Code type, LocalDateTime from, LocalDateTime to, VacationRequestStatus status, String reason) {
+		this.type = type;
+		this.from = from;
+		this.to = to;
+		this.status = status;
+		this.reason = reason;
+	}
+
+	public void updateStatus(VacationRequestStatus vacationRequestStatus) {
+		this.status = vacationRequestStatus;
+	}
 
 	@Builder
 	public VacationRequest(LocalDateTime from, LocalDateTime to, String reason, Code type, VacationRequestStatus status,

@@ -13,6 +13,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import programmers.team6.global.entity.BaseEntity;
 
+@Getter
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -40,6 +41,12 @@ public class Code extends BaseEntity {
 
 	@Builder
 	public Code(String groupCode, String code, String name) {
+		this.groupCode = groupCode;
+		this.code = code;
+		this.name = name;
+	}
+
+	public void updateCode(String groupCode, String code, String name) {
 		this.groupCode = groupCode;
 		this.code = code;
 		this.name = name;

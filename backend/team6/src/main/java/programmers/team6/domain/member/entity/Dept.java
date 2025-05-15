@@ -13,9 +13,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import programmers.team6.global.entity.BaseEntity;
 
+@Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Getter
 public class Dept extends BaseEntity {
 	@Id
 	@Column(name = "dept_id")
@@ -30,10 +30,10 @@ public class Dept extends BaseEntity {
 	}
 
 	@OneToOne
-	@JoinColumn(name = "dept_leader_id", nullable = false)
+	@JoinColumn(name = "dept_leader_id")
 	private Member deptLeader;
 
-	@Builder
+	@Builder(toBuilder = true)
 	public Dept(String deptName, Member deptLeader) {
 		this.deptName = deptName;
 		this.deptLeader = deptLeader;

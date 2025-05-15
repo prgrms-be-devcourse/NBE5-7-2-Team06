@@ -1,5 +1,8 @@
 package programmers.team6.domain.member.entity;
 
+import java.time.LocalDateTime;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -10,16 +13,18 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import programmers.team6.domain.member.enums.Role;
 import programmers.team6.global.entity.BaseEntity;
 
+@Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Getter
 public class Member extends BaseEntity {
 
 	@Id
@@ -30,24 +35,46 @@ public class Member extends BaseEntity {
 	@Column(nullable = false)
 	private String name;
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
 	@JoinColumn(name = "dept_id")
 	private Dept dept;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "position_id", nullable = false)
+	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+	@JoinColumn(name = "position_id")
 	private Code position;
+
+	@Column(nullable = false)
+	private LocalDateTime joinDate;
 
 	@Column(nullable = false)
 	@Enumerated(EnumType.STRING)
 	private Role role;
 
+	@Setter
+	@JoinColumn(name = "member_info_id")
+	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	private MemberInfo memberInfo;
+
 	@Builder
-	public Member(String name, Dept dept, Code position, Role role) {
+	public Member(String name, Dept dept, Code position, LocalDateTime joinDate, Role role) {
 		this.name = name;
 		this.dept = dept;
 		this.position = position;
+		this.joinDate = joinDate;
 		this.role = role;
+	}
+
+	public void approve() {
+		if (this.role != Role.PENDING) {
+			throw new IllegalArgumentException("승인 대기 상태가 아닌 멤버는 권한을 변경할 수 없습니다.");
+		}
+		this.role = Role.USER;
+	}
+
+	public void validateDeletable() {
+		if (this.role != Role.PENDING) {
+			throw new IllegalArgumentException("해당 멤버는 승인된 멤버이므로 삭제할 수 없습니다.");
+		}
 	}
 
 	public void setDept(Dept dept) {
