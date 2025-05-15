@@ -1,5 +1,7 @@
 package programmers.team6.domain.vacation.service;
 
+import java.util.List;
+
 import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
@@ -14,5 +16,9 @@ public class VacationInfoLogPublisher {
 
 	public void publish(VacationInfoLog vacationInfoLog) {
 		vacationInfoRepository.save(vacationInfoLog);
+	}
+
+	public void publish(List<VacationInfoLog> logs) {
+		vacationInfoRepository.saveAll(logs);
 	}
 }

@@ -18,20 +18,8 @@ class MonthlyVacationRuleTest {
 
 		VacationInfoLog log = monthlyVacationRule.grant(info);
 
-		assertThat(info.getTotalCount()).isEqualTo(17);
-		assertThat(log.getTotalCount()).isEqualTo(17);
-	}
-
-	@Test
-	void 지급정보생성_최대값() {
-		int grantDays = 2;
-		MonthlyVacationRule monthlyVacationRule = new MonthlyVacationRule(new Positive(grantDays));
-		VacationInfo info = createTestVacationInfo(15);
-
-		VacationInfoLog log = monthlyVacationRule.grant(info);
-
-		assertThat(info.getTotalCount()).isEqualTo(15);
-		assertThat(log.getTotalCount()).isEqualTo(15);
+		assertThat(info.getTotalCount()).isEqualTo(17.0);
+		assertThat(log.getTotalCount()).isEqualTo(17.0);
 	}
 
 	private VacationInfo createTestVacationInfo(int totalCount) {

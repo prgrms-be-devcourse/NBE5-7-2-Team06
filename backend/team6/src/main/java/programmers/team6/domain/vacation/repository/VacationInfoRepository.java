@@ -40,4 +40,16 @@ public interface VacationInfoRepository extends JpaRepository<VacationInfo, Inte
 	List<VacationInfo> findAllByMemberId(Long memberId);
 
 	List<VacationInfo> findAllByVacationIdIn(List<Integer> ids);
+
+	@Query("SELECT vi "
+		+ "FROM VacationInfo vi "
+		+ "JOIN Member m ON vi.memberId = m.id "
+		+ "WHERE FUNCTION('date', m.joinDate) in :joinDates and vi.vacationType = :type ")
+	List<VacationInfo> findAnnualVacationByJoinDates(String type, List<LocalDate> joinDates);
+
+
+	@Query("SELECT vi "
+		+ "FROM VacationInfo vi "
+		+ "WHERE FUNCTION('date', vi.updatedAt) in :baseLineDates and vi.vacationType = :type ")
+	List<VacationInfo> findByTypeAndCreatedAtToDate(String type, List<LocalDate> baseLineDates);
 }
