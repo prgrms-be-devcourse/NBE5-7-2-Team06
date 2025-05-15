@@ -10,7 +10,9 @@ public enum NotFoundErrorCode implements ErrorCode {
 	NOT_FOUND_POSITION("직위 정보를 찾을 수 없습니다."),
 	NOT_FOUND_EMAIL("이메일 정보를 찾을 수 없습니다."),
 	NOT_FOUND_MEMBER("멤버 정보를 찾을 수 없습니다."),
-
+	NOT_FOUND_VACATION_REQUEST("휴가계를 찾을 수 없습니다."),
+	NOT_FOUND_APPROVAL_STEP("결재 단계를 찾을 수 없습니다."),
+	NOT_FOUND_CODE("존재하지 않는 코드입니다."),
 	NOT_FOUND_FIRST_APPROVAL_STEP("1차 결재 정보를 찾을 수 없습니다."),
 	NOT_FOUND_SECOND_APPROVAL_STEP("2차 결재 정보를 찾을 수 없습니다."),
 	NOT_FOUND_VACATION_INFO("휴가 정보를 찾을 수 없습니다.");

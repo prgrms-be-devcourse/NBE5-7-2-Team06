@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import programmers.team6.domain.member.dto.CodeCreateRequest;
 import programmers.team6.domain.member.dto.CodeReadResponse;
@@ -27,7 +28,7 @@ public class CodeController {
 
 	@PostMapping
 	@ResponseStatus(HttpStatus.NO_CONTENT)
-	void registerCode(@RequestBody CodeCreateRequest codeCreateRequest) {
+	void registerCode(@Valid @RequestBody CodeCreateRequest codeCreateRequest) {
 		codeService.createCode(codeCreateRequest);
 	}
 
@@ -39,7 +40,7 @@ public class CodeController {
 
 	@PutMapping("/{id}")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
-	void modifyCode(@PathVariable("id") Long id, @RequestBody CodeCreateRequest codeCreateRequest) {
+	void modifyCode(@PathVariable("id") Long id, @Valid @RequestBody CodeCreateRequest codeCreateRequest) {
 		codeService.updateCode(id, codeCreateRequest);
 	}
 
