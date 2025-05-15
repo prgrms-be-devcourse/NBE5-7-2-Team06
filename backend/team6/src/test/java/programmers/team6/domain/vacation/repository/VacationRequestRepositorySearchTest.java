@@ -17,10 +17,10 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
 import jakarta.persistence.EntityManager;
-import programmers.team6.domain.admin.dto.AdminVacationRequestSearchCustom;
 import programmers.team6.domain.admin.dto.AdminVacationSearchCondition;
 import programmers.team6.domain.admin.dto.VacationRequestSearchResponse;
 import programmers.team6.domain.admin.enums.Quarter;
+import programmers.team6.domain.admin.repository.AdminVacationRequestSearchCustom;
 import programmers.team6.domain.member.entity.Code;
 import programmers.team6.domain.member.entity.Dept;
 import programmers.team6.domain.member.entity.Member;
