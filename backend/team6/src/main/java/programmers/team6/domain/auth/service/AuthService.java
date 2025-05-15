@@ -35,6 +35,7 @@ import programmers.team6.global.exception.customException.NotFoundException;
 import programmers.team6.global.exception.customException.UnauthorizedException;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class AuthService {
 
@@ -46,7 +47,6 @@ public class AuthService {
 	private final JwtTokenProvider jwtTokenProvider;
 	private final JwtService jwtService;
 
-	@Transactional
 	public void signUp(MemberSignUpRequest memberSignUpRequest) {
 
 		Dept dept = deptRepository.findById(memberSignUpRequest.dept()).orElseThrow(
@@ -72,15 +72,11 @@ public class AuthService {
 	}
 
 	@Transactional(readOnly = true)
-	public boolean isEmailDuplicated(String email) {
-		return isExistsByEmail(email);
-	}
-
-	private boolean isExistsByEmail(String email) {
+	public boolean isExistsByEmail(String email) {
 		return memberInfoRepository.existsByEmail(email);
 	}
 
-	@Transactional
+	@Transactional(readOnly = true)
 	public LoginResponse login(MemberLoginRequest memberLoginRequest) {
 
 		Member member = memberRepository.findByEmail(memberLoginRequest.email())

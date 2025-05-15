@@ -43,7 +43,7 @@ public class AuthController {
 	@GetMapping("/email-duplicate-check")
 	public ResponseEntity<Map<String, Boolean>> isEmailDuplicated(@RequestParam String email) {
 
-		boolean isEmailDuplicated = authService.isEmailDuplicated(email);
+		boolean isEmailDuplicated = authService.isExistsByEmail(email);
 
 		return ResponseEntity.ok(Map.of("isEmailDuplicated", isEmailDuplicated));
 	}
