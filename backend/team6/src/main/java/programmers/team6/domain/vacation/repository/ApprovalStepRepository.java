@@ -14,9 +14,15 @@ import programmers.team6.domain.admin.dto.ApprovalStepDetailUpdateResponse;
 import programmers.team6.domain.vacation.dto.ApprovalFirstStepSelectResponse;
 import programmers.team6.domain.vacation.dto.ApprovalSecondStepSelectResponse;
 import programmers.team6.domain.vacation.entity.ApprovalStep;
+import programmers.team6.domain.vacation.entity.VacationRequest;
 import programmers.team6.domain.vacation.enums.ApprovalStatus;
 
 public interface ApprovalStepRepository extends JpaRepository<ApprovalStep, Long> {
+	// 휴가 요청에 대한 첫 번째 결재 단계 조회 (단계 오름차순)
+	Optional<ApprovalStep> findFirstByVacationRequestOrderByStepAsc(VacationRequest vacationRequest);
+
+	@Query("SELECT a FROM ApprovalStep a JOIN FETCH a.member WHERE a.vacationRequest.id IN :requestIds AND a.step = 1")
+	List<ApprovalStep> findFirstStepsByVacationRequestIds(@Param("requestIds") List<Long> requestIds);
 
 	@Query(value =
 		"select new programmers.team6.domain.admin.dto.ApprovalStepDetailUpdateResponse(m.name,asp.reason) from ApprovalStep asp "

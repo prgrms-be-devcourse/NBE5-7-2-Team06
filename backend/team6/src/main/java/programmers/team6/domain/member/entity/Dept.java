@@ -25,6 +25,10 @@ public class Dept extends BaseEntity {
 	@Column(nullable = false)
 	private String deptName;
 
+	public void setDeptLeader(Member deptLeader) {
+		this.deptLeader = deptLeader;
+	}
+
 	@OneToOne
 	@JoinColumn(name = "dept_leader_id")
 	private Member deptLeader;
