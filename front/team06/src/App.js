@@ -1,24 +1,21 @@
-import logo from './logo.svg';
-import './App.css';
+import { BrowserRouter as Router, Navigate, Route, Routes } from "react-router-dom";
+import VacationList from "./pages/admin/vacation-list";
+import CodeManagement from "./pages/admin/code-management";
+import VacationDetail from "./pages/admin/vacation-detail";
+import DefaultLayout from "./pages/component/default-layout";
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <DefaultLayout>
+        <Routes>
+          <Route path="/" element={<Navigate to="/admin/vacation-request" replace />} />
+          <Route path="/admin/vacation-request" element={<VacationList />} />
+          <Route path="/admin/code" element={<CodeManagement />} />
+          <Route path="/admin/vacation-detail/:id" element={<VacationDetail />} />
+        </Routes>
+      </DefaultLayout>
+    </Router>
   );
 }
 
