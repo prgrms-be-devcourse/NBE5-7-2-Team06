@@ -77,4 +77,7 @@ public class Member extends BaseEntity {
 		}
 	}
 
+	public void setDept(Dept dept) {
+		this.dept = dept;
+	}
 }

@@ -1,6 +1,7 @@
 package programmers.team6.domain.vacation.entity;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -14,6 +15,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Version;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import programmers.team6.domain.member.entity.Code;
@@ -50,6 +52,11 @@ public class VacationRequest extends BaseEntity {
 	@Enumerated(value = EnumType.STRING)
 	private VacationRequestStatus status;
 
+	// 추가: 휴가 신청자
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "requester_id", nullable = false)
+	private Member requester;
+
 	@Version
 	private Integer version;
 
@@ -74,5 +81,107 @@ public class VacationRequest extends BaseEntity {
 
 	public void updateStatus(VacationRequestStatus vacationRequestStatus) {
 		this.status = vacationRequestStatus;
+	}
+
+	@Builder
+	public VacationRequest(LocalDateTime from, LocalDateTime to, String reason, Code type, VacationRequestStatus status,
+		Member requester) {
+		this.from = from;
+		this.to = to;
+		this.reason = reason;
+		this.type = type;
+		this.status = status;
+		this.requester = requester;
+	}
+
+	// UPDATE
+	// 현재 요청자가 수정 권한을 가지고 있는지 확인
+	public boolean canUpdate(Long memberId) {
+		return this.requester.getId().equals(memberId) && this.status == VacationRequestStatus.IN_PROGRESS;
+	}
+
+	// 수정 권한 검증
+	private void validateUpdate(Long memberId) {
+		if (!canUpdate(memberId)) {
+			// 세부 오류 메시지
+			if (!this.requester.getId().equals(memberId)) {
+				throw new RuntimeException("휴가 신청자만 수정할 수 있습니다.");
+			}
+
+			if (this.status != VacationRequestStatus.IN_PROGRESS) {
+				throw new IllegalStateException("진행 중인 휴가 요청만 수정할 수 있습니다.");
+			}
+		}
+	}
+
+	// 휴가 수정 권한 검증 후 수정 처리
+	public void updateByMember(Long memberId, LocalDateTime from, LocalDateTime to, String reason, Code type) {
+		validateUpdate(memberId);
+		this.from = from;
+		this.to = to;
+		this.reason = reason;
+		this.type = type;
+	}
+
+	// DELETE
+	// 현재 요청자가 취소 권한을 가지고 있는지 학인
+	public boolean canCancel(Long memberId) {
+		return this.requester.getId().equals(memberId) && this.status == VacationRequestStatus.IN_PROGRESS;
+	}
+
+	// 취소 권한 확인
+	private void validateCancel(Long memberId) {
+		if (!canCancel(memberId)) {
+			// 세부 오류 메시지
+			if (!this.requester.getId().equals(memberId)) {
+				throw new RuntimeException("휴가 신청자만 취소할 수 있습니다.");
+			}
+
+			if (this.status == VacationRequestStatus.CANCELED) {
+				throw new IllegalStateException("이미 취소된 휴가 신청입니다.");
+			}
+
+			throw new IllegalStateException("진행 중인 휴가 요청만 취소할 수 있습니다.");
+		}
+	}
+
+	// 휴가 신청 취소
+	private void changeStatusToCanceled() {
+		this.status = VacationRequestStatus.CANCELED;
+	}
+
+	// 휴가 취소 권한 검증 후 취소 처리
+	public void validateAndCancel(Long memberId) {
+		validateCancel(memberId);
+		changeStatusToCanceled();
+	}
+
+	public void approve() {
+		updateStatus(VacationRequestStatus.APPROVED);
+	}
+
+	public void reject() {
+		updateStatus(VacationRequestStatus.REJECTED);
+	}
+
+	public void cancel() {
+		updateStatus(VacationRequestStatus.CANCELED);
+	}
+
+	public int calcVacationDays() {
+		return (int)ChronoUnit.DAYS.between(from.toLocalDate(), to.toLocalDate()) + 1;
+	}
+
+	public Long getMemberId() {
+		return this.member.getId();
+	}
+
+	public String getCode() {
+		return this.type.getCode();
+	}
+
+	// todo : code 번호 확정 시 변경 고려
+	public boolean isHalfDay() {
+		return this.type.getName().equals("반차");
 	}
 }
