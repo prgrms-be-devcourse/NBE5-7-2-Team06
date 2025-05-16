@@ -4,17 +4,17 @@ import {
   Routes,
   Route,
 } from 'react-router-dom';
-import AdminLayout from './pages/component/admin-layout';
+import DefaultLayout from './pages/component/default-layout';
 import Vacations from "./pages/component/vacations/vacations";
 
 function App() {
   return (
       <Router>
-        <AdminLayout>
+        <DefaultLayout>
           <Routes>
               <Route path="/vacations" element={<Vacations />} />
           </Routes>
-        </AdminLayout>
+        </DefaultLayout>
       </Router>
   );
 }

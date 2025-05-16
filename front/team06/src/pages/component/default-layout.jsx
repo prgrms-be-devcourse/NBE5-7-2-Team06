@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
-const AdminLayout = ({ children }) => {
+const DefaultLayout = ({ children }) => {
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -184,7 +184,7 @@ const AdminLayout = ({ children }) => {
 // 사용 예시 컴포넌트
 const App = () => {
     return (
-        <AdminLayout>
+        <DefaultLayout>
             <div className="p-6">
                 <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
                     <h2 className="text-xl font-semibold text-gray-800 mb-4">환영합니다!</h2>
@@ -233,8 +233,8 @@ const App = () => {
                     </div>
                 </div>
             </div>
-        </AdminLayout>
+        </DefaultLayout>
     );
 };
 
-export default AdminLayout;
+export default DefaultLayout;
