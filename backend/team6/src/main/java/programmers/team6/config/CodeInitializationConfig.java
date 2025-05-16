@@ -6,6 +6,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
@@ -14,7 +15,9 @@ import programmers.team6.domain.auth.service.AuthService;
 import programmers.team6.domain.member.entity.Code;
 import programmers.team6.domain.member.entity.Dept;
 import programmers.team6.domain.member.entity.Member;
+import programmers.team6.domain.member.entity.MemberInfo;
 import programmers.team6.domain.member.enums.BasicCodeInfo;
+import programmers.team6.domain.member.enums.Role;
 import programmers.team6.domain.member.repository.CodeRepository;
 import programmers.team6.domain.member.repository.DeptRepository;
 import programmers.team6.domain.member.repository.MemberRepository;
@@ -27,6 +30,7 @@ public class CodeInitializationConfig {
 	private final DeptRepository deptRepository;
 	private final MemberRepository memberRepository;
 	private final AuthService authService;
+	private final PasswordEncoder passwordEncoder;
 
 	/**
 	 * 현재 개발환경이고 다른 엔티티의 변수 수정 가능성이 있는 상황에서 우선적으로 CommandLineRunner를 활용하여 개발하였음, 그럼으로 yml의 profile은 dev로 작성 필요
@@ -49,21 +53,15 @@ public class CodeInitializationConfig {
 					codeRepository.save(CodeMapper.toCode(BasicCodeInfo.values()[i]));
 				}
 
-				Dept d1 = DeptInsert("인사팀");
-				Dept d2 = DeptInsert("개발팀");
-				Dept d3 = DeptInsert("영업팀");
+				DeptInsert("인사팀");
+				DeptInsert("개발팀");
+				DeptInsert("영업팀");
 
-				authService.signUp(
-					new MemberSignUpRequest("김부장", "l1@a.com", 1L, "04", LocalDateTime.of(2023, 5, 15, 0, 0), "850101",
-						"123456q!"));
-				authService.signUp(
-					new MemberSignUpRequest("이부장", "l2@a.com", 2L, "04", LocalDateTime.of(2023, 5, 15, 0, 0), "831111",
-						"123456q!"));
-				authService.signUp(
-					new MemberSignUpRequest("박부장", "l3@a.com", 3L, "04", LocalDateTime.of(2023, 5, 15, 0, 0), "871101",
-						"123456q!"));
-
-				setDeptLeader(d1, d2, d3);
+				insertAdmin(new MemberSignUpRequest("관리자", "admin@a.com", 1L, "04", LocalDateTime.of(2023, 5, 15, 0, 0),
+					"000000",
+					"123456q!"));
+				insertMember();
+				setDeptLeader();
 			}
 		};
 	}
@@ -76,14 +74,56 @@ public class CodeInitializationConfig {
 			.build());
 	}
 
-	private Dept DeptInsert(String deptName) {
-		return deptRepository.save(Dept.builder().deptName(deptName).build());
+	private void DeptInsert(String deptName) {
+		deptRepository.save(Dept.builder().deptName(deptName).build());
 	}
 
-	private void setDeptLeader(Dept d1, Dept d2, Dept d3) {
-		Member m1 = memberRepository.findById(1L).orElseThrow();
-		Member m2 = memberRepository.findById(2L).orElseThrow();
-		Member m3 = memberRepository.findById(3L).orElseThrow();
+	private void insertAdmin(MemberSignUpRequest request) {
+		Dept dept = deptRepository.findByDeptName("인사팀").orElseThrow();
+		Code code = codeRepository.findByGroupCodeAndCode("POSITION", "04").orElseThrow();
+
+		String encodedPassword = passwordEncoder.encode(request.password());
+
+		MemberInfo memberInfo = MemberInfo.builder()
+			.birth(request.birth())
+			.email(request.email())
+			.password(encodedPassword)
+			.build();
+
+		Member member = Member.builder()
+			.name(request.name())
+			.dept(dept)
+			.position(code)
+			.joinDate(request.joinDate())
+			.role(Role.ADMIN)
+			.build();
+
+		member.setMemberInfo(memberInfo);
+
+		memberRepository.save(member);
+
+	}
+
+	private void insertMember() {
+		authService.signUp(
+			new MemberSignUpRequest("김부장", "l1@a.com", 1L, "04", LocalDateTime.of(2023, 5, 15, 0, 0), "850101",
+				"123456q!"));
+		authService.signUp(
+			new MemberSignUpRequest("이부장", "l2@a.com", 2L, "04", LocalDateTime.of(2023, 5, 15, 0, 0), "831111",
+				"123456q!"));
+		authService.signUp(
+			new MemberSignUpRequest("박부장", "l3@a.com", 3L, "04", LocalDateTime.of(2023, 5, 15, 0, 0), "871101",
+				"123456q!"));
+	}
+
+	private void setDeptLeader() {
+		Member m1 = memberRepository.findById(2L).orElseThrow();
+		Member m2 = memberRepository.findById(3L).orElseThrow();
+		Member m3 = memberRepository.findById(4L).orElseThrow();
+
+		Dept d1 = deptRepository.findById(1L).orElseThrow();
+		Dept d2 = deptRepository.findById(2L).orElseThrow();
+		Dept d3 = deptRepository.findById(3L).orElseThrow();
 
 		d1.appointLeader(m1);
 		d2.appointLeader(m2);

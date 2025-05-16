@@ -35,11 +35,11 @@ public class Member extends BaseEntity {
 	@Column(nullable = false)
 	private String name;
 
-	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "dept_id")
 	private Dept dept;
 
-	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "position_id")
 	private Code position;
 
@@ -76,5 +76,5 @@ public class Member extends BaseEntity {
 			throw new IllegalArgumentException("해당 멤버는 승인된 멤버이므로 삭제할 수 없습니다.");
 		}
 	}
-	
+
 }
