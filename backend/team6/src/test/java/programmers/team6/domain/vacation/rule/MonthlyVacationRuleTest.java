@@ -18,8 +18,8 @@ class MonthlyVacationRuleTest {
 
 		VacationInfoLog log = monthlyVacationRule.grant(info);
 
-		assertThat(info.getTotalCount()).isEqualTo(17);
-		assertThat(log.getTotalCount()).isEqualTo(17);
+		assertThat(info.getTotalCount()).isEqualTo(17.0);
+		assertThat(log.getTotalCount()).isEqualTo(17.0);
 	}
 
 	private VacationInfo createTestVacationInfo(int totalCount) {

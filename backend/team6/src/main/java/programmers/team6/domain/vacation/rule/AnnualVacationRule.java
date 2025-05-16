@@ -3,6 +3,7 @@ package programmers.team6.domain.vacation.rule;
 import static programmers.team6.global.util.DateUtil.*;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import lombok.RequiredArgsConstructor;
 import programmers.team6.domain.member.entity.Member;
@@ -30,13 +31,35 @@ public final class AnnualVacationRule {
 			STATUTORY_INITIAL_GRANT_DAYS);
 	}
 
-	public LocalDate getAnnualVacationStartJoinDateFrom(LocalDate date) {
+	public LocalDate getJoinDate(LocalDate date) {
 		return date.minusYears(boundaryYear.toInt());
 	}
 
 	public VacationInfoLog grant(LocalDate date, Member member, VacationInfo vacationInfo) {
 		int yearsOfService = calcYearsOfService(date, member.getJoinDate().toLocalDate());
-		return vacationInfo.init(vacationInfo.getTotalCount() + calcIncreaseDays(yearsOfService));
+		return vacationInfo.init(calcIncreaseDays(yearsOfService));
+	}
+
+	public VacationInfo vacationInfo(Long memberId) {
+		return new VacationInfo(initialGrantDays.toInt(), TYPE.getCode(), memberId);
+	}
+
+	public List<LocalDate> getBaseLineDates(LocalDate date) {
+		return List.of(date.minusYears(boundaryYear.toInt()));
+	}
+
+	public boolean isSameType(VacationCode vacationCode) {
+		return TYPE == vacationCode;
+	}
+
+	public VacationCode getType() {
+		return TYPE;
+	}
+
+	public boolean isTarget(LocalDate date, Member member) {
+		LocalDate joinDate = getJoinDate(date);
+		return joinDate.isBefore(member.getJoinDate().toLocalDate()) || joinDate.isEqual(
+			member.getJoinDate().toLocalDate());
 	}
 
 	private int calcIncreaseDays(int yearsOfService) {
@@ -45,9 +68,5 @@ public final class AnnualVacationRule {
 
 	private int calculateAdditionalVacationDays(int yearsOfService) {
 		return (((yearsOfService - boundaryYear.toInt()) / increaseYear.toInt()) * vacationIncreaseDays.toInt());
-	}
-
-	public VacationInfo vacationInfo(Long memberId) {
-		return new VacationInfo(initialGrantDays.toInt(), TYPE.getCode(), memberId);
 	}
 }
