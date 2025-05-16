@@ -55,7 +55,7 @@ public class VacationInfo extends BaseEntity {
 	}
 
 	@CheckReturnValue
-	public VacationInfoLog useVacation(int count) {
+	public VacationInfoLog useVacation(double count) {
 		return update(totalCount, count);
 	}
 
@@ -63,7 +63,7 @@ public class VacationInfo extends BaseEntity {
 		return this.version == version;
 	}
 
-	public boolean canUseVacation(int count) {
+	public boolean canUseVacation(double count) {
 		return this.useCount + count <= totalCount;
 	}
 
