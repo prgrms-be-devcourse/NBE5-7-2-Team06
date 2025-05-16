@@ -12,7 +12,6 @@ import lombok.extern.slf4j.Slf4j;
 import programmers.team6.domain.member.entity.Dept;
 import programmers.team6.domain.member.entity.Member;
 import programmers.team6.domain.member.repository.DeptRepository;
-import programmers.team6.domain.member.repository.MemberRepository;
 import programmers.team6.domain.vacation.dto.ApprovalFirstStepDetailResponse;
 import programmers.team6.domain.vacation.dto.ApprovalFirstStepSelectResponse;
 import programmers.team6.domain.vacation.dto.ApprovalSecondStepDetailResponse;
@@ -49,7 +48,7 @@ public class ApprovalStepService {
 
 	public Page<ApprovalFirstStepSelectResponse> findFirstStepByFilter(
 		ApprovalStepSelectRequest request, Long memberId, Pageable pageable) {
-		return approvalStepRepository.findFirstStepByFilter(memberId, request.typeId(),
+		return approvalStepRepository.findFirstStepByFilter(memberId, request.type(),
 			request.name(), request.from(), request.to(), request.status(), STEP1, pageable);
 	}
 
@@ -59,7 +58,7 @@ public class ApprovalStepService {
 
 	public Page<ApprovalSecondStepSelectResponse> findSecondStepByFilter(
 		ApprovalStepSelectRequest request, Long memberId, Pageable pageable) {
-		return approvalStepRepository.findSecondStepByFilter(memberId, request.typeId(),
+		return approvalStepRepository.findSecondStepByFilter(memberId, request.type(),
 			request.name(), request.from(), request.to(), request.status(), STEP2, pageable);
 	}
 
