@@ -1,13 +1,13 @@
 package programmers.team6.config;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import programmers.team6.domain.auth.dto.request.MemberSignUpRequest;
@@ -40,7 +40,6 @@ public class CodeInitializationConfig {
 	 */
 	@Bean
 	@Profile("dev")
-	@Transactional
 	public CommandLineRunner initData() {
 		return args -> {
 			if (codeRepository.count() == 0) {  // 데이터베이스에 데이터가 없으면 삽입
@@ -128,6 +127,8 @@ public class CodeInitializationConfig {
 		d1.appointLeader(m1);
 		d2.appointLeader(m2);
 		d3.appointLeader(m3);
+
+		deptRepository.saveAll(List.of(d1, d2, d3));
 
 	}
 
