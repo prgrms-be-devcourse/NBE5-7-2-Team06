@@ -52,13 +52,13 @@ public interface ApprovalStepRepository extends JpaRepository<ApprovalStep, Long
 				)
 		from ApprovalStep a join a.member m join a.vacationRequest vr
 		where a.member.id = :memberId and a.step = :step
-				and (:typeId is null or vr.type.id = :typeId)
+				and (:type is null or vr.type.name = :type)
 				and (:name is null or vr.member.name = :name)
 				and (:from is null or :to is null or (vr.from <= :to and  vr.to >= :from))
 				and (:status is null or a.approvalStatus = :status)
 		order by a.createdAt desc
 		""")
-	Page<ApprovalFirstStepSelectResponse> findFirstStepByFilter(Long memberId, Long typeId, String name,
+	Page<ApprovalFirstStepSelectResponse> findFirstStepByFilter(Long memberId, String type, String name,
 		LocalDate from, LocalDate to, ApprovalStatus status, int step, Pageable pageable);
 
 	@Query("""
@@ -81,13 +81,13 @@ public interface ApprovalStepRepository extends JpaRepository<ApprovalStep, Long
 		from ApprovalStep a2 join a2.vacationRequest vr
 				join ApprovalStep a1 on a1.vacationRequest.id = vr.id and a1.step = 1
 		where a2.member.id = :memberId and a2.step = :step
-				and (:typeId is null or vr.type.id = :typeId)
+				and (:type is null or vr.type.name = :type)
 				and (:name is null or vr.member.name = :name)
 				and (:from is null or :to is null or (vr.from <= :to and  vr.to >= :from))
 				and (:status is null or a2.approvalStatus = :status)
 		order by a2.createdAt desc
 		""")
-	Page<ApprovalSecondStepSelectResponse> findSecondStepByFilter(Long memberId, Long typeId, String name,
+	Page<ApprovalSecondStepSelectResponse> findSecondStepByFilter(Long memberId, String type, String name,
 		LocalDate from, LocalDate to, ApprovalStatus status, int step, Pageable pageable);
 
 	Optional<ApprovalStep> findByIdAndMember_IdAndStep(Long id, Long memberId, int step);

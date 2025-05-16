@@ -7,13 +7,13 @@ import programmers.team6.domain.vacation.enums.ApprovalStatus;
 
 @Slf4j
 public record ApprovalStepSelectRequest(
-	Long typeId,
+	String type,
 	String name,
 	LocalDate from,
 	LocalDate to,
 	ApprovalStatus status
 ) {
 	public boolean hasFilter() {
-		return typeId != null || name != null || from != null || to != null || status != null;
+		return type != null || name != null || from != null || to != null || status != null;
 	}
 }
