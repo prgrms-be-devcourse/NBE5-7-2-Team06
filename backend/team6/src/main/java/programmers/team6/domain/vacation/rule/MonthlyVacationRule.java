@@ -2,7 +2,7 @@ package programmers.team6.domain.vacation.rule;
 
 import lombok.RequiredArgsConstructor;
 import programmers.team6.domain.vacation.entity.VacationInfo;
-import programmers.team6.domain.vacation.enums.VacationInfoUpdateResult;
+import programmers.team6.domain.vacation.entity.VacationInfoLog;
 import programmers.team6.global.entity.Positive;
 
 @RequiredArgsConstructor
@@ -16,8 +16,7 @@ public final class MonthlyVacationRule {
 		return new MonthlyVacationRule(STATUTORY_GRANT_DAYS);
 	}
 
-	public VacationInfoUpdateResult grant(VacationInfo vacationInfo, Positive maxGrantDays) {
-		return vacationInfo.updateTotalCount(
-			Math.min(vacationInfo.getTotalCount() + grantDays.toInt(), maxGrantDays.toInt()));
+	public VacationInfoLog grant(VacationInfo vacationInfo) {
+		return vacationInfo.updateTotalCount(vacationInfo.getTotalCount() + grantDays.toInt());
 	}
 }

@@ -13,7 +13,7 @@ import programmers.team6.domain.vacation.dto.VacationInfoUpdateTotalCountRequest
 import programmers.team6.domain.vacation.dto.VacationInfoUpdateTotalCountRequests;
 import programmers.team6.domain.vacation.dto.VacationInfoUpdateTotalCountRequestsList;
 import programmers.team6.domain.vacation.entity.VacationInfo;
-import programmers.team6.domain.vacation.enums.VacationInfoUpdateResult;
+import programmers.team6.domain.vacation.entity.VacationInfoLog;
 import programmers.team6.domain.vacation.repository.VacationInfoRepository;
 import programmers.team6.domain.vacation.rule.AnnualVacationGrantRule;
 import programmers.team6.domain.vacation.rule.VacationGrantRule;
@@ -30,6 +30,7 @@ public class VacationInfoService {
 	private final VacationInfoRepository vacationInfoRepository;
 	private final AnnualVacationInfosFactory annualVacationInfosFactory;
 	private final VacationGrantRuleFinder vacationGrantRuleFinder;
+	private final VacationInfoLogPublisher vacationInfoLogPublisher;
 
 	@Transactional
 	public void grantAnnualEligiblities(LocalDate date) {
@@ -67,17 +68,13 @@ public class VacationInfoService {
 		for (VacationInfo annualVacationInfo : eligibilities.getAnnualVacationInfos()) {
 			Member member = memberRepository.findById(annualVacationInfo.getMemberId())
 				.orElseThrow(() -> new RuntimeException());
-			VacationInfoUpdateResult result = vacationGrantRule.grantAnnual(date, member, annualVacationInfo);
-			if (!result.isSuccess()) {
-				throw new RuntimeException();
-			}
+			VacationInfoLog result = vacationGrantRule.grantAnnual(date, member, annualVacationInfo);
+			vacationInfoLogPublisher.publish(result);
 		}
 
 		for (VacationInfo monthlyVacationInfo : eligibilities.getMonthlyVacationInfos()) {
-			VacationInfoUpdateResult result = vacationGrantRule.grantMonthly(monthlyVacationInfo);
-			if (!result.isSuccess()) {
-				throw new RuntimeException();
-			}
+			VacationInfoLog result = vacationGrantRule.grantMonthly(monthlyVacationInfo);
+			vacationInfoLogPublisher.publish(result);
 		}
 	}
 
@@ -85,16 +82,14 @@ public class VacationInfoService {
 		for (VacationInfo info : infos) {
 			VacationInfoUpdateTotalCountRequest request = requests.getTarget(info.getVacationType());
 			VacationGrantRule vacationGrantRule = vacationGrantRuleFinder.find(info.getVacationType());
-			if (!vacationGrantRule.canUpdate(new Positive(request.totalCount()))) {
+			if (!vacationGrantRule.canUpdate(new Positive(request.totalCount())) || !info.isSameVersion(
+				request.version())) {
 				//TODO : 공통예외구현되면 수정예정
 				throw new RuntimeException();
 			}
 
-			VacationInfoUpdateResult updateResult = info.updateTotalCount(request.totalCount());
-			if (!updateResult.isSuccess()) {
-				//TODO : 공통예외구현되면 수정예정
-				throw new RuntimeException();
-			}
+			VacationInfoLog log = info.updateTotalCount(request.totalCount());
+			vacationInfoLogPublisher.publish(log);
 		}
 	}
 }

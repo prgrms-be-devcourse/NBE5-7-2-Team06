@@ -35,16 +35,18 @@ class VacationInfoServiceTest {
 	@Mock
 	private MemberRepository memberRepository;
 
+	@Mock
+	private VacationInfoLogPublisher publisher;
+
 	@Test
 	void 업데이트성공_테스트() {
+		VacationInfoService service = createService(new AnnualVacationInfosFactory());
 		VacationInfo info = new VacationInfo(3, 0, "test", 1L);
 		List<VacationInfo> infos = List.of(info);
 		when(repository.findAnnualVacationFrom(any(), any())).thenReturn(infos);
 		when(repository.findMonthlyVacationFrom(any(), any())).thenReturn(infos);
 		LocalDateTime joinDate = LocalDateTime.of(2024, 10, 18, 0, 0, 0);
 		when(memberRepository.findById(1L)).thenReturn(Optional.of(new Member("", null, null, joinDate, Role.ADMIN)));
-		VacationInfoService service = new VacationInfoService(memberRepository, repository,
-			new AnnualVacationInfosFactory(), new VacationGrantRuleFinder());
 		LocalDateTime localDateTime = joinDate.plusYears(1);
 
 		assertThatCode(() -> service.grantAnnualEligiblities(localDateTime.toLocalDate())).doesNotThrowAnyException();
@@ -54,8 +56,7 @@ class VacationInfoServiceTest {
 
 	@Test
 	void 휴가총합수정테스트() {
-		VacationInfoService service = new VacationInfoService(memberRepository, repository, factory,
-			new VacationGrantRuleFinder());
+		VacationInfoService service = createService(factory);
 		VacationInfoUpdateTotalCountRequest vacationInfoUpdateTotalCountRequest1 = createVacationDto(1, 12, "01", 0);
 		VacationInfoUpdateTotalCountRequest vacationInfoUpdateTotalCountRequest2 = createVacationDto(2, 13, "02", 0);
 		VacationInfoUpdateTotalCountRequests request = createUpdateTotalCountRequest(
@@ -68,6 +69,11 @@ class VacationInfoServiceTest {
 
 		assertThat(vacationInfo1.getTotalCount()).isEqualTo(12);
 		assertThat(vacationInfo2.getTotalCount()).isEqualTo(13);
+	}
+
+	private VacationInfoService createService(AnnualVacationInfosFactory factory) {
+		return new VacationInfoService(memberRepository, repository, factory,
+			new VacationGrantRuleFinder(), publisher);
 	}
 
 	private VacationInfoUpdateTotalCountRequest createVacationDto(int id, int totalCount, String type, int version) {

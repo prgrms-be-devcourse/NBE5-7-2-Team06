@@ -21,6 +21,7 @@ import programmers.team6.domain.vacation.dto.ApprovalStepRejectRequest;
 import programmers.team6.domain.vacation.dto.ApprovalStepSelectRequest;
 import programmers.team6.domain.vacation.entity.ApprovalStep;
 import programmers.team6.domain.vacation.entity.VacationInfo;
+import programmers.team6.domain.vacation.entity.VacationInfoLog;
 import programmers.team6.domain.vacation.entity.VacationRequest;
 import programmers.team6.domain.vacation.repository.ApprovalStepRepository;
 import programmers.team6.domain.vacation.repository.VacationInfoRepository;
@@ -38,9 +39,9 @@ public class ApprovalStepService {
 	private static final int STEP2 = 2;
 
 	private final ApprovalStepRepository approvalStepRepository;
-	private final MemberRepository memberRepository;
 	private final VacationInfoRepository vacationInfoRepository;
 	private final DeptRepository deptRepository;
+	private final VacationInfoLogPublisher vacationInfoLogPublisher;
 
 	public Page<ApprovalFirstStepSelectResponse> findFirstStepByMemberId(Long memberId, Pageable pageable) {
 		return approvalStepRepository.findFirstStepByMemberId(memberId, STEP1, pageable);
@@ -128,7 +129,8 @@ public class ApprovalStepService {
 		if (findVacationInfo.canUseVacation(count)) {
 			findApprovalStep.approve();
 			findApprovalStep.approveVacation();
-			findVacationInfo.useVacation(count);
+			VacationInfoLog log = findVacationInfo.useVacation(count);
+			vacationInfoLogPublisher.publish(log);
 		} else {
 			findApprovalStep.cancel();
 			findApprovalStep.cancelVacation();
