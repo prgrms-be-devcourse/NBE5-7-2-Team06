@@ -76,8 +76,5 @@ public class Member extends BaseEntity {
 			throw new IllegalArgumentException("해당 멤버는 승인된 멤버이므로 삭제할 수 없습니다.");
 		}
 	}
-
-	public void setDept(Dept dept) {
-		this.dept = dept;
-	}
+	
 }
