@@ -14,9 +14,15 @@ import programmers.team6.domain.admin.dto.ApprovalStepDetailUpdateResponse;
 import programmers.team6.domain.vacation.dto.ApprovalFirstStepSelectResponse;
 import programmers.team6.domain.vacation.dto.ApprovalSecondStepSelectResponse;
 import programmers.team6.domain.vacation.entity.ApprovalStep;
+import programmers.team6.domain.vacation.entity.VacationRequest;
 import programmers.team6.domain.vacation.enums.ApprovalStatus;
 
 public interface ApprovalStepRepository extends JpaRepository<ApprovalStep, Long> {
+	// 휴가 요청에 대한 첫 번째 결재 단계 조회 (단계 오름차순)
+	Optional<ApprovalStep> findFirstByVacationRequestOrderByStepAsc(VacationRequest vacationRequest);
+
+	@Query("SELECT a FROM ApprovalStep a JOIN FETCH a.member WHERE a.vacationRequest.id IN :requestIds AND a.step = 1")
+	List<ApprovalStep> findFirstStepsByVacationRequestIds(@Param("requestIds") List<Long> requestIds);
 
 	@Query(value =
 		"select new programmers.team6.domain.admin.dto.ApprovalStepDetailUpdateResponse(m.name,asp.reason) from ApprovalStep asp "
@@ -46,13 +52,13 @@ public interface ApprovalStepRepository extends JpaRepository<ApprovalStep, Long
 				)
 		from ApprovalStep a join a.member m join a.vacationRequest vr
 		where a.member.id = :memberId and a.step = :step
-				and (:typeId is null or vr.type.id = :typeId)
+				and (:type is null or vr.type.name = :type)
 				and (:name is null or vr.member.name = :name)
 				and (:from is null or :to is null or (vr.from <= :to and  vr.to >= :from))
 				and (:status is null or a.approvalStatus = :status)
 		order by a.createdAt desc
 		""")
-	Page<ApprovalFirstStepSelectResponse> findFirstStepByFilter(Long memberId, Long typeId, String name,
+	Page<ApprovalFirstStepSelectResponse> findFirstStepByFilter(Long memberId, String type, String name,
 		LocalDate from, LocalDate to, ApprovalStatus status, int step, Pageable pageable);
 
 	@Query("""
@@ -75,19 +81,19 @@ public interface ApprovalStepRepository extends JpaRepository<ApprovalStep, Long
 		from ApprovalStep a2 join a2.vacationRequest vr
 				join ApprovalStep a1 on a1.vacationRequest.id = vr.id and a1.step = 1
 		where a2.member.id = :memberId and a2.step = :step
-				and (:typeId is null or vr.type.id = :typeId)
+				and (:type is null or vr.type.name = :type)
 				and (:name is null or vr.member.name = :name)
 				and (:from is null or :to is null or (vr.from <= :to and  vr.to >= :from))
 				and (:status is null or a2.approvalStatus = :status)
 		order by a2.createdAt desc
 		""")
-	Page<ApprovalSecondStepSelectResponse> findSecondStepByFilter(Long memberId, Long typeId, String name,
+	Page<ApprovalSecondStepSelectResponse> findSecondStepByFilter(Long memberId, String type, String name,
 		LocalDate from, LocalDate to, ApprovalStatus status, int step, Pageable pageable);
 
-	Optional<ApprovalStep> findByIdAndMemberIdAndStep(Long id, Long memberId, int step);
+	Optional<ApprovalStep> findByIdAndMember_IdAndStep(Long id, Long memberId, int step);
 
-	Optional<ApprovalStep> findByVacationRequestIdAndStep(Long vacationRequestId, int step);
+	Optional<ApprovalStep> findByVacationRequest_IdAndStep(Long vacationRequestId, int step);
 
-	List<ApprovalStep> findByVacationRequestId(Long id);
+	List<ApprovalStep> findByVacationRequest_Id(Long id);
 
 }

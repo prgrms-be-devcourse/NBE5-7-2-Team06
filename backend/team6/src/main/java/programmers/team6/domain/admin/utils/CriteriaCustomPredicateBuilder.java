@@ -1,6 +1,5 @@
 package programmers.team6.domain.admin.utils;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -53,6 +52,14 @@ public class CriteriaCustomPredicateBuilder<T> {
 		SingularAttribute<?, ?>... mappedFields) {
 		if (isProvided(conditionValue)) {
 			this.predicates.add(cb.equal(CriteriaUtils.searchPath(root, mappedFields), conditionValue));
+		}
+		return this;
+	}
+
+	public CriteriaCustomPredicateBuilder<T> applyNonEqualFilter(From<T, ?> root, Object conditionValue,
+		SingularAttribute<?, ?>... mappedFields) {
+		if (isProvided(conditionValue)) {
+			this.predicates.add(cb.notEqual(CriteriaUtils.searchPath(root, mappedFields), conditionValue));
 		}
 		return this;
 	}

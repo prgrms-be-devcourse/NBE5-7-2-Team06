@@ -16,7 +16,7 @@ class AnnualVacationRuleTest {
 		AnnualVacationRule annualVacationRule = createVacationInfo(boundaryYear, 0, 0, 0);
 		LocalDate date = LocalDate.of(2024, 10, 18);
 
-		LocalDate result = annualVacationRule.getAnnualVacationStartJoinDateFrom(date);
+		LocalDate result = annualVacationRule.getJoinDate(date);
 
 		assertThat(result).isEqualTo(LocalDate.of(2022, 10, 18));
 	}
