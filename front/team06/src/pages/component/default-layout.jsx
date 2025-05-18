@@ -9,7 +9,7 @@ const DefaultLayout = ({ children }) => {
     //로그인, 회원가입에서는 sidebar,이름 정보 삭제  삭제
 
 
-    const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+    const [sidebarCollapsed, setSidebarCollapsed] = useState(true);
     // setActiveMenu 삭제하고 이걸로 교체
     const activeMenu = location.pathname.includes('/admin/vacation-request') ? 'vacation-list'
         : location.pathname.includes('/admin/code') ? 'code-management'
@@ -178,7 +178,7 @@ const DefaultLayout = ({ children }) => {
             </footer>
 
             {/* Mobile sidebar overlay */}
-            {!isAuthPage && !!sidebarCollapsed && (
+            {!isAuthPage && !sidebarCollapsed && (
                 <div
                     className="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-10"
                     onClick={() => setSidebarCollapsed(true)}

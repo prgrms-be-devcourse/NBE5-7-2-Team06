@@ -33,14 +33,13 @@ const Login = () => {
 
             //todo 로그인 성공 처리
             alert(`${token.name}님 환영합니다.`);
+            window.location.href = '/vacations/calendar';
+
 
         }catch(error){
             if(error.response){
                 const {message,Codename,status} = error.response.data;
-
                 alert(message);
-
-
             }
         }
 
