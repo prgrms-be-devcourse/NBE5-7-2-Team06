@@ -178,7 +178,7 @@ const DefaultLayout = ({ children }) => {
             </footer>
 
             {/* Mobile sidebar overlay */}
-            {!isAuthPage && !!sidebarCollapsed && (
+            {!isAuthPage && !sidebarCollapsed && (
                 <div
                     className="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-10"
                     onClick={() => setSidebarCollapsed(true)}
