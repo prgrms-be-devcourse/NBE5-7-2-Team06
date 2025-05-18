@@ -61,7 +61,7 @@ const DefaultLayout = ({ children }) => {
         {
             id: 'approval-first',
             label: '1차 결재 목록',
-            icon: '✅',
+            icon: '📝',
             path: '/approval/first'
         },
         {

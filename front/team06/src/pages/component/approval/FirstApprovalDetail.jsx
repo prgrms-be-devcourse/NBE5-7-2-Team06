@@ -205,7 +205,7 @@ const FirstApprovalDetail = () => {
             <div className="max-w-3xl mx-auto">
                 {/* 페이지 헤더 */}
                 <div className="mb-6 flex justify-between items-center">
-                    <h1 className="text-2xl font-bold text-gray-900">휴가 결재 상세 정보</h1>
+                    <h1 className="text-2xl font-bold text-gray-900">1차 결재 상세 정보</h1>
                     <button
                         onClick={handleGoBack}
                         className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-100 focus:outline-none"
