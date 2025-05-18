@@ -15,7 +15,6 @@ import programmers.team6.domain.vacation.repository.VacationInfoRepository;
 import programmers.team6.domain.vacation.rule.VacationGrantRule;
 import programmers.team6.domain.vacation.rule.VacationGrantRuleFinder;
 import programmers.team6.domain.vacation.rule.VacationInfos;
-import programmers.team6.global.entity.Positive;
 
 @RequiredArgsConstructor
 @Service
@@ -59,7 +58,7 @@ public class VacationInfoService {
 
 	private static boolean canUpdate(VacationInfo info, VacationGrantRule vacationGrantRule,
 		VacationInfoUpdateTotalCountRequest request) {
-		return !vacationGrantRule.canUpdate(new Positive(request.totalCount())) || !info.isSameVersion(
+		return !vacationGrantRule.canUpdate(request.totalCount()) || !info.isSameVersion(
 			request.version());
 	}
 }

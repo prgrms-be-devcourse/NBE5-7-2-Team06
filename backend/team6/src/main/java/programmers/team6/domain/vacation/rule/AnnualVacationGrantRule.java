@@ -27,8 +27,8 @@ public final class AnnualVacationGrantRule implements VacationGrantRule {
 	}
 
 	@Override
-	public boolean canUpdate(Positive totalCount) {
-		return !this.maxGrantDays.isLessThan(totalCount);
+	public boolean canUpdate(double totalCount) {
+		return this.maxGrantDays.toInt() >= totalCount;
 	}
 
 	@Override
