@@ -5,12 +5,30 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="6b09c2dd-e595-4265-84c2-111b1c5b244e" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/team06/src/pages/component/admin/MemberApprovalList.jsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/team06/src/pages/component/approval/FirstApprovalDetail.jsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/team06/src/pages/component/approval/SecondApprovalDetail.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../backend/team6/src/main/java/programmers/team6/domain/vacation/dto/ApprovalFirstStepDetailResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/team6/src/main/java/programmers/team6/domain/vacation/dto/ApprovalFirstStepDetailResponse.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../backend/team6/src/main/java/programmers/team6/domain/vacation/dto/ApprovalSecondStepDetailResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/team6/src/main/java/programmers/team6/domain/vacation/dto/ApprovalSecondStepDetailResponse.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../backend/team6/src/main/java/programmers/team6/domain/vacation/util/mapper/ApprovalStepMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/team6/src/main/java/programmers/team6/domain/vacation/util/mapper/ApprovalStepMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../backend/team6/src/main/java/programmers/team6/global/config/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/team6/src/main/java/programmers/team6/global/config/SecurityConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/team06/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/team06/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/team06/public/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/team06/public/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/team06/src/App.js" beforeDir="false" afterPath="$PROJECT_DIR$/team06/src/App.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/team06/src/pages/component/default-layout.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/team06/src/pages/component/default-layout.jsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="JSX File" />
+      </list>
+    </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
@@ -40,7 +58,7 @@
     "RunOnceActivity.git.unshallow": "true",
     "git-widget-placeholder": "#75 on dev",
     "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "/Users/mingyeongjun/project/grepp/project2/NBE5-7-2-Team06/front",
+    "last_opened_file_path": "/Users/mingyeongjun/project/grepp/project2/NBE5-7-2-Team06/front/team06/src/pages/component/approval",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -50,6 +68,11 @@
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/team06/src/pages/component/approval" />
+    </key>
+  </component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
@@ -67,7 +90,7 @@
       <option name="presentableId" value="Default" />
       <updated>1747379415104</updated>
       <workItem from="1747379416510" duration="133000" />
-      <workItem from="1747379577893" duration="1864000" />
+      <workItem from="1747379577893" duration="30702000" />
     </task>
     <servers />
   </component>

@@ -9,6 +9,9 @@ const DefaultLayout = ({ children }) => {
     // setActiveMenu 삭제하고 이걸로 교체
     const activeMenu = location.pathname.includes('/admin/vacation-request') ? 'vacation-list'
         : location.pathname.includes('/admin/code') ? 'code-management'
+            :location.pathname.includes('/approval/first') ? 'approval-first'
+                : location.pathname.includes('/approval/second') ? 'approval-second'
+                    : location.pathname.includes('/admin/member-approvals') ? 'member-approval'
             : 'vacation-list';
 
     // 메뉴 아이템 정의
@@ -48,6 +51,24 @@ const DefaultLayout = ({ children }) => {
             label: '휴가 관리',
             icon: '✅',
             path: '/vacations'
+        },
+        {
+            id: 'member-approval',
+            label: '회원 승인 관리',
+            icon: '👤',
+            path: '/admin/member-approvals'
+        },
+        {
+            id: 'approval-first',
+            label: '1차 결재 목록',
+            icon: '✅',
+            path: '/approval/first'
+        },
+        {
+            id: 'approval-second',
+            label: '2차 결재 목록',
+            icon: '📝',
+            path: '/approval/second'
         }
     ];
 
