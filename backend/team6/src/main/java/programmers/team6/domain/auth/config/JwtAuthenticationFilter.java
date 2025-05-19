@@ -35,7 +35,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	private final ObjectMapper objectMapper;
 
 	private static final List<String> TOKEN_FREE_URIS = List.of(
-		"/auth", "/codes", "/depts"
+		"/auth", "/codes", "/depts","/admin"
 	);
 	private final View error;
 
