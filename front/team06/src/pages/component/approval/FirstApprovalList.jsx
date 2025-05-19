@@ -61,7 +61,7 @@ const FirstApprovalList = () => {
     const statusOptions = [
         { value: "PENDING", label: "결재 대기" },
         { value: "APPROVED", label: "승인" },
-        { value: "REJECTED", label: "거절" },
+        { value: "REJECTED", label: "반려" },
         { value: "CANCELED", label: "취소" }
     ];
 
@@ -169,7 +169,7 @@ const FirstApprovalList = () => {
         const statusNames = {
             PENDING: "결재 대기",
             APPROVED: "승인",
-            REJECTED: "거절",
+            REJECTED: "반려",
             CANCELED: "취소"
         };
         return statusNames[status] || status;

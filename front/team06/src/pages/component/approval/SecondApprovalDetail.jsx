@@ -138,7 +138,7 @@ const SecondApprovalDetail = () => {
         const statusNames = {
             PENDING: "결재 대기",
             APPROVED: "승인",
-            REJECTED: "거절",
+            REJECTED: "반려",
             CANCELED: "취소",
             WAITING: "1차 결재 대기중"
         };
