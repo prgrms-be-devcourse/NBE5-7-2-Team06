@@ -1,5 +1,8 @@
 package programmers.team6.domain.member.service;
 
+import java.util.List;
+
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -7,6 +10,8 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import programmers.team6.domain.admin.dto.AdminCodeResponse;
 import programmers.team6.domain.member.dto.CodeCreateRequest;
+import programmers.team6.domain.member.dto.CodeDropdownResponse;
+import programmers.team6.domain.member.dto.CodeReadResponse;
 import programmers.team6.domain.member.entity.Code;
 import programmers.team6.domain.member.enums.BasicCodeInfo;
 import programmers.team6.domain.member.repository.CodeRepository;
@@ -47,6 +52,11 @@ public class CodeService {
 			return;
 		}
 		codeRepository.delete(deletedTarget);
+	}
+
+	public List<CodeDropdownResponse> getCodesByGroupCode(String groupCode) {
+
+		return codeRepository.findByGroupCode(groupCode);
 	}
 
 }

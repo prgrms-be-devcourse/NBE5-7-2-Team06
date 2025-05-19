@@ -12,6 +12,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import programmers.team6.global.entity.BaseEntity;
+import programmers.team6.global.exception.code.NotFoundErrorCode;
+import programmers.team6.global.exception.customException.NotFoundException;
 
 @Getter
 @Entity
@@ -34,4 +36,16 @@ public class Dept extends BaseEntity {
 		this.deptName = deptName;
 		this.deptLeader = deptLeader;
 	}
+
+	public void appointLeader(Member leader) {
+		this.deptLeader = leader;
+	}
+
+	public Member getDeptLeader() {
+		if (this.deptLeader == null) {
+			throw new NotFoundException(NotFoundErrorCode.NOT_FOUND_DEPT_LEADER);
+		}
+		return this.deptLeader;
+	}
+
 }

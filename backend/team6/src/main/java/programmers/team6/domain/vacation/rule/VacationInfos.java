@@ -1,4 +1,4 @@
-package programmers.team6.domain.vacation.service;
+package programmers.team6.domain.vacation.rule;
 
 import java.util.Collections;
 import java.util.List;
@@ -19,7 +19,17 @@ public final class VacationInfos {
 		return infos.stream().collect(Collectors.groupingBy(VacationInfo::getMemberId));
 	}
 
+	public List<Long> getMemberIds() {
+		return infos.keySet().stream().toList();
+	}
+
 	public List<VacationInfo> getByMemberId(@NotNull Long id) {
 		return infos.getOrDefault(id, Collections.emptyList());
+	}
+
+	public List<VacationInfo> getAll() {
+		return infos.values().stream()
+			.flatMap(List::stream)
+			.toList();
 	}
 }

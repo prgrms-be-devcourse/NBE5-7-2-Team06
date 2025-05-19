@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import programmers.team6.domain.admin.dto.CodeInfo;
+import programmers.team6.domain.member.dto.CodeDropdownResponse;
 import programmers.team6.domain.member.dto.CodeReadResponse;
 import programmers.team6.domain.member.entity.Code;
 
@@ -18,7 +19,12 @@ public interface CodeRepository extends JpaRepository<Code, Long> {
 
 	Optional<Code> findByGroupCodeAndCode(String groupCode, String code);
 
-	List<Code> findByGroupCode(String vacationType);
+	@Query("""
+		  SELECT new programmers.team6.domain.member.dto.CodeDropdownResponse (c.code,c.name)
+		  FROM Code c
+		  WHERE c.groupCode = :groupCode
+		""")
+	List<CodeDropdownResponse> findByGroupCode(@Param("groupCode") String groupCode);
 
 	@Query(value = "select new programmers.team6.domain.member.dto.CodeReadResponse(c.id,c.groupCode,c.code,c.name) "
 		+ "from Code c where (:groupCode is null or c.groupCode = :groupCode)")
@@ -30,4 +36,5 @@ public interface CodeRepository extends JpaRepository<Code, Long> {
 	@Query(value = "select c.groupCode from Code c group by c.groupCode")
 	List<String> findGroupCodes();
 
+	boolean existsByGroupCodeAndCode(String groupCode, String code);
 }
