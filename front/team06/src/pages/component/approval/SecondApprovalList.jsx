@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import api from "../../../api/axiosInstance";
 
 const SecondApprovalList = () => {
     // 상태 관리
@@ -69,11 +70,7 @@ const SecondApprovalList = () => {
     const fetchApprovals = async () => {
         setLoading(true);
         try {
-            const token = localStorage.getItem("accessToken");
-            // 기본 URL과 페이지 파라미터 설정
-            let url = `http://localhost:8080/approval-steps/second?page=${currentPage}&size=${itemsPerPage}`;
-
-            // 필터 조건이 있는 경우 필터링 파라미터 추가
+            let url = `/approval-steps/second?page=${currentPage}&size=${itemsPerPage}`;
             const queryParams = new URLSearchParams();
 
             if (appliedFilters.type) queryParams.append("type", appliedFilters.type);
@@ -82,24 +79,15 @@ const SecondApprovalList = () => {
             if (appliedFilters.to) queryParams.append("to", `${appliedFilters.to}T23:59:59`);
             if (appliedFilters.status) queryParams.append("status", appliedFilters.status);
 
-            // 쿼리 파라미터가 있으면 URL에 추가
             const queryString = queryParams.toString();
             if (queryString) {
-                url = `${url}&${queryString}`;
+                url += `&${queryString}`;
             }
 
-            const response = await fetch(url, {
-                headers: {
-                    "Authorization": `Bearer ${token}`, // ✅ 토큰 붙이기
-                },
-            });
+            // ✅ Axios 인스턴스 사용
+            const response = await api.get(url);
+            const data = response.data;
 
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.message || "데이터를 불러오는데 실패했습니다.");
-            }
-
-            const data = await response.json();
             setApprovals(data.content);
             setTotalPages(data.totalPages);
             setTotalElements(data.totalElements);
@@ -107,11 +95,12 @@ const SecondApprovalList = () => {
             setItemsPerPage(data.size);
         } catch (error) {
             console.error("Error fetching approvals:", error);
-            alert(error.message);
+            alert(error.response?.data?.message || "데이터를 불러오는데 실패했습니다.");
         } finally {
             setLoading(false);
         }
     };
+
 
     // currentPage나 appliedFilters가 변경될 때만 데이터 로드 (필터 입력 변경 시 API 호출 없음)
     useEffect(() => {

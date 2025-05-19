@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import api from "../../../api/axiosInstance";
 
 const SecondApprovalDetail = () => {
     const { approvalStepId } = useParams();
@@ -19,23 +20,11 @@ const SecondApprovalDetail = () => {
     const fetchApprovalDetail = async () => {
         setLoading(true);
         try {
-            const token = localStorage.getItem("accessToken");
-            const response = await fetch(`http://localhost:8080/approval-steps/second/${approvalStepId}`, {
-                headers: {
-                    "Authorization": `Bearer ${token}`,
-                },
-            });
-
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.message || "데이터를 불러오는데 실패했습니다.");
-            }
-
-            const data = await response.json();
-            setApprovalDetail(data);
+            const response = await api.get(`/approval-steps/second/${approvalStepId}`);
+            setApprovalDetail(response.data);
         } catch (err) {
             console.error("Error fetching approval detail:", err);
-            setError(err.message);
+            setError(err.response?.data?.message || "데이터를 불러오는데 실패했습니다.");
         } finally {
             setLoading(false);
         }
@@ -54,25 +43,13 @@ const SecondApprovalDetail = () => {
     const handleApprove = async () => {
         setIsSubmitting(true);
         try {
-            const token = localStorage.getItem("accessToken");
-            const response = await fetch(`http://localhost:8080/approval-steps/second/${approvalStepId}/approve`, {
-                method: "PATCH",
-                headers: {
-                    "Authorization": `Bearer ${token}`,
-                },
-            });
-
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.message || "승인 처리 중 오류가 발생했습니다.");
-            }
-
+            await api.patch(`/approval-steps/second/${approvalStepId}/approve`);
             alert("휴가 신청이 승인되었습니다.");
             setShowApproveModal(false);
             fetchApprovalDetail(); // 데이터 새로고침
         } catch (err) {
             console.error("Error approving vacation:", err);
-            alert(err.message);
+            alert(err.response?.data?.message || "승인 처리 중 오류가 발생했습니다.");
         } finally {
             setIsSubmitting(false);
         }
@@ -92,28 +69,17 @@ const SecondApprovalDetail = () => {
 
         setIsSubmitting(true);
         try {
-            const token = localStorage.getItem("accessToken");
-            const response = await fetch(`http://localhost:8080/approval-steps/second/${approvalStepId}/reject`, {
-                method: "PATCH",
-                headers: {
-                    "Authorization": `Bearer ${token}`,
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ reason: rejectReason }),
+            await api.patch(`/approval-steps/second/${approvalStepId}/reject`, {
+                reason: rejectReason,
             });
 
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.message || "반려 처리 중 오류가 발생했습니다.");
-            }
-
             alert("휴가 신청이 반려되었습니다.");
-            setShowRejectModal(false); // 모달 닫기
-            setRejectReason(""); // 입력 초기화
+            setShowRejectModal(false);
+            setRejectReason("");
             fetchApprovalDetail(); // 데이터 새로고침
         } catch (err) {
             console.error("Error rejecting vacation:", err);
-            alert(err.message);
+            alert(err.response?.data?.message || "반려 처리 중 오류가 발생했습니다.");
         } finally {
             setIsSubmitting(false);
         }

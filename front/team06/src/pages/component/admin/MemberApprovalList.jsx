@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import api from "../../../api/axiosInstance";
 
 export default function MemberApprovalList() {
     // 상태 관리
@@ -14,23 +15,11 @@ export default function MemberApprovalList() {
     const fetchMemberRequests = async () => {
         setLoading(true);
         try {
-            const token = localStorage.getItem("accessToken");
-            const response = await fetch("http://localhost:8080/admin/member-approvals", {
-                headers: {
-                    "Authorization": `Bearer ${token}`,
-                },
-            });
-
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.message || "데이터를 불러오는데 실패했습니다.");
-            }
-
-            const data = await response.json();
-            setMemberRequests(data);
+            const response = await api.get("/admin/member-approvals");
+            setMemberRequests(response.data);
         } catch (err) {
             console.error("Error fetching member requests:", err);
-            setError(err.message);
+            setError(err.response?.data?.message || "데이터를 불러오는데 실패했습니다.");
         } finally {
             setLoading(false);
         }
@@ -72,33 +61,14 @@ export default function MemberApprovalList() {
 
         setIsSubmitting(true);
         try {
-            const token = localStorage.getItem("accessToken");
-            const response = await fetch(`http://localhost:8080/admin/member-approvals/${selectedMemberId}`, {
-                method: "POST",
-                headers: {
-                    "Authorization": `Bearer ${token}`,
-                },
-            });
-
-            if (!response.ok) {
-                throw new Error("회원 승인 처리 중 오류가 발생했습니다.");
-            }
-
-            // 성공 처리 및 목록 새로고침
+            await api.post(`/admin/member-approvals/${selectedMemberId}`);
             alert("회원 가입이 승인되었습니다.");
             closeModal();
             fetchMemberRequests();
-
-            // 페이지 상단으로 스크롤
-            setTimeout(() => {
-                window.scrollTo({
-                    top: 0,
-                    behavior: 'auto'
-                });
-            }, 100);
+            window.scrollTo({ top: 0, behavior: "auto" });
         } catch (err) {
             console.error("Error approving member:", err);
-            alert(err.message);
+            alert(err.response?.data?.message || "회원 승인 처리 중 오류가 발생했습니다.");
         } finally {
             setIsSubmitting(false);
         }
@@ -110,33 +80,14 @@ export default function MemberApprovalList() {
 
         setIsSubmitting(true);
         try {
-            const token = localStorage.getItem("accessToken");
-            const response = await fetch(`http://localhost:8080/admin/member-approvals/${selectedMemberId}`, {
-                method: "DELETE",
-                headers: {
-                    "Authorization": `Bearer ${token}`,
-                },
-            });
-
-            if (!response.ok) {
-                throw new Error("회원 거부 처리 중 오류가 발생했습니다.");
-            }
-
-            // 성공 처리 및 목록 새로고침
+            await api.delete(`/admin/member-approvals/${selectedMemberId}`);
             alert("회원 가입이 거부되었습니다.");
             closeModal();
             fetchMemberRequests();
-
-            // 페이지 상단으로 스크롤
-            setTimeout(() => {
-                window.scrollTo({
-                    top: 0,
-                    behavior: 'auto'
-                });
-            }, 100);
+            window.scrollTo({ top: 0, behavior: "auto" });
         } catch (err) {
             console.error("Error rejecting member:", err);
-            alert(err.message);
+            alert(err.response?.data?.message || "회원 거부 처리 중 오류가 발생했습니다.");
         } finally {
             setIsSubmitting(false);
         }

@@ -14,6 +14,9 @@ import SecondApprovalList from './pages/component/approval/SecondApprovalList'
 import FirstApprovalDetail from './pages/component/approval/FirstApprovalDetail'
 import SecondApprovalDetail from './pages/component/approval/SecondApprovalDetail'
 import MemberApprovalList from './pages/component/admin/MemberApprovalList'
+import VacationList from './pages/admin/vacation-list'
+import CodeManagement from "./pages/admin/code-management";
+import VacationDetail from "./pages/admin/vacation-detail";
 
 function App() {
   return (
@@ -26,7 +29,7 @@ function App() {
               <Route path="/auth/signup" element={<SignUp />} />
 
               <Route path="/vacations/calendar" element={<Calendar />} />
-              
+
               <Route path="/admin/vacation-request" element={<VacationList />} />
               <Route path="/admin/code" element={<CodeManagement />} />
               <Route path="/admin/vacation-detail/:id" element={<VacationDetail />} />

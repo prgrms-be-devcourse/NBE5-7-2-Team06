@@ -26,9 +26,10 @@ const DefaultLayout = ({ children }) => {
 
     const [sidebarCollapsed, setSidebarCollapsed] = useState(true);
 
-    // setActiveMenu 삭제하고 이걸로 교체
-    const activeMenu = location.pathname.includes('/admin/vacation-request') ? 'vacation-list'
-        : location.pathname.includes('/admin/code') ? 'code-management'
+    const activeMenu =
+        location.pathname.includes('/vacations/calendar') ? 'vacation-calendar'
+        :location.pathname.includes('/admin/vacation-request') ? 'vacation-list'
+        :location.pathname.includes('/admin/code') ? 'code-management'
             :location.pathname.includes('/approval/first') ? 'approval-first'
                 : location.pathname.includes('/approval/second') ? 'approval-second'
                     : location.pathname.includes('/admin/member-approvals') ? 'member-approval'
@@ -48,7 +49,7 @@ const DefaultLayout = ({ children }) => {
     // 메뉴 아이템 정의
     const menuItems = [
         {
-            id: 'vacation-list',
+            id: 'vacation-calendar',
             label: '휴가 일정 캘린더',
             icon: '🗓️',
             path: '/vacations/calendar'
@@ -83,12 +84,12 @@ const DefaultLayout = ({ children }) => {
         //   icon: '✅',
         //   path: '/approval'
         // }
-        {
-            id: 'vacations',
-            label: '휴가 관리',
-            icon: '✅',
-            path: '/vacations'
-        },
+        // {
+        //     id: 'vacations',
+        //     label: '휴가 관리',
+        //     icon: '✅',
+        //     path: '/vacations'
+        // },
         {
             id: 'member-approval',
             label: '회원 승인 관리',
