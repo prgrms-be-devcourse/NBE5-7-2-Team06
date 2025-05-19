@@ -77,11 +77,11 @@ public class VacationService {
 	@Transactional
 	public VacationCreateResponseDto requestVacation(Long memberId, VacationCreateRequestDto requestDto) {
 		// 신청자 정보 조회
-		Member requester = memberRepository.findByIdWithDeptAndLeader(memberId)
+		Member member = memberRepository.findByIdWithDeptAndLeader(memberId)
 			.orElseThrow(() -> new RuntimeException("멤버 정보를 찾을 수 없습니다."));
 
 		// 부서장 조회 (결재자)
-		Dept dept = requester.getDept();
+		Dept dept = member.getDept();
 		Member approver = dept.getDeptLeader();
 
 		// 휴가 유형 코드 조회
@@ -92,7 +92,7 @@ public class VacationService {
 		VacationRequestStatus status = VacationRequestStatus.IN_PROGRESS;
 
 		// 휴가 요청 생성
-		VacationRequest vacationRequest = vacationMapper.toVacationRequest(requestDto, vacationType, status, requester);
+		VacationRequest vacationRequest = vacationMapper.toVacationRequest(requestDto, vacationType, status, member);
 		vacationRequestRepository.save(vacationRequest);
 
 		// 결재 단계 생성
