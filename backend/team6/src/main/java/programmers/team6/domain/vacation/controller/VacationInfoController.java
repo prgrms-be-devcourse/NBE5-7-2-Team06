@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,6 +23,7 @@ import programmers.team6.domain.vacation.entity.VacationInfo;
 import programmers.team6.domain.vacation.repository.VacationInfoRepository;
 import programmers.team6.domain.vacation.service.VacationInfoService;
 import programmers.team6.domain.vacation.util.mapper.VacationInfoMapper;
+import programmers.team6.global.paging.PagingConfig;
 
 @RestController
 @RequestMapping("/vacations/infos")
@@ -37,7 +37,7 @@ public class VacationInfoController {
 
 	@GetMapping
 	@ResponseStatus(value = HttpStatus.OK)
-	public Page<MemberVacationInfoSelectResponse> selectVacationInfos(@PageableDefault(sort = "id") Pageable pageable,
+	public Page<MemberVacationInfoSelectResponse> selectVacationInfos(@PagingConfig(sort = "id") Pageable pageable,
 		@RequestParam(required = false) String name) {
 		Page<Member> members = memberSearchRepository.searchFrom(name, pageable);
 		List<VacationInfo> vacationInfos = vacationInfoRepository.findByMemberIdIn(toIds(members));
