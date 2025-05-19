@@ -91,8 +91,7 @@ public class VacationController {
 
 	@GetMapping("/calendar")
 	public ResponseEntity<?> selectVacationCalendar(@RequestParam String yearMonth, @RequestParam Long deptId) {
-		log.info("yearMonth = {}", yearMonth);
-		log.info("deptCode = {}", deptId);
+		
 		List<VacationRequestCalendarResponse> vacations
 			= vacationService.selectVacationCalendar(yearMonth, deptId);
 
