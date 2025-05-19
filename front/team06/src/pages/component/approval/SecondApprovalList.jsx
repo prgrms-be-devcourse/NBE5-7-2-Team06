@@ -21,7 +21,7 @@ const SecondApprovalList = () => {
         name: "",
         from: "",
         to: "",
-        status: ""
+        status: "PENDING"
     });
 
     // 실제 API 요청에 사용될 필터 상태
@@ -30,7 +30,7 @@ const SecondApprovalList = () => {
         name: "",
         from: "",
         to: "",
-        status: ""
+        status: "PENDING"
     });
 
     // 휴가 종류 옵션
@@ -135,7 +135,7 @@ const SecondApprovalList = () => {
             name: "",
             from: "",
             to: "",
-            status: ""
+            status: "PENDING"
         };
         setFilters(emptyFilters);
         setAppliedFilters(emptyFilters);
@@ -151,6 +151,24 @@ const SecondApprovalList = () => {
             month: "2-digit",
             day: "2-digit"
         });
+    };
+
+    // 두 날짜 사이의 일수 계산 함수 추가
+    const calculateDays = (fromDate, toDate) => {
+        if (!fromDate || !toDate) return 0;
+
+        const start = new Date(fromDate);
+        const end = new Date(toDate);
+
+        // 시간 부분을 제외하고 날짜만 비교하기 위해 시간을 00:00:00으로 설정
+        start.setHours(0, 0, 0, 0);
+        end.setHours(0, 0, 0, 0);
+
+        // ms -> days 변환 후 +1 (시작일과 종료일 모두 포함)
+        const diffTime = Math.abs(end - start);
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+
+        return diffDays;
     };
 
     // 상태별 뱃지 스타일
@@ -398,7 +416,24 @@ const SecondApprovalList = () => {
                                                 </span>
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                                {formatDate(approval.from)} ~ {formatDate(approval.to)}
+                                                {approval.type.includes("반차") ? (
+                                                    <>
+                                                        {formatDate(approval.from)}
+                                                        <span className="text-sm ml-2 text-gray-500">
+                                                    ({new Date(approval.from).getHours() < 12 ? "오전 반차" : "오후 반차"})
+                                                </span>
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        {formatDate(approval.from)}
+                                                        {formatDate(approval.from) !== formatDate(approval.to) && (
+                                                            <> ~ {formatDate(approval.to)}</>
+                                                        )}
+                                                        <span className="text-sm ml-2 text-gray-500">
+                                                        ({calculateDays(approval.from, approval.to)}일)
+                                                    </span>
+                                                    </>
+                                                )}
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap">
                                                 <div className="text-sm font-medium text-gray-900">

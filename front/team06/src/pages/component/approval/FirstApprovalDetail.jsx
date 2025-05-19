@@ -102,6 +102,31 @@ const FirstApprovalDetail = () => {
         });
     };
 
+    // 두 날짜 사이의 일수 계산 함수 추가
+    const calculateDays = (fromDate, toDate) => {
+        if (!fromDate || !toDate) return 0;
+
+        const start = new Date(fromDate);
+        const end = new Date(toDate);
+
+        // 시간 부분을 제외하고 날짜만 비교하기 위해 시간을 00:00:00으로 설정
+        start.setHours(0, 0, 0, 0);
+        end.setHours(0, 0, 0, 0);
+
+        // ms -> days 변환 후 +1 (시작일과 종료일 모두 포함)
+        const diffTime = Math.abs(end - start);
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+
+        return diffDays;
+    };
+
+    const formatHalfDay = (dateString) => {
+        const date = new Date(dateString);
+        const hour = date.getHours();
+        const period = hour < 12 ? "오전 반차" : "오후 반차";
+        return `${formatDate(dateString)} (${period})`;
+    };
+
     // 휴가 종류별 뱃지 스타일
     const getVacationTypeBadge = (type) => {
         if (!type) return "bg-gray-100 text-gray-800";
@@ -196,7 +221,24 @@ const FirstApprovalDetail = () => {
                                         {approvalDetail.type}
                                     </span>
                                     <span className="ml-3 text-gray-700">
-                                        {formatDate(approvalDetail.from)} ~ {formatDate(approvalDetail.to)}
+                                        {approvalDetail.type.includes("반차") ? (
+                                            <>
+                                                {formatDate(approvalDetail.from)}
+                                                <span className="text-sm ml-2 text-gray-500">
+                                                    ({new Date(approvalDetail.from).getHours() < 12 ? "오전 반차" : "오후 반차"})
+                                                </span>
+                                            </>
+                                        ) : (
+                                            <>
+                                                {formatDate(approvalDetail.from)}
+                                                {formatDate(approvalDetail.from) !== formatDate(approvalDetail.to) && (
+                                                    <> ~ {formatDate(approvalDetail.to)}</>
+                                                )}
+                                                <span className="text-sm ml-2 text-gray-500">
+                                                        ({calculateDays(approvalDetail.from, approvalDetail.to)}일)
+                                                    </span>
+                                            </>
+                                        )}
                                     </span>
                                 </div>
                                 <span className={`inline-flex px-3 py-1 text-sm font-medium rounded-full ${getStatusBadge(approvalDetail.status)}`}>
@@ -240,7 +282,24 @@ const FirstApprovalDetail = () => {
                                     <div>
                                         <p className="text-sm text-gray-500">휴가 기간</p>
                                         <p className="text-gray-900">
-                                            {formatDate(approvalDetail.from)} ~ {formatDate(approvalDetail.to)}
+                                            {approvalDetail.type.includes("반차") ? (
+                                                <>
+                                                    {formatDate(approvalDetail.from)}
+                                                    <span className="text-sm ml-2 text-gray-500">
+                                                    ({new Date(approvalDetail.from).getHours() < 12 ? "오전 반차" : "오후 반차"})
+                                                </span>
+                                                </>
+                                            ) : (
+                                                <>
+                                                    {formatDate(approvalDetail.from)}
+                                                    {formatDate(approvalDetail.from) !== formatDate(approvalDetail.to) && (
+                                                        <> ~ {formatDate(approvalDetail.to)}</>
+                                                    )}
+                                                    <span className="text-sm ml-2 text-gray-500">
+                                                        ({calculateDays(approvalDetail.from, approvalDetail.to)}일)
+                                                    </span>
+                                                </>
+                                            )}
                                         </p>
                                     </div>
                                     <div>
