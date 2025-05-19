@@ -120,13 +120,6 @@ const FirstApprovalDetail = () => {
         return diffDays;
     };
 
-    const formatHalfDay = (dateString) => {
-        const date = new Date(dateString);
-        const hour = date.getHours();
-        const period = hour < 12 ? "오전 반차" : "오후 반차";
-        return `${formatDate(dateString)} (${period})`;
-    };
-
     // 휴가 종류별 뱃지 스타일
     const getVacationTypeBadge = (type) => {
         if (!type) return "bg-gray-100 text-gray-800";
