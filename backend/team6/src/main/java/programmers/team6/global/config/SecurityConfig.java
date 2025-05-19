@@ -4,25 +4,23 @@ import java.util.List;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import programmers.team6.domain.auth.config.JwtAuthenticationFilter;
+import programmers.team6.global.exception.code.ForbiddenErrorCode;
+import programmers.team6.global.exception.code.UnauthorizedErrorCode;
+import programmers.team6.global.util.ErrorResponseUtil;
 
-@Slf4j
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
@@ -50,25 +48,21 @@ public class SecurityConfig {
 					.requestMatchers(
 						"/auth/**",
 						"/codes/**",
-						"depts/**"
+						"/depts/**"
 					)
 					.permitAll()
 					.requestMatchers("/admin/**").hasAuthority("ADMIN")
 					.anyRequest().authenticated()
-			).exceptionHandling(e -> e
+			).exceptionHandling(exception -> exception
 				.authenticationEntryPoint((request, response, authException) -> {
-					log.warn("🔥 인증 실패 (401): {}", authException.getMessage());
-					response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "인증이 필요합니다.");
+					ErrorResponseUtil.setErrorResponse(response, UnauthorizedErrorCode.UNAUTHORIZED_ENTRY_POINT);
 				})
 				.accessDeniedHandler((request, response, accessDeniedException) -> {
-					log.warn("🚫 인가 실패 (403): {}", accessDeniedException.getMessage());
-					response.sendError(HttpServletResponse.SC_FORBIDDEN, "권한이 없습니다.");
+					ErrorResponseUtil.setErrorResponse(response, ForbiddenErrorCode.FORBIDDEN_NO_AUTHORITY);
 				})
-				.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.NOT_FOUND))
 			)
 			.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
 			.build();
-
 	}
 
 	@Bean

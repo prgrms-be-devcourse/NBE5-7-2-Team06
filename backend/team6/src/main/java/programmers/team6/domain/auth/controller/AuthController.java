@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RestController;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import programmers.team6.domain.auth.dto.TokenPairWithExpiration;
 import programmers.team6.domain.auth.dto.request.MemberLoginRequest;
 import programmers.team6.domain.auth.dto.request.MemberSignUpRequest;
 import programmers.team6.domain.auth.dto.response.AccessTokenResponse;
@@ -66,12 +65,9 @@ public class AuthController {
 	public ResponseEntity<AccessTokenResponse> refresh(
 		@CookieValue("refreshToken") String refreshToken, HttpServletResponse response) {
 
-		TokenPairWithExpiration tokenPair = authService.reissue(refreshToken);
+		AccessTokenResponse accessToken = authService.reissue(refreshToken);
 
-		JwtUtils.addRefreshTokenCookie(response, tokenPair.refreshToken(), tokenPair.refreshTokenExpiresIn());
-
-		return ResponseEntity.ok(
-			new AccessTokenResponse(tokenPair.accessToken(), JwtUtils.toSeconds(tokenPair.accessTokenExpiresIn())));
+		return ResponseEntity.ok(accessToken);
 	}
 
 	@PostMapping("/logout")

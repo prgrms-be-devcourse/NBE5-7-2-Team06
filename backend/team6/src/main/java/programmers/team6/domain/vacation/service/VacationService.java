@@ -36,6 +36,7 @@ import programmers.team6.domain.vacation.enums.VacationRequestStatus;
 import programmers.team6.domain.vacation.repository.ApprovalStepRepository;
 import programmers.team6.domain.vacation.repository.VacationRepository;
 import programmers.team6.domain.vacation.repository.VacationRequestRepository;
+import programmers.team6.domain.vacation.repository.VacationRequestSearchRepository;
 import programmers.team6.domain.vacation.util.mapper.VacationMapper;
 
 @Slf4j
@@ -53,6 +54,7 @@ public class VacationService {
 	private final CodeRepository codeRepository;
 
 	private final ApprovalStepService approvalStepService;
+	private final VacationRequestSearchRepository vacationRequestSearchRepository;
 
 	// 멤버 ID로 멤버를 조회, 멤버가 존재하지 않으면 예외 발생
 	private Member getMemberById(Long memberId) {
@@ -224,7 +226,7 @@ public class VacationService {
 
 		MonthRange monthRange = getMonthRange(yearMonthStr);
 
-		return vacationRequestRepository.findApprovedVacationsByMonth(VacationRequestStatus.APPROVED,
+		return vacationRequestSearchRepository.findApprovedVacationsByMonth(VacationRequestStatus.APPROVED,
 			monthRange.start(),
 			monthRange.end(),
 			deptId);

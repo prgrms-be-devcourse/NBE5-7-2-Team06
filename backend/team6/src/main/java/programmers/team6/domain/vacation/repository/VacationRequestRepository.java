@@ -1,6 +1,5 @@
 package programmers.team6.domain.vacation.repository;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -12,9 +11,7 @@ import org.springframework.data.repository.query.Param;
 
 import programmers.team6.domain.admin.dto.VacationRequestDetailReadResponse;
 import programmers.team6.domain.vacation.dto.VacationMonthlyStatisticsResponse;
-import programmers.team6.domain.vacation.dto.VacationRequestCalendarResponse;
 import programmers.team6.domain.vacation.entity.VacationRequest;
-import programmers.team6.domain.vacation.enums.VacationRequestStatus;
 
 public interface VacationRequestRepository extends JpaRepository<VacationRequest, Long> {
 	@Query("SELECT vr.id FROM VacationRequest vr WHERE vr.member.id = :memberId ORDER BY vr.createdAt DESC")
@@ -40,25 +37,4 @@ public interface VacationRequestRepository extends JpaRepository<VacationRequest
 
 	Optional<VacationRequest> findVacationRequestById(Long id);
 
-	@Query(
-		"""
-			SELECT new programmers.team6.domain.vacation.dto.VacationRequestCalendarResponse(
-			m.name,
-			d.deptName,
-			vr.type.name,
-			m.position.name,
-			vr.from,
-			vr.to)
-			FROM VacationRequest vr
-			JOIN vr.member m
-			JOIN m.dept d
-			JOIN m.position p
-			WHERE vr.status = :status
-			 AND vr.from >= :start
-			 AND vr.to < :end
-			 ANd d.id = :deptId
-			"""
-	)
-	List<VacationRequestCalendarResponse> findApprovedVacationsByMonth(VacationRequestStatus status,
-		LocalDateTime start, LocalDateTime end, Long deptId);
 }

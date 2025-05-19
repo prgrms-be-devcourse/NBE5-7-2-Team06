@@ -1,5 +1,19 @@
-import React, { useState } from 'react';
+import React, { useEffect,useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import api from '../../api/axiosInstance';
+
+const handleLogout = async () => {
+    try {
+        const ok = window.confirm('로그아웃하시겠습니까?');
+        if (!ok) return;
+        await api.post('/auth/logout'); // ✅ refreshToken → 서버로 전달됨 (withCredentials=true)
+
+        localStorage.clear(); // ✅ accessToken, userName 등 제거
+        window.location.href = '/auth/login'; // 또는 navigate('/auth/login')
+    } catch (e) {
+        console.error('로그아웃 실패', e);
+    }
+};
 
 const DefaultLayout = ({ children }) => {
     const navigate = useNavigate();
@@ -15,8 +29,25 @@ const DefaultLayout = ({ children }) => {
         : location.pathname.includes('/admin/code') ? 'code-management'
             : 'vacation-list';
 
+    const [userName, setUserName] = useState('');
+    const [firstLetter, setFirstLetter] = useState('');
+    useEffect(() => {
+        const storedName = localStorage.getItem('userName');
+        if (storedName) {
+            setUserName(storedName);
+            setFirstLetter(storedName?.charAt(0));
+        }
+    }, []);
+
+
     // 메뉴 아이템 정의
     const menuItems = [
+        {
+            id: 'vacation-list',
+            label: '휴가 일정 캘린더',
+            icon: '🗓️',
+            path: '/vacations/calendar'
+        },
         {
             id: 'vacation-list',
             label: '휴가 신청 목록',
@@ -84,14 +115,17 @@ const DefaultLayout = ({ children }) => {
                     <div className="flex items-center space-x-4">
                         <div className="flex items-center space-x-3">
                             <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
-                                <span className="text-white text-sm font-medium">김</span>
+                                <span className="text-white text-sm font-medium">{firstLetter}</span>
                             </div>
-                            <div className="hidden md:block text-sm">
-                                <div className="font-medium text-gray-900">김철수</div>
-                                <div className="text-gray-500">개발팀 대리</div>
+                            <div className="hidden md:block">
+                                <div className="font-medium text-gray-900">{userName}</div>
                             </div>
-                            <button className="text-gray-400 hover:text-gray-600">
-                                <span>▼</span>
+                            <button
+                                onClick={handleLogout}
+                                className="mt-1 font-medium text-gray-500 hover:text-gray-800 underline"
+                                style={{ margin: '5px' }}
+                            >
+                                로그아웃
                             </button>
                         </div>
                     </div>
