@@ -14,12 +14,12 @@ public class TargetVacationRequests {
 		this.vacationRequests = vacationRequests;
 	}
 
-	public long count(Integer year, Integer month) {
+	public double count(Integer year, Integer month) {
 		return countFrom(year, month);
 	}
 
-	private long countFrom(Integer year, Integer month) {
-		long count = 0;
+	private double countFrom(Integer year, Integer month) {
+		double count = 0;
 		for (VacationRequest vacationRequest : vacationRequests) {
 			if (isInRange(vacationRequest, month)) {
 				count += calcVacationDays(vacationRequest, year, month);
@@ -28,9 +28,12 @@ public class TargetVacationRequests {
 		return count;
 	}
 
-	private int calcVacationDays(VacationRequest vacationRequest, Integer year, Integer month) {
+	private double calcVacationDays(VacationRequest vacationRequest, Integer year, Integer month) {
 		LocalDate from = vacationRequest.getFrom().toLocalDate();
 		LocalDate to = vacationRequest.getTo().toLocalDate();
+		if (vacationRequest.getCode().equals("05")) {
+			return 0.5;
+		}
 		if (from.getMonthValue() == to.getMonthValue()) {
 			return DateUtil.calcDaysOfService(from, to) + 1;
 		}

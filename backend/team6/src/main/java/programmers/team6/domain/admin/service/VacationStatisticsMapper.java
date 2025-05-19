@@ -9,9 +9,9 @@ import programmers.team6.domain.vacation.entity.VacationInfoLog;
 
 @Component
 public class VacationStatisticsMapper {
-	public Page<VacationMonthlyStatisticsResponse> toDto(Page<Member> members, VacationRequests vacationRequests,
+	public Page<VacationMonthlyStatisticsResponse> toDto(Members members, VacationRequests vacationRequests,
 		VacationInfoLogs logs, Integer year) {
-		return members.map(member -> toDto(member, vacationRequests, logs, year));
+		return members.toPages().map(member -> toDto(member, vacationRequests, logs, year));
 	}
 
 	private VacationMonthlyStatisticsResponse toDto(Member member, VacationRequests vacationRequests,

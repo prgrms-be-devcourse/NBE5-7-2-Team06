@@ -1,5 +1,6 @@
 package programmers.team6.domain.vacation.repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -12,7 +13,7 @@ public interface VacationInfoLogRepository extends JpaRepository<VacationInfoLog
 	@Query("""
 		select vl
 		from VacationInfoLog vl
-		where vl.memberId in :ids and vl.vacationType = :code
+		where vl.memberId in :ids and vl.vacationType = :code and vl.logDate <= :localDate
 		""")
-	List<VacationInfoLog> findLastedByMemberIdInAndYear(List<Long> ids, String code);
+	List<VacationInfoLog> findLastedByMemberIdInAndYear(List<Long> ids, LocalDateTime localDate, String code);
 }

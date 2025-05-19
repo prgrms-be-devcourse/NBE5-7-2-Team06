@@ -30,7 +30,7 @@ public interface VacationRequestRepository extends JpaRepository<VacationRequest
 	@Query("""
 		select vr 
 		from VacationRequest vr 
-		where vr.type.code = :code 
+		where (vr.type.code = :code or vr.type.code = '05')
 				and vr.status = 'APPROVED' 
 				and vr.member.id in :ids 
 				and (year(vr.from) = :year or year(vr.to) = :year)

@@ -1,5 +1,6 @@
 package programmers.team6.domain.admin.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -17,8 +18,9 @@ public class VacationInfoLogReader {
 
 	private final VacationInfoLogRepository repository;
 
-	public VacationInfoLogs lastedLogsFrom(List<Long> ids, String code) {
-		List<VacationInfoLog> lastedByMemberIdInAndYear = repository.findLastedByMemberIdInAndYear(ids, code);
+	public VacationInfoLogs lastedLogsFrom(List<Long> ids, Integer year, String code) {
+		LocalDateTime date = LocalDateTime.of(year, 12, 31, 23, 59);
+		List<VacationInfoLog> lastedByMemberIdInAndYear = repository.findLastedByMemberIdInAndYear(ids, date, code);
 		return new VacationInfoLogs(toLastedMap(lastedByMemberIdInAndYear));
 	}
 
