@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import programmers.team6.domain.admin.dto.CodeInfo;
 import programmers.team6.domain.member.dto.CodeDropdownResponse;
 import programmers.team6.domain.member.dto.CodeReadResponse;
 import programmers.team6.domain.member.entity.Code;
@@ -26,8 +27,14 @@ public interface CodeRepository extends JpaRepository<Code, Long> {
 	List<CodeDropdownResponse> findByGroupCode(@Param("groupCode") String groupCode);
 
 	@Query(value = "select new programmers.team6.domain.member.dto.CodeReadResponse(c.id,c.groupCode,c.code,c.name) "
-		+ "from Code c")
-	Page<CodeReadResponse> findCodePage(Pageable pageable);
+		+ "from Code c where (:groupCode is null or c.groupCode = :groupCode)")
+	Page<CodeReadResponse> findCodePage(Pageable pageable, @Param("groupCode") String groupCode);
+
+	@Query(value = "select new programmers.team6.domain.admin.dto.CodeInfo(c.id,c.name) from Code c where c.groupCode = :groupCode")
+	List<CodeInfo> findCodeInfosByGroupCode(@Param("groupCode") String groupCode);
+
+	@Query(value = "select c.groupCode from Code c group by c.groupCode")
+	List<String> findGroupCodes();
 
 	boolean existsByGroupCodeAndCode(String groupCode, String code);
 }
