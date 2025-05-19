@@ -22,6 +22,9 @@ import programmers.team6.domain.member.repository.CodeRepository;
 import programmers.team6.domain.member.repository.DeptRepository;
 import programmers.team6.domain.member.repository.MemberRepository;
 import programmers.team6.domain.member.util.mapper.CodeMapper;
+import programmers.team6.domain.vacation.entity.VacationRequest;
+import programmers.team6.domain.vacation.enums.VacationRequestStatus;
+import programmers.team6.domain.vacation.repository.VacationRequestRepository;
 
 @Configuration
 @RequiredArgsConstructor
@@ -31,6 +34,7 @@ public class CodeInitializationConfig {
 	private final MemberRepository memberRepository;
 	private final AuthService authService;
 	private final PasswordEncoder passwordEncoder;
+	private final VacationRequestRepository vacationRequestRepository;
 
 	/**
 	 * 현재 개발환경이고 다른 엔티티의 변수 수정 가능성이 있는 상황에서 우선적으로 CommandLineRunner를 활용하여 개발하였음, 그럼으로 yml의 profile은 dev로 작성 필요
@@ -61,7 +65,33 @@ public class CodeInitializationConfig {
 					"123456q!"));
 				insertMember();
 				setDeptLeader();
+
+				Member member = memberRepository.findById(2L).get();
+				Member member2 = memberRepository.findById(3L).get();
+				Member member3 = memberRepository.findById(4L).get();
+				Code vacationType = codeRepository.findByGroupCodeAndCode("VACATION_TYPE", "01").get();
+
+				VacationRequest vacationRequest = new VacationRequest(member, LocalDateTime.now(),
+					LocalDateTime.of(2025, 5, 22, 0, 0),
+					"사유",
+					vacationType, VacationRequestStatus.APPROVED, 1);
+
+				VacationRequest vacationRequest2 = new VacationRequest(member2, LocalDateTime.of(2025, 5, 18, 0, 0),
+					LocalDateTime.of(2025, 5, 20, 0, 0),
+					"사유",
+					vacationType, VacationRequestStatus.APPROVED, 1);
+
+				VacationRequest vacationRequest3 = new VacationRequest(member3, LocalDateTime.of(2025, 5, 30, 0, 0),
+					LocalDateTime.of(2025, 5, 30, 0, 0),
+					"사유",
+					vacationType, VacationRequestStatus.APPROVED, 1);
+
+				insertVacation(vacationRequest);
+				insertVacation(vacationRequest2);
+				insertVacation(vacationRequest3);
+
 			}
+
 		};
 	}
 
@@ -130,6 +160,10 @@ public class CodeInitializationConfig {
 
 		deptRepository.saveAll(List.of(d1, d2, d3));
 
+	}
+
+	private void insertVacation(VacationRequest request) {
+		vacationRequestRepository.save(request);
 	}
 
 }

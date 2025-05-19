@@ -1,11 +1,31 @@
-import React, { useState } from 'react';
+import React, { useEffect,useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import api from '../../api/axiosInstance';
+
+const handleLogout = async () => {
+    try {
+        const ok = window.confirm('로그아웃하시겠습니까?');
+        if (!ok) return;
+        await api.post('/auth/logout'); // ✅ refreshToken → 서버로 전달됨 (withCredentials=true)
+
+        localStorage.clear(); // ✅ accessToken, userName 등 제거
+        window.location.href = '/auth/login'; // 또는 navigate('/auth/login')
+    } catch (e) {
+        console.error('로그아웃 실패', e);
+    }
+};
 
 const DefaultLayout = ({ children }) => {
     const navigate = useNavigate();
     const location = useLocation();
 
-    const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+    const isAuthPage = location.pathname === '/auth/login' || location.pathname === '/auth/signup';
+    //로그인, 회원가입에서는 sidebar,이름 정보 삭제  삭제
+
+
+
+    const [sidebarCollapsed, setSidebarCollapsed] = useState(true);
+
     // setActiveMenu 삭제하고 이걸로 교체
     const activeMenu = location.pathname.includes('/admin/vacation-request') ? 'vacation-list'
         : location.pathname.includes('/admin/code') ? 'code-management'
@@ -14,8 +34,25 @@ const DefaultLayout = ({ children }) => {
                     : location.pathname.includes('/admin/member-approvals') ? 'member-approval'
             : 'vacation-list';
 
+    const [userName, setUserName] = useState('');
+    const [firstLetter, setFirstLetter] = useState('');
+    useEffect(() => {
+        const storedName = localStorage.getItem('userName');
+        if (storedName) {
+            setUserName(storedName);
+            setFirstLetter(storedName?.charAt(0));
+        }
+    }, []);
+
+
     // 메뉴 아이템 정의
     const menuItems = [
+        {
+            id: 'vacation-list',
+            label: '휴가 일정 캘린더',
+            icon: '🗓️',
+            path: '/vacations/calendar'
+        },
         {
             id: 'vacation-list',
             label: '휴가 신청 목록',
@@ -87,7 +124,9 @@ const DefaultLayout = ({ children }) => {
                             onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
                             className="p-2 rounded-md hover:bg-gray-100 lg:hidden"
                         >
-                            <span className="text-gray-600">☰</span>
+                            {!isAuthPage && (
+                                <span className="text-gray-600">☰</span>
+                            )}
                         </button>
                         <div className="ml-4 flex items-center">
                             <h1 className="text-xl font-bold text-gray-900">휴가 관리 시스템</h1>
@@ -95,27 +134,30 @@ const DefaultLayout = ({ children }) => {
                     </div>
 
                     {/* Right side - User menu */}
+                    {!isAuthPage && (
                     <div className="flex items-center space-x-4">
-                        <button className="p-2 rounded-md hover:bg-gray-100">
-                            <span className="text-gray-600">🔔</span>
-                        </button>
                         <div className="flex items-center space-x-3">
                             <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
-                                <span className="text-white text-sm font-medium">김</span>
+                                <span className="text-white text-sm font-medium">{firstLetter}</span>
                             </div>
-                            <div className="hidden md:block text-sm">
-                                <div className="font-medium text-gray-900">김철수</div>
-                                <div className="text-gray-500">개발팀 대리</div>
+                            <div className="hidden md:block">
+                                <div className="font-medium text-gray-900">{userName}</div>
                             </div>
-                            <button className="text-gray-400 hover:text-gray-600">
-                                <span>▼</span>
+                            <button
+                                onClick={handleLogout}
+                                className="mt-1 font-medium text-gray-500 hover:text-gray-800 underline"
+                                style={{ margin: '5px' }}
+                            >
+                                로그아웃
                             </button>
                         </div>
                     </div>
+                    )}
                 </div>
             </header>
 
             {/* Sidebar */}
+            {!isAuthPage && (
             <aside className={`fixed top-16 left-0 h-full bg-white shadow-lg border-r border-gray-200 transition-width duration-300 z-20 ${
                 sidebarCollapsed ? 'w-16' : 'w-60'
             }`}>
@@ -163,10 +205,11 @@ const DefaultLayout = ({ children }) => {
                     </div>
                 </div>
             </aside>
+            )}
 
             {/* Main content */}
             <main className={`pt-16 transition-all duration-300 ${
-                sidebarCollapsed ? 'ml-16' : 'ml-60'
+                isAuthPage ? '' :sidebarCollapsed ? 'ml-16' : 'ml-60'
             }`}>
                 <div className="min-h-screen">
                     {children}
@@ -175,7 +218,7 @@ const DefaultLayout = ({ children }) => {
 
             {/* Footer */}
             <footer className={`bg-white border-t border-gray-200 transition-all duration-300 ${
-                sidebarCollapsed ? 'ml-16' : 'ml-60'
+                isAuthPage ? '':sidebarCollapsed ? 'ml-16' : 'ml-60'
             }`}>
                 <div className="px-6 py-4">
                     <div className="flex flex-col md:flex-row md:items-center md:justify-between">
@@ -192,7 +235,7 @@ const DefaultLayout = ({ children }) => {
             </footer>
 
             {/* Mobile sidebar overlay */}
-            {!sidebarCollapsed && (
+            {!isAuthPage && !sidebarCollapsed && (
                 <div
                     className="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-10"
                     onClick={() => setSidebarCollapsed(true)}

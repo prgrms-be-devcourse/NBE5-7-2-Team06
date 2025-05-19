@@ -36,4 +36,5 @@ public interface VacationRequestRepository extends JpaRepository<VacationRequest
 	Optional<VacationRequestDetailReadResponse> findVacationRequestDetailById(@Param("id") Long id);
 
 	Optional<VacationRequest> findVacationRequestById(Long id);
+
 }
