@@ -111,10 +111,6 @@ public class ApprovalStep extends BaseEntity {
 		return this.vacationRequest.getCode();
 	}
 
-	public Long getVacationRequestId() {
-		return this.vacationRequest.getId();
-	}
-
 	public int calcVacationDays() {
 		return this.vacationRequest.calcVacationDays();
 	}

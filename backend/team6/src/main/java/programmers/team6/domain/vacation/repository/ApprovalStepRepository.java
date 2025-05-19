@@ -92,8 +92,8 @@ public interface ApprovalStepRepository extends JpaRepository<ApprovalStep, Long
 
 	Optional<ApprovalStep> findByIdAndMemberIdAndStep(Long id, Long memberId, int step);
 
-	Optional<ApprovalStep> findByVacationRequestIdAndStep(Long vacationRequestId, int step);
+	Optional<ApprovalStep> findByVacationRequestAndStep(VacationRequest vacationRequest, int step);
 
-	List<ApprovalStep> findByVacationRequestId(Long id);
+	List<ApprovalStep> findByVacationRequest(VacationRequest vacationRequest);
 
 }

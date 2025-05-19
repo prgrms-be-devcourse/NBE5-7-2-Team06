@@ -78,7 +78,7 @@ public class ApprovalStepService {
 
 		firstStepApproval.validateApprovable();
 
-		ApprovalStep secondStepApproval = findByVacationRequestIdAndStep(firstStepApproval.getVacationRequestId(),
+		ApprovalStep secondStepApproval = findByVacationRequestIdAndStep(firstStepApproval.getVacationRequest(),
 			STEP2);
 
 		firstStepApproval.approve();
@@ -92,7 +92,7 @@ public class ApprovalStepService {
 
 		firstStepApproval.validateRejectable();
 
-		ApprovalStep secondStepApproval = findByVacationRequestIdAndStep(firstStepApproval.getVacationRequestId(),
+		ApprovalStep secondStepApproval = findByVacationRequestIdAndStep(firstStepApproval.getVacationRequest(),
 			STEP2);
 
 		firstStepApproval.reject(request.reason());
@@ -153,8 +153,8 @@ public class ApprovalStepService {
 	}
 
 	// 휴가 요청 취소될 경우, 관련 결재 단계 상태 CANCELED
-	public void cancelApprovalStep(Long vacationStepId) {
-		List<ApprovalStep> findApprovalSteps = approvalStepRepository.findByVacationRequestId(vacationStepId);
+	public void cancelApprovalStep(VacationRequest vacationStep) {
+		List<ApprovalStep> findApprovalSteps = approvalStepRepository.findByVacationRequest(vacationStep);
 		for (ApprovalStep findApprovalStep : findApprovalSteps) {
 			findApprovalStep.cancel();
 		}
@@ -165,8 +165,8 @@ public class ApprovalStepService {
 			.orElseThrow(() -> new NotFoundException(NotFoundErrorCode.NOT_FOUND_APPROVAL_STEP));
 	}
 
-	private ApprovalStep findByVacationRequestIdAndStep(Long vacationRequestId, int step) {
-		return approvalStepRepository.findByVacationRequestIdAndStep(vacationRequestId, step)
+	private ApprovalStep findByVacationRequestIdAndStep(VacationRequest vacationRequest, int step) {
+		return approvalStepRepository.findByVacationRequestAndStep(vacationRequest, step)
 			.orElseThrow(() -> new NotFoundException(NotFoundErrorCode.NOT_FOUND_APPROVAL_STEP));
 	}
 }
