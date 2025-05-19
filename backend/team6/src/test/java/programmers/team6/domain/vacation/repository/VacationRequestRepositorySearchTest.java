@@ -92,7 +92,8 @@ class VacationRequestRepositorySearchTest {
 					// 1 2 3
 					for (int day = 1; day < 4; day++) {
 						VacationRequest vr = new VacationRequest(member, LocalDate.of(year, month, day).atStartOfDay(),
-							LocalDate.of(year, month, day + 1).atStartOfDay(), null, code, 0);
+							LocalDate.of(year, month, day + 1).atStartOfDay(), null, code,
+							VacationRequestStatus.APPROVED, 1);
 						vacationRequestRepository.save(vr);
 						List<ApprovalStep> approvalSteps = new ArrayList<>();
 						for (int j = 0; j < 3; j++) {

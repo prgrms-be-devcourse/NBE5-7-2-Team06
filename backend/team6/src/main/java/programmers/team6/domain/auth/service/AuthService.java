@@ -7,11 +7,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import programmers.team6.domain.auth.dto.JwtMemberInfo;
 import programmers.team6.domain.auth.dto.TokenBody;
 import programmers.team6.domain.auth.dto.TokenPairWithExpiration;
 import programmers.team6.domain.auth.dto.request.MemberLoginRequest;
 import programmers.team6.domain.auth.dto.request.MemberSignUpRequest;
+import programmers.team6.domain.auth.dto.response.AccessTokenResponse;
 import programmers.team6.domain.auth.dto.response.AuthTokenResponse;
 import programmers.team6.domain.auth.dto.response.LoginResponse;
 import programmers.team6.domain.auth.token.JwtTokenProvider;
@@ -34,6 +36,7 @@ import programmers.team6.global.exception.customException.ForbiddenException;
 import programmers.team6.global.exception.customException.NotFoundException;
 import programmers.team6.global.exception.customException.UnauthorizedException;
 
+@Slf4j
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -71,7 +74,6 @@ public class AuthService {
 		memberRepository.save(member);
 	}
 
-	@Transactional(readOnly = true)
 	public boolean isExistsByEmail(String email) {
 		return memberInfoRepository.existsByEmail(email);
 	}
@@ -100,18 +102,13 @@ public class AuthService {
 		return new LoginResponse(authTokenResponse, tokenPair.refreshToken(), tokenPair.refreshTokenExpiresIn());
 	}
 
-	public TokenPairWithExpiration reissue(String refreshToken) {
+	public AccessTokenResponse reissue(String refreshToken) {
+
 		jwtTokenProvider.validate(refreshToken);
 
 		jwtTokenProvider.validateNotBlackListed(refreshToken);
 
-		addBlackList(refreshToken);
-
-		TokenBody tokenBody = jwtTokenProvider.parseClaims(refreshToken);
-
-		return jwtTokenProvider.generateTokenPair(
-			new JwtMemberInfo(tokenBody.id(), tokenBody.name(), tokenBody.role())
-		);
+		return jwtTokenProvider.generateAccessToken(refreshToken);
 	}
 
 	public void addBlackList(String refreshToken) {

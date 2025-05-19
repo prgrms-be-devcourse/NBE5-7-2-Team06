@@ -7,5 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import programmers.team6.domain.vacation.entity.VacationInfo;
 
 public interface VacationRepository extends JpaRepository<VacationInfo, Integer> {
+
 	Optional<VacationInfo> findByMemberId(Long memberId);
 }

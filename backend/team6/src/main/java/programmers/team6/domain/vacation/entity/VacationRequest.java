@@ -52,23 +52,19 @@ public class VacationRequest extends BaseEntity {
 	@Enumerated(value = EnumType.STRING)
 	private VacationRequestStatus status;
 
-	// 추가: 휴가 신청자
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "requester_id", nullable = false)
-	private Member requester;
-
 	@Version
 	private Integer version;
 
+	@Builder
 	public VacationRequest(Member member, LocalDateTime from, LocalDateTime to, String reason, Code type,
-		Integer version) {
+		VacationRequestStatus status, Integer version) {
 		this.member = member;
 		this.from = from;
 		this.to = to;
 		this.reason = reason;
 		this.type = type;
+		this.status = (status != null) ? status : VacationRequestStatus.IN_PROGRESS;
 		this.version = version;
-		this.status = VacationRequestStatus.IN_PROGRESS;
 	}
 
 	public void update(Code type, LocalDateTime from, LocalDateTime to, VacationRequestStatus status, String reason) {
@@ -83,28 +79,17 @@ public class VacationRequest extends BaseEntity {
 		this.status = vacationRequestStatus;
 	}
 
-	@Builder
-	public VacationRequest(LocalDateTime from, LocalDateTime to, String reason, Code type, VacationRequestStatus status,
-		Member requester) {
-		this.from = from;
-		this.to = to;
-		this.reason = reason;
-		this.type = type;
-		this.status = status;
-		this.requester = requester;
-	}
-
 	// UPDATE
 	// 현재 요청자가 수정 권한을 가지고 있는지 확인
 	public boolean canUpdate(Long memberId) {
-		return this.requester.getId().equals(memberId) && this.status == VacationRequestStatus.IN_PROGRESS;
+		return this.member.getId().equals(memberId) && this.status == VacationRequestStatus.IN_PROGRESS;
 	}
 
 	// 수정 권한 검증
 	private void validateUpdate(Long memberId) {
 		if (!canUpdate(memberId)) {
 			// 세부 오류 메시지
-			if (!this.requester.getId().equals(memberId)) {
+			if (!this.member.getId().equals(memberId)) {
 				throw new RuntimeException("휴가 신청자만 수정할 수 있습니다.");
 			}
 
@@ -126,14 +111,14 @@ public class VacationRequest extends BaseEntity {
 	// DELETE
 	// 현재 요청자가 취소 권한을 가지고 있는지 학인
 	public boolean canCancel(Long memberId) {
-		return this.requester.getId().equals(memberId) && this.status == VacationRequestStatus.IN_PROGRESS;
+		return this.member.getId().equals(memberId) && this.status == VacationRequestStatus.IN_PROGRESS;
 	}
 
 	// 취소 권한 확인
 	private void validateCancel(Long memberId) {
 		if (!canCancel(memberId)) {
 			// 세부 오류 메시지
-			if (!this.requester.getId().equals(memberId)) {
+			if (!this.member.getId().equals(memberId)) {
 				throw new RuntimeException("휴가 신청자만 취소할 수 있습니다.");
 			}
 
