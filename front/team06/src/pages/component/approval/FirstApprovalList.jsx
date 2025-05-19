@@ -11,7 +11,8 @@ const FirstApprovalList = () => {
     const [currentPage, setCurrentPage] = useState(0);
     const [totalPages, setTotalPages] = useState(0);
     const [totalElements, setTotalElements] = useState(0);
-    const itemsPerPage = 20;
+    const [itemsPerPage, setItemsPerPage] = useState(0);
+    // const itemsPerPage = 20;
 
     // 필터 상태
     const [filters, setFilters] = useState({
@@ -69,7 +70,7 @@ const FirstApprovalList = () => {
         try {
             const token = localStorage.getItem("accessToken");
             // 기본 URL과 페이지 파라미터 설정
-            let url = `http://localhost:8080/approval-steps/first?page=${currentPage}&size=${itemsPerPage}`;
+            let url = `http://localhost:8080/approval-steps/first?page=${currentPage}`;
 
             // 필터 조건이 있는 경우 필터링 파라미터 추가
             const queryParams = new URLSearchParams();
@@ -102,6 +103,7 @@ const FirstApprovalList = () => {
             setTotalPages(data.totalPages);
             setTotalElements(data.totalElements);
             setCurrentPage(data.number);
+            setItemsPerPage(data.size);
         } catch (error) {
             console.error("Error fetching approvals:", error);
             alert(error.message);

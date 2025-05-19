@@ -11,7 +11,8 @@ const SecondApprovalList = () => {
     const [currentPage, setCurrentPage] = useState(0);
     const [totalPages, setTotalPages] = useState(0);
     const [totalElements, setTotalElements] = useState(0);
-    const itemsPerPage = 20;
+    const [itemsPerPage, setItemsPerPage] = useState(0);
+    // const itemsPerPage = 20;
 
     // 필터 상태 - 사용자 입력용
     const [filters, setFilters] = useState({
@@ -103,6 +104,7 @@ const SecondApprovalList = () => {
             setTotalPages(data.totalPages);
             setTotalElements(data.totalElements);
             setCurrentPage(data.number);
+            setItemsPerPage(data.size);
         } catch (error) {
             console.error("Error fetching approvals:", error);
             alert(error.message);

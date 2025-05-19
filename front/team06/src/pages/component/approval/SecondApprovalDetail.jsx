@@ -12,6 +12,8 @@ const SecondApprovalDetail = () => {
     const [rejectReason, setRejectReason] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [showRejectModal, setShowRejectModal] = useState(false);
+    // 승인 모달 상태 추가
+    const [showApproveModal, setShowApproveModal] = useState(false);
 
     // 휴가 상세 정보 가져오기
     const fetchApprovalDetail = async () => {
@@ -43,12 +45,13 @@ const SecondApprovalDetail = () => {
         fetchApprovalDetail();
     }, [approvalStepId]);
 
+    // 승인 모달 표시
+    const openApproveModal = () => {
+        setShowApproveModal(true);
+    };
+
     // 승인 처리
     const handleApprove = async () => {
-        if (!window.confirm("이 휴가 신청을 승인하시겠습니까?")) {
-            return;
-        }
-
         setIsSubmitting(true);
         try {
             const token = localStorage.getItem("accessToken");
@@ -65,6 +68,7 @@ const SecondApprovalDetail = () => {
             }
 
             alert("휴가 신청이 승인되었습니다.");
+            setShowApproveModal(false);
             fetchApprovalDetail(); // 데이터 새로고침
         } catch (err) {
             console.error("Error approving vacation:", err);
@@ -303,7 +307,7 @@ const SecondApprovalDetail = () => {
                             {approvalDetail.status === "PENDING" && (
                                 <div className="mt-8 flex justify-center space-x-4">
                                     <button
-                                        onClick={handleApprove}
+                                        onClick={openApproveModal}
                                         disabled={isSubmitting}
                                         className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
                                     >
@@ -327,6 +331,37 @@ const SecondApprovalDetail = () => {
                                     </p>
                                 </div>
                             )}
+                        </div>
+                    </div>
+                )}
+
+                {/* 승인 확인 모달 */}
+                {showApproveModal && (
+                    <div className="fixed inset-0 bg-black/20 backdrop-blur-sm z-50 flex justify-center items-center transition-all duration-200">
+                        <div className="bg-white rounded-lg shadow-2xl border border-gray-200 max-w-md w-full mx-4">
+                            <div className="px-6 py-4 border-b border-gray-200">
+                                <h3 className="text-lg font-semibold text-gray-800">휴가 승인 확인</h3>
+                            </div>
+                            <div className="p-6">
+                                <p className="text-gray-700 mb-4">
+                                    이 휴가 신청을 승인하시겠습니까?
+                                </p>
+                                <div className="flex justify-end space-x-3">
+                                    <button
+                                        onClick={() => setShowApproveModal(false)}
+                                        className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-100 focus:outline-none"
+                                    >
+                                        취소
+                                    </button>
+                                    <button
+                                        onClick={handleApprove}
+                                        disabled={isSubmitting}
+                                        className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                                    >
+                                        {isSubmitting ? "처리 중..." : "승인"}
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 )}
