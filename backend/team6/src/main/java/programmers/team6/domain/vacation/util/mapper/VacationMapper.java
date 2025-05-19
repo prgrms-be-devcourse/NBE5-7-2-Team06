@@ -28,14 +28,14 @@ public class VacationMapper {
 
 	// VacationCreateRequestDto → VacationRequest
 	public VacationRequest toVacationRequest(VacationCreateRequestDto requestDto, Code vacationType,
-		VacationRequestStatus status, Member requester) {
+		VacationRequestStatus status, Member member) {
 		return VacationRequest.builder()
 			.from(requestDto.getFrom())
 			.to(requestDto.getTo())
 			.reason(requestDto.getReason())
 			.type(vacationType)
 			.status(status)
-			.requester(requester)
+			.member(member)
 			.build();
 	}
 

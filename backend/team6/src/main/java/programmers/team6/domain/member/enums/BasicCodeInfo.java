@@ -7,7 +7,8 @@ public enum BasicCodeInfo {
 	ANNUAL("VACATION_TYPE", "01", "연차"),
 	REWARD("VACATION_TYPE", "02", "포상 휴가"),
 	OFFICIAL("VACATION_TYPE", "03", "공가"),
-	CONGRATULATORY("VACATION_TYPE", "04", "경조사 휴가");
+	CONGRATULATORY("VACATION_TYPE", "04", "경조사 휴가"),
+	HALF("VACATION_TYPE", "05", "반차");
 	private final String groupCode;
 	private final String code;
 	private final String name;
