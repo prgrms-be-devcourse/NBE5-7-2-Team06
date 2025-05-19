@@ -1,10 +1,10 @@
 package programmers.team6.global.exception.customException;
 
-import programmers.team6.global.exception.code.ErrorCode;
+import programmers.team6.global.exception.code.ConflictErrorCode;
 
 public class ConflictException extends CustomException {
 
-	public ConflictException(ErrorCode errorCode) {
+	public ConflictException(ConflictErrorCode errorCode) {
 		super(errorCode);
 	}
 }

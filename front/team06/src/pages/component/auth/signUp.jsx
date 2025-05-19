@@ -2,8 +2,9 @@
 import { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { colors, spacing, typography } from '../styles/design-tokens';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import api from '../../../api/axiosInstance';
+
 
 const SignUp = () => {
 
@@ -12,7 +13,7 @@ const SignUp = () => {
 
     useEffect(() => {
         // 직위 코드 가져오기
-        axios.get('/codes/group/POSITION')
+        api.get('/codes/group/POSITION')
             .then(res => {
                 setPositions(res.data);
             })
@@ -21,7 +22,8 @@ const SignUp = () => {
             });
 
         // 부서 목록 가져오기
-        axios.get('/depts')
+        api.get('/depts')
+
             .then(res => {
                 setDepts(res.data);
             })
@@ -43,7 +45,8 @@ const SignUp = () => {
         }
 
 
-        const res = await axios.get(`/auth/email-duplicate-check?email=${form.email}`);
+
+        const res = await api.get(`/auth/email-duplicate-check?email=${form.email}`);
         const isDuplicated = res.data.isEmailDuplicated;
         if(!isDuplicated){
             setEmailCheckMessage('✅ 사용 가능한 이메일입니다.');
@@ -106,7 +109,9 @@ const SignUp = () => {
         }
 
         try {
-            await axios.post('/auth/signup', {
+
+            await api.post('/auth/signup', {
+
                 ...form,
                 joinDate: new Date(form.joinDate),
             });

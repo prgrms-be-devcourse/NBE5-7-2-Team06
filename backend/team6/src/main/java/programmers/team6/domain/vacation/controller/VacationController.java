@@ -1,5 +1,7 @@
 package programmers.team6.domain.vacation.controller;
 
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -13,15 +15,18 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import programmers.team6.domain.vacation.dto.VacationCancelResponseDto;
 import programmers.team6.domain.vacation.dto.VacationCreateRequestDto;
 import programmers.team6.domain.vacation.dto.VacationCreateResponseDto;
 import programmers.team6.domain.vacation.dto.VacationInfoSelectResponseDto;
 import programmers.team6.domain.vacation.dto.VacationListResponseDto;
+import programmers.team6.domain.vacation.dto.VacationRequestCalendarResponse;
 import programmers.team6.domain.vacation.dto.VacationUpdateRequestDto;
 import programmers.team6.domain.vacation.dto.VacationUpdateResponseDto;
 import programmers.team6.domain.vacation.service.VacationService;
 
+@Slf4j
 @RestController
 @RequestMapping("/vacations")
 @RequiredArgsConstructor
@@ -83,4 +88,15 @@ public class VacationController {
 			.build();
 		return ResponseEntity.ok(response);
 	}
+
+	@GetMapping("/calendar")
+	public ResponseEntity<?> selectVacationCalendar(@RequestParam String yearMonth, @RequestParam Long deptId) {
+		log.info("yearMonth = {}", yearMonth);
+		log.info("deptCode = {}", deptId);
+		List<VacationRequestCalendarResponse> vacations
+			= vacationService.selectVacationCalendar(yearMonth, deptId);
+
+		return ResponseEntity.ok(vacations);
+	}
+
 }

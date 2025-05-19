@@ -21,6 +21,7 @@ import programmers.team6.domain.auth.config.JwtConfiguration;
 import programmers.team6.domain.auth.dto.JwtMemberInfo;
 import programmers.team6.domain.auth.dto.TokenBody;
 import programmers.team6.domain.auth.dto.TokenPairWithExpiration;
+import programmers.team6.domain.auth.dto.response.AccessTokenResponse;
 import programmers.team6.domain.auth.service.JwtService;
 import programmers.team6.domain.member.enums.Role;
 import programmers.team6.global.exception.code.UnauthorizedErrorCode;
@@ -44,6 +45,17 @@ public class JwtTokenProvider {
 
 		return new TokenPairWithExpiration(accessToken, refreshToken, jwtConfiguration.accessTokenExpiration(),
 			jwtConfiguration.refreshTokenExpiration());
+	}
+
+	public AccessTokenResponse generateAccessToken(String refreshToken) {
+
+		TokenBody tokenBody = parseClaims(refreshToken);
+
+		JwtMemberInfo jwtMemberInfo = new JwtMemberInfo(tokenBody.id(), tokenBody.name(), tokenBody.role());
+
+		String accessToken = issueAccessToken(jwtMemberInfo);
+
+		return new AccessTokenResponse(accessToken, jwtConfiguration.accessTokenExpiration());
 	}
 
 	public void validate(String token) {
@@ -121,8 +133,7 @@ public class JwtTokenProvider {
 		if (header != null && header.startsWith(BEARER)) {
 			return header.substring(BEARER.length());
 		}
-		throw new UnauthorizedException(UnauthorizedErrorCode.UNAUTHORIZED_INVALID_HEADER);
-
+		return null;
 	}
 
 }

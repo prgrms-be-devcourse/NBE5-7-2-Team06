@@ -2,8 +2,10 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { colors, spacing, typography } from '../styles/design-tokens';
-import axios from 'axios';
+
 import { useNavigate } from 'react-router-dom';
+import api from '../../../api/axiosInstance';
+
 
 const Login = () => {
 
@@ -20,7 +22,8 @@ const Login = () => {
         e.preventDefault();
 
         try{
-            const response = await axios.post("/auth/login",
+
+            const response = await api.post("/auth/login",
                 {email,password},
                 {withCredentials: true});
 
@@ -31,16 +34,14 @@ const Login = () => {
             localStorage.setItem("userName",token.name);
             localStorage.setItem("userRole",token.role);
 
-            //todo 로그인 성공 처리
             alert(`${token.name}님 환영합니다.`);
+            window.location.href = '/vacations/calendar';
+
 
         }catch(error){
             if(error.response){
                 const {message,Codename,status} = error.response.data;
-
                 alert(message);
-
-
             }
         }
 
