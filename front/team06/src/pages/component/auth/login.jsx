@@ -2,8 +2,10 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { colors, spacing, typography } from '../styles/design-tokens';
+
 import { useNavigate } from 'react-router-dom';
 import api from '../../../api/axiosInstance';
+
 
 const Login = () => {
 
@@ -20,6 +22,7 @@ const Login = () => {
         e.preventDefault();
 
         try{
+
             const response = await api.post("/auth/login",
                 {email,password},
                 {withCredentials: true});
@@ -33,6 +36,7 @@ const Login = () => {
 
             alert(`${token.name}님 환영합니다.`);
             window.location.href = '/vacations/calendar';
+
 
         }catch(error){
             if(error.response){

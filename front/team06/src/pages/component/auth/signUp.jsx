@@ -5,6 +5,7 @@ import { colors, spacing, typography } from '../styles/design-tokens';
 import { useNavigate } from 'react-router-dom';
 import api from '../../../api/axiosInstance';
 
+
 const SignUp = () => {
 
     const [positions, setPositions] = useState([]);
@@ -22,6 +23,7 @@ const SignUp = () => {
 
         // 부서 목록 가져오기
         api.get('/depts')
+
             .then(res => {
                 setDepts(res.data);
             })
@@ -41,6 +43,7 @@ const SignUp = () => {
             setIsEmailAvailable(false);
             return;
         }
+
 
 
         const res = await api.get(`/auth/email-duplicate-check?email=${form.email}`);
@@ -106,7 +109,9 @@ const SignUp = () => {
         }
 
         try {
+
             await api.post('/auth/signup', {
+
                 ...form,
                 joinDate: new Date(form.joinDate),
             });
