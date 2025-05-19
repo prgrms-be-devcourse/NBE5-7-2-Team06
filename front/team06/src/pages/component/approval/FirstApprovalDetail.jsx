@@ -31,6 +31,7 @@ const FirstApprovalDetail = () => {
     };
 
     useEffect(() => {
+        window.scrollTo(0, 0);
         fetchApprovalDetail();
     }, [approvalStepId]);
 
