@@ -2,7 +2,6 @@ package programmers.team6.domain.vacation.controller;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,6 +22,7 @@ import programmers.team6.domain.vacation.dto.ApprovalSecondStepSelectResponse;
 import programmers.team6.domain.vacation.dto.ApprovalStepRejectRequest;
 import programmers.team6.domain.vacation.dto.ApprovalStepSelectRequest;
 import programmers.team6.domain.vacation.service.ApprovalStepService;
+import programmers.team6.global.paging.PagingConfig;
 
 @RestController
 @RequestMapping("/approval-steps")
@@ -35,7 +35,7 @@ public class ApprovalStepController {
 	@ResponseStatus(HttpStatus.OK)
 	public Page<ApprovalFirstStepSelectResponse> getFirstStep(
 		@AuthenticationPrincipal TokenBody tokenBody,
-		ApprovalStepSelectRequest request, @PageableDefault(size = 20) Pageable pageable) {
+		ApprovalStepSelectRequest request, @PagingConfig Pageable pageable) {
 
 		if (!request.hasFilter()) {
 			return approvalStepService.findFirstStepByMemberId(tokenBody.id(), pageable);
@@ -56,7 +56,7 @@ public class ApprovalStepController {
 	@ResponseStatus(HttpStatus.OK)
 	public Page<ApprovalSecondStepSelectResponse> getSecondStep(
 		@AuthenticationPrincipal TokenBody tokenBody,
-		ApprovalStepSelectRequest request, @PageableDefault(size = 20) Pageable pageable) {
+		ApprovalStepSelectRequest request, @PagingConfig Pageable pageable) {
 
 		if (!request.hasFilter()) {
 			return approvalStepService.findSecondStepByMemberId(tokenBody.id(), pageable);
