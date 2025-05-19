@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
+import programmers.team6.domain.admin.dto.AdminCodeResponse;
 import programmers.team6.domain.member.dto.CodeCreateRequest;
 import programmers.team6.domain.member.dto.CodeDropdownResponse;
 import programmers.team6.domain.member.dto.CodeReadResponse;
@@ -29,8 +30,8 @@ public class CodeService {
 	}
 
 	@Transactional(readOnly = true)
-	public Page<CodeReadResponse> readCodePage(Pageable pageable) {
-		return codeRepository.findCodePage(pageable);
+	public AdminCodeResponse readCodePage(Pageable pageable,String groupCode) {
+		return new AdminCodeResponse(codeRepository.findCodePage(pageable,groupCode), codeRepository.findGroupCodes());
 	}
 
 	public void updateCode(Long id, CodeCreateRequest codeCreateRequest) {

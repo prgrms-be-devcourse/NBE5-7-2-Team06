@@ -14,10 +14,17 @@ import programmers.team6.domain.vacation.enums.VacationRequestStatus;
 public record AdminVacationSearchCondition(
 	@Valid DateRangeCondition dateRange,
 	@Valid ApplicantCondition applicant,
-	@Valid ApproverCondition approver,
 	// 휴가 신청 상태
 	VacationRequestStatus vacationRequestStatus
 ) {
+	public AdminVacationSearchCondition {
+		if (dateRange == null) {
+			dateRange = new DateRangeCondition(null, null, null, null);
+		}
+		if (applicant == null) {
+			applicant = new ApplicantCondition(null, null, null, null);
+		}
+	}
 
 	public record DateRangeCondition(
 		// 시작일
@@ -54,14 +61,6 @@ public record AdminVacationSearchCondition(
 		// 휴가 종류 codeId
 		@Positive
 		Long vacationTypeCodeId
-	) {
-	}
-
-	// 휴가 결재자
-	public record ApproverCondition(
-		// 이름
-		@Size(max = 30)
-		String name
 	) {
 	}
 }
