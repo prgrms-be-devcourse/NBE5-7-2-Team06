@@ -10,6 +10,7 @@ import programmers.team6.domain.admin.dto.MemberApprovalResponse;
 import programmers.team6.domain.member.entity.Member;
 import programmers.team6.domain.member.enums.Role;
 import programmers.team6.domain.member.repository.MemberRepository;
+import programmers.team6.domain.member.service.MemberService;
 import programmers.team6.domain.vacation.entity.VacationInfo;
 import programmers.team6.domain.vacation.enums.VacationCode;
 import programmers.team6.domain.vacation.repository.VacationInfoRepository;
@@ -24,6 +25,7 @@ public class MemberApprovalService {
 	private final MemberRepository memberRepository;
 	private final VacationGrantRuleFinder vacationGrantRuleFinder;
 	private final VacationInfoRepository vacationInfoRepository;
+	private final MemberService memberService;
 
 	public List<MemberApprovalResponse> findPendingMembers() {
 		return memberRepository.findPendingMembers(Role.PENDING);
@@ -31,8 +33,7 @@ public class MemberApprovalService {
 
 	@Transactional
 	public void approveMember(Long memberId) {
-		Member member = memberRepository.findById(memberId)
-			.orElseThrow(() -> new IllegalArgumentException("해당 멤버가 존재하지 않습니다."));
+		Member member = memberService.findById(memberId);
 		member.approve();
 
 		initInfo(member);
@@ -49,8 +50,7 @@ public class MemberApprovalService {
 
 	@Transactional
 	public void deleteMember(Long memberId) {
-		Member member = memberRepository.findById(memberId)
-			.orElseThrow(() -> new IllegalArgumentException("해당 멤버가 존재하지 않습니다."));
+		Member member = memberService.findById(memberId);
 		member.validateDeletableOnReject();
 		memberRepository.delete(member);
 	}

@@ -90,10 +90,10 @@ public interface ApprovalStepRepository extends JpaRepository<ApprovalStep, Long
 	Page<ApprovalSecondStepSelectResponse> findSecondStepByFilter(Long memberId, String type, String name,
 		LocalDateTime from, LocalDateTime to, ApprovalStatus status, int step, Pageable pageable);
 
-	Optional<ApprovalStep> findByIdAndMember_IdAndStep(Long id, Long memberId, int step);
+	Optional<ApprovalStep> findByIdAndMemberIdAndStep(Long id, Long memberId, int step);
 
-	Optional<ApprovalStep> findByVacationRequest_IdAndStep(Long vacationRequestId, int step);
+	Optional<ApprovalStep> findByVacationRequestIdAndStep(Long vacationRequestId, int step);
 
-	List<ApprovalStep> findByVacationRequest_Id(Long id);
+	List<ApprovalStep> findByVacationRequestId(Long id);
 
 }
