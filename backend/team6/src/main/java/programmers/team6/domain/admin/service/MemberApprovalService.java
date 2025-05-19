@@ -51,7 +51,7 @@ public class MemberApprovalService {
 	public void deleteMember(Long memberId) {
 		Member member = memberRepository.findById(memberId)
 			.orElseThrow(() -> new IllegalArgumentException("해당 멤버가 존재하지 않습니다."));
-		member.validateDeletable();
+		member.validateDeletableOnReject();
 		memberRepository.delete(member);
 	}
 }

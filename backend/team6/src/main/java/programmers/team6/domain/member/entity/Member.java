@@ -21,6 +21,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import programmers.team6.domain.member.enums.Role;
 import programmers.team6.global.entity.BaseEntity;
+import programmers.team6.global.exception.code.BadRequestErrorCode;
+import programmers.team6.global.exception.customException.BadRequestException;
 
 @Getter
 @Entity
@@ -66,14 +68,14 @@ public class Member extends BaseEntity {
 
 	public void approve() {
 		if (this.role != Role.PENDING) {
-			throw new IllegalArgumentException("승인 대기 상태가 아닌 멤버는 권한을 변경할 수 없습니다.");
+			throw new BadRequestException(BadRequestErrorCode.BAD_REQUEST_MEMBER_ROLE);
 		}
 		this.role = Role.USER;
 	}
 
-	public void validateDeletable() {
+	public void validateDeletableOnReject() {
 		if (this.role != Role.PENDING) {
-			throw new IllegalArgumentException("해당 멤버는 승인된 멤버이므로 삭제할 수 없습니다.");
+			throw new BadRequestException(BadRequestErrorCode.BAD_REQUEST_MEMBER_ROLE);
 		}
 	}
 
