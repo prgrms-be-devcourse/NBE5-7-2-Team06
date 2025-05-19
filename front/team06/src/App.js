@@ -5,14 +5,20 @@ import {
   Route,
 } from 'react-router-dom';
 import DefaultLayout from './pages/component/default-layout';
-import Vacations from "./pages/component/vacations/vacations";
+import Login from'./pages/component/auth/login';
+import SignUp from'./pages/component/auth/signUp';
+import {Navigate} from "react-router-dom";
+
 
 function App() {
   return (
       <Router>
         <DefaultLayout>
           <Routes>
-              <Route path="/vacations" element={<Vacations />} />
+              <Route path="/" element={<Navigate to="/auth/login" />} />
+
+              <Route path="/auth/login" element={<Login />} />
+              <Route path="/auth/signup" element={<SignUp />} />
           </Routes>
         </DefaultLayout>
       </Router>
