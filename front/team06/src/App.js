@@ -19,6 +19,10 @@ function App() {
 
               <Route path="/auth/login" element={<Login />} />
               <Route path="/auth/signup" element={<SignUp />} />
+              
+              <Route path="/admin/vacation-request" element={<VacationList />} />
+              <Route path="/admin/code" element={<CodeManagement />} />
+              <Route path="/admin/vacation-detail/:id" element={<VacationDetail />} />
           </Routes>
         </DefaultLayout>
       </Router>
