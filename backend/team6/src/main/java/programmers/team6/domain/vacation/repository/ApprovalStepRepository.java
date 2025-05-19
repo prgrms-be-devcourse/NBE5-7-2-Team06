@@ -1,6 +1,6 @@
 package programmers.team6.domain.vacation.repository;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -59,7 +59,7 @@ public interface ApprovalStepRepository extends JpaRepository<ApprovalStep, Long
 		order by a.createdAt desc
 		""")
 	Page<ApprovalFirstStepSelectResponse> findFirstStepByFilter(Long memberId, String type, String name,
-		LocalDate from, LocalDate to, ApprovalStatus status, int step, Pageable pageable);
+		LocalDateTime from, LocalDateTime to, ApprovalStatus status, int step, Pageable pageable);
 
 	@Query("""
 		select new programmers.team6.domain.vacation.dto.ApprovalSecondStepSelectResponse(
@@ -88,7 +88,7 @@ public interface ApprovalStepRepository extends JpaRepository<ApprovalStep, Long
 		order by a2.createdAt desc
 		""")
 	Page<ApprovalSecondStepSelectResponse> findSecondStepByFilter(Long memberId, String type, String name,
-		LocalDate from, LocalDate to, ApprovalStatus status, int step, Pageable pageable);
+		LocalDateTime from, LocalDateTime to, ApprovalStatus status, int step, Pageable pageable);
 
 	Optional<ApprovalStep> findByIdAndMember_IdAndStep(Long id, Long memberId, int step);
 

@@ -14,6 +14,7 @@ public record ApprovalFirstStepDetailResponse(
 	LocalDateTime from,
 	LocalDateTime to,
 	String reason,
-	String approverName
+	String approverName,
+	String approvalReason
 ) {
 }
