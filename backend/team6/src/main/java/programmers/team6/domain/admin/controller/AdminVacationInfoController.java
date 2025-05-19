@@ -1,4 +1,4 @@
-package programmers.team6.domain.vacation.controller;
+package programmers.team6.domain.admin.controller;
 
 import java.util.List;
 
@@ -15,10 +15,10 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
+import programmers.team6.domain.admin.dto.VacationInfoUpdateTotalCountRequestsList;
 import programmers.team6.domain.member.entity.Member;
 import programmers.team6.domain.member.repository.MemberSearchRepository;
 import programmers.team6.domain.vacation.dto.MemberVacationInfoSelectResponse;
-import programmers.team6.domain.vacation.dto.VacationInfoUpdateTotalCountRequestsList;
 import programmers.team6.domain.vacation.entity.VacationInfo;
 import programmers.team6.domain.vacation.repository.VacationInfoRepository;
 import programmers.team6.domain.vacation.service.VacationInfoService;
@@ -26,9 +26,9 @@ import programmers.team6.domain.vacation.util.mapper.VacationInfoMapper;
 import programmers.team6.global.paging.PagingConfig;
 
 @RestController
-@RequestMapping("/vacations/infos")
+@RequestMapping("/admin/vacations/infos")
 @RequiredArgsConstructor
-public class VacationInfoController {
+public class AdminVacationInfoController {
 
 	private final VacationInfoService vacationInfoService;
 	private final MemberSearchRepository memberSearchRepository;

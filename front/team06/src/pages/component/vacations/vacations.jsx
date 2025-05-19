@@ -1,12 +1,13 @@
-import React, {useState, useEffect} from "react";
+import React, {useState, useEffect,useRef} from "react";
 import {Search, Save, ChevronLeft, ChevronRight, Loader2} from "lucide-react";
+import axios from '../../../api/axiosInstance';
 
 // 실제 휴가 유형 맵핑
 const vacationTypeMap = {
     "01": "연차",
-    "02": "병가",
-    "03": "무급",
-    "04": "포상"
+    "02": "포상 휴가",
+    "03": "공가",
+    "04": "경조사 휴가"
 };
 
 const vacationTypes = Object.keys(vacationTypeMap);
@@ -19,28 +20,36 @@ export default function Vacations() {
     const [totalPages, setTotalPages] = useState(1);
     const pageSize = 10;
 
+    const requestedRef = useRef(false);
     useEffect(() => {
+        if (requestedRef.current) return;
+        requestedRef.current = true;
         fetchVacationData(currentPage, searchName);
     }, [currentPage]);
 
     const fetchVacationData = async (page, name) => {
         setLoading(true);
         try {
-            const response = await fetch(
-                `http://localhost:8080/vacations/infos?name=${encodeURIComponent(name)}&page=${page}&size=${pageSize}`
-            );
+            const response = await axios.get('/admin/vacations/infos', {
+                params: {
+                    name: name,
+                    page: page,
+                    size: pageSize
+                }
+            });
 
-            if (!response.ok) {
-                throwError(response);
-            }
-
-            const data = await response.json();
+            const data = response.data;
             setVacationData(data.content || []);
             setTotalPages(data.totalPages || 1);
         } catch (e) {
-            alert("데이터 조회 실패");
+            if (e.response?.status === 401) {
+               alert('접근 권한이 없습니다.');
+            }else{
+                alert('데이터 조회 실패');
+            }
         } finally {
             setLoading(false);
+            requestedRef.current = false;
         }
     };
 
@@ -63,51 +72,49 @@ export default function Vacations() {
 
     const saveEmployee = async (employee) => {
         try {
-            const response = await fetch("http://localhost:8080/vacations/infos", {
-                method: 'PATCH',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    requests: [
-                        {
-                            memberId: employee.id,
-                            vacations: employee.vacationInfos.map(v => ({
-                                id: v.id,
-                                totalCount: v.totalCount,
-                                type: v.vacationType || v.type,
-                                version: v.version,
-                            })),
-                        },
-                    ],
-                })
+            const response = await axios.patch('/admin/vacations/infos', {
+                requests: [
+                    {
+                        memberId: employee.id,
+                        vacations: employee.vacationInfos.map(v => ({
+                            id: v.id,
+                            totalCount: v.totalCount,
+                            type: v.vacationType || v.type,
+                            version: v.version,
+                        })),
+                    },
+                ],
             });
-
-            if (!response.ok) {
-                throwError(response);
-            }
 
             alert(`${employee.name} 저장 완료`);
         } catch (e) {
-            if(e.validationErrors){
-                alert("필수 입력 사항을 확인해주세요")
-            }else{
-                alert("문제가 발생하였습니다");
+            const res = e.response?.data;
+
+            if (res?.codeName === 'CONFLICT_VERSION') {
+                alert('변경중 문제가 발생하였습니다. 다시 요청해 주세요');
+                return;
+            }
+
+            if (res?.status === 400) {
+                alert('잘못된 입력입니다.');
+            } else {
+                alert('문제가 발생하였습니다');
             }
         } finally {
             fetchVacationData(currentPage, searchName);
         }
     };
 
-    const throwError = (response) => {
+    const  throwError = async (response) => {
         let errorData = {};
         try {
-            errorData = response.json(); // 서버 에러 메시지 파싱
+            errorData = await response.json(); // 서버 에러 메시지 파싱
         } catch {
             errorData.message = '알 수 없는 에러';
         }
 
         const error = new Error(errorData.message || '저장 실패');
+        error.codeName = errorData.codeName || null;
         error.status = errorData.status || response.status;
         error.validationErrors = errorData.errors || null;
         throw error;
@@ -125,24 +132,21 @@ export default function Vacations() {
                 })),
             }));
 
-            const response = await fetch("http://localhost:8080/vacations/infos", {
-                method: 'PATCH',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({requests})
-            });
+            const response = await axios.patch('/admin/vacations/infos', { requests });
 
-            if (!response.ok) {
-                throwError(response);
+            alert('전체 저장 완료');
+        } catch (e) {
+            const res = e.response?.data;
+
+            if (res?.codeName === 'CONFLICT_VERSION') {
+                alert('변경중 문제가 발생하였습니다. 다시 요청해 주세요');
+                return;
             }
 
-            alert("전체 저장 완료");
-        } catch (e) {
-            if(e.validationErrors){
-                alert("필수 입력 사항을 확인해주세요")
-            }else{
-                alert("문제가 발생하였습니다");
+            if (res?.status === 400) {
+                alert('잘못된 입력입니다.');
+            } else {
+                alert('문제가 발생하였습니다');
             }
         } finally {
             fetchVacationData(currentPage, searchName);
@@ -230,7 +234,7 @@ export default function Vacations() {
                                         {vacationTypeMap[type]}
                                     </th>
                                 ))}
-                                <th className="px-4 py-3 text-center font-semibold text-gray-700 border-b-2 border-gray-200 w-24">액션</th>
+                                <th className="px-4 py-3 text-center font-semibold text-gray-700 border-b-2 border-gray-200 w-24"></th>
                             </tr>
                             </thead>
                             <tbody>

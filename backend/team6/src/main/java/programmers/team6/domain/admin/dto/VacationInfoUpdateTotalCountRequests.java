@@ -1,25 +1,27 @@
-package programmers.team6.domain.vacation.dto;
+package programmers.team6.domain.admin.dto;
 
 import java.util.List;
+import java.util.Optional;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PositiveOrZero;
 
 public record VacationInfoUpdateTotalCountRequests(
-	@NotNull Long memberId, @NotNull @NotEmpty List<@Valid VacationInfoUpdateTotalCountRequest> vacations) {
+	@NotNull @PositiveOrZero Long memberId,
+	@NotNull @NotEmpty List<@Valid VacationInfoUpdateTotalCountRequest> vacations) {
 
 	public List<Integer> getIds() {
 		return vacations.stream().map(VacationInfoUpdateTotalCountRequest::id).toList();
 	}
 
-	public VacationInfoUpdateTotalCountRequest getTarget(String type) {
+	public Optional<VacationInfoUpdateTotalCountRequest> getTarget(String type) {
 		for (VacationInfoUpdateTotalCountRequest vacation : vacations) {
 			if (vacation.isSameType(type)) {
-				return vacation;
+				return Optional.of(vacation);
 			}
 		}
-		//TODO : 공통예외나오면 수정 예정
-		throw new RuntimeException();
+		return Optional.empty();
 	}
 }
