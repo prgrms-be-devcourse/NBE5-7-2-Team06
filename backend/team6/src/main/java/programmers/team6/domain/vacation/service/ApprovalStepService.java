@@ -102,7 +102,7 @@ public class ApprovalStepService {
 	}
 
 	@Transactional
-	public void approveSecondStep(Long approvalStepId, Long memberId) {
+	public boolean approveSecondStep(Long approvalStepId, Long memberId) {
 		ApprovalStep findApprovalStep = findByIdAndMemberIdAndStep(approvalStepId, memberId, STEP2);
 
 		findApprovalStep.validateApprovable();
@@ -118,18 +118,11 @@ public class ApprovalStepService {
 			findApprovalStep.approveVacation();
 			VacationInfoLog log = findVacationInfo.useVacation(count);
 			vacationInfoLogPublisher.publish(log);
+			return true;
 		} else {
 			findApprovalStep.cancel();
 			findApprovalStep.cancelVacation();
-
-			// throw new 예외("잔여 연차 부족으로 취소되었습니다.");
-			/*
-				todo
-				? : 예외를 터트리면 롤백됨.
-				1. 예외 터트리고 해당 예외는 트랜잭션에서 제외 시키는 방법
-				2. 예외처리를 하지말고, 응답을 void가 아닌 상태, dto를 반환해주는 방법
-					(성공이면 상태 + "휴가 결재 완료", 실패면 실패 + "잔여 연차 부족 ~~")
-			 */
+			return false;
 		}
 
 	}

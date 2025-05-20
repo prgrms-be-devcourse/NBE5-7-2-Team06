@@ -88,10 +88,9 @@ public class ApprovalStepController {
 	}
 
 	@PatchMapping("/second/{approvalStepId}/approve")
-	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public void approveSecondStep(@AuthenticationPrincipal TokenBody tokenBody, @PathVariable Long approvalStepId) {
-
-		approvalStepService.approveSecondStep(approvalStepId, tokenBody.id());
+	@ResponseStatus(HttpStatus.OK)
+	public boolean approveSecondStep(@AuthenticationPrincipal TokenBody tokenBody, @PathVariable Long approvalStepId) {
+		return approvalStepService.approveSecondStep(approvalStepId, tokenBody.id());
 	}
 
 	@PatchMapping("/second/{approvalStepId}/reject")

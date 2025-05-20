@@ -16,6 +16,7 @@ import programmers.team6.domain.vacation.enums.VacationCode;
 import programmers.team6.domain.vacation.repository.VacationInfoRepository;
 import programmers.team6.domain.vacation.rule.VacationGrantRule;
 import programmers.team6.domain.vacation.rule.VacationGrantRuleFinder;
+import programmers.team6.domain.vacation.service.VacationInfoLogPublisher;
 
 @Service
 @RequiredArgsConstructor
@@ -26,6 +27,7 @@ public class MemberApprovalService {
 	private final VacationGrantRuleFinder vacationGrantRuleFinder;
 	private final VacationInfoRepository vacationInfoRepository;
 	private final MemberService memberService;
+	private final VacationInfoLogPublisher vacationInfoLogPublisher;
 
 	public List<MemberApprovalResponse> findPendingMembers() {
 		return memberRepository.findPendingMembers(Role.PENDING);
@@ -45,6 +47,7 @@ public class MemberApprovalService {
 			VacationGrantRule vacationRule = vacationGrantRuleFinder.find(type);
 			VacationInfo vacationInfo = vacationRule.createVacationInfo(member.getId());
 			vacationInfoRepository.save(vacationInfo);
+			vacationInfoLogPublisher.publish(vacationInfo.toLog());
 		}
 	}
 

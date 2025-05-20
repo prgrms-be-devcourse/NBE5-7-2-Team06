@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import api from "../../api/axiosInstance";
 
 export default function VacationList() {
   const navigate = useNavigate();
@@ -59,15 +60,10 @@ export default function VacationList() {
       if (filters.start) queryParams.append("dateRange.start", filters.start);
       if (filters.end) queryParams.append("dateRange.end", filters.end);
 
-      const response = await fetch(
-        `http://localhost:8080/admin/vacation-request?${queryParams}`
-      );
-
-      if (!response.ok) {
-        throw new Error("데이터를 불러오는데 실패했습니다.");
-      }
-
-      const data = await response.json();
+      // 변경 후 (api 인스턴스 사용)
+      const response = await api.get(`/admin/vacation-request?${queryParams}`);
+      console.log(response);
+      const data = response.data;
       console.log(data);
 
       setVacations(data.vacationRequestSearchResponses.content);
