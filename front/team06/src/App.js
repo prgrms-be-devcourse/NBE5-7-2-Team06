@@ -1,4 +1,4 @@
-import  './App.css';
+import './App.css';
 import {
   BrowserRouter as Router,
   Routes,
@@ -18,6 +18,7 @@ import MemberApprovalList from './pages/component/admin/MemberApprovalList'
 import VacationList from './pages/admin/vacation-list'
 import CodeManagement from "./pages/admin/code-management";
 import VacationDetail from "./pages/admin/vacation-detail";
+import VacationManagerPage from './pages/component/vacations/statistics';
 
 function App() {
   return (
@@ -40,6 +41,8 @@ function App() {
               <Route path="/approval/first/:approvalStepId" element={<FirstApprovalDetail />} />
               <Route path="/approval/second/:approvalStepId" element={<SecondApprovalDetail />} />
               <Route path="/admin/member-approvals" element={<MemberApprovalList />} />
+
+              <Route path="/admin/vacations/statistics" element={<VacationManagerPage />} />
           </Routes>
         </DefaultLayout>
       </Router>
