@@ -82,4 +82,8 @@ public class VacationInfo extends BaseEntity {
 	public VacationInfoLog toLog() {
 		return VacationInfoLog.from(this);
 	}
+
+	public double remainCount() {
+		return this.totalCount - this.useCount;
+	}
 }

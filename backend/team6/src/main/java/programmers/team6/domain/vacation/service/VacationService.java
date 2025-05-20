@@ -40,6 +40,10 @@ import programmers.team6.domain.vacation.repository.VacationInfoRepository;
 import programmers.team6.domain.vacation.repository.VacationRequestRepository;
 import programmers.team6.domain.vacation.repository.VacationRequestSearchRepository;
 import programmers.team6.domain.vacation.util.mapper.VacationMapper;
+import programmers.team6.global.exception.code.BadRequestErrorCode;
+import programmers.team6.global.exception.code.NotFoundErrorCode;
+import programmers.team6.global.exception.customException.BadRequestException;
+import programmers.team6.global.exception.customException.NotFoundException;
 
 @Slf4j
 @Service
@@ -82,6 +86,24 @@ public class VacationService {
 		Member member = memberRepository.findByIdWithDeptAndLeader(memberId)
 			.orElseThrow(() -> new RuntimeException("멤버 정보를 찾을 수 없습니다."));
 
+		// 시작일(from)과 종료일(to) 설정 (진행중이거나 승인된 휴가 기간내에 신청 불가능하게)
+		if (0 != vacationRequestRepository.countInRangeFromBetweenToBy(memberId, requestDto.getFrom(),
+			requestDto.getTo())) {
+			throw new BadRequestException(BadRequestErrorCode.BAD_REQUEST_VACATION_OVERLAP);
+		}
+		// 신청하려는 휴가 일수 계산
+		double requestDays = vacationRequestRepository.calculateRequestedVacationDays(requestDto.getFrom(),
+			requestDto.getTo(), requestDto.getVacationType());
+
+		double actualRemainCount = vacationInfoRepository
+			.findActualRemainingVacationDays(memberId, requestDto.getVacationType())
+			.orElseThrow(() -> new NotFoundException(NotFoundErrorCode.NOT_FOUND_VACATION_INFO));
+
+		// 잔여 일수 초과 검증
+		if (actualRemainCount < requestDays) {
+			throw new BadRequestException(BadRequestErrorCode.BAD_REQUEST_INSUFFICIENT_VACATION_DAYS);
+		}
+
 		// 부서장 조회 (결재자)
 		Dept dept = member.getDept();
 		Member approver = dept.getDeptLeader();
@@ -95,6 +117,8 @@ public class VacationService {
 
 		// 휴가 요청 생성
 		VacationRequest vacationRequest = vacationMapper.toVacationRequest(requestDto, vacationType, status, member);
+
+		// 저장
 		vacationRequestRepository.save(vacationRequest);
 
 		// 결재 단계 생성
@@ -182,6 +206,26 @@ public class VacationService {
 		// 휴가 신청 조회
 		VacationRequest vacationRequest = vacationRequestRepository.findById(requestId)
 			.orElseThrow(() -> new RuntimeException("휴가 신청 정보를 찾을 수 없습니다."));
+
+		// 시작일(from)과 종료일(to) 설정 (진행중이거나 승인된 휴가 기간내에 신청 불가능하게) -> 수정할 휴가 내역을 수정할 때 발생하는 오류 잡기 위함
+		if (0 != vacationRequestRepository.countInRangeFromBetweenToByExcludeRequestId(
+			memberId, requestDto.getFrom(), requestDto.getTo(), requestId)) {
+			throw new BadRequestException(BadRequestErrorCode.BAD_REQUEST_VACATION_OVERLAP);
+		}
+
+		// 신청하려는 휴가 일수 계산
+		double requestDays = vacationRequestRepository.calculateRequestedVacationDays(requestDto.getFrom(),
+			requestDto.getTo(), requestDto.getVacationType());
+
+		// 실제 사용 가능한 잔여 휴가 일수를 한 번에 조회
+		double actualRemainCount = vacationInfoRepository
+			.findActualRemainingVacationDaysExcludeRequestId(memberId, requestDto.getVacationType(), requestId)
+			.orElseThrow(() -> new NotFoundException(NotFoundErrorCode.NOT_FOUND_VACATION_INFO));
+
+		// 잔여 일수 초과 검증
+		if (actualRemainCount < requestDays) {
+			throw new BadRequestException(BadRequestErrorCode.BAD_REQUEST_INSUFFICIENT_VACATION_DAYS);
+		}
 
 		// 휴가 유형 코드 조회
 		Code vacationType = codeRepository.findByGroupCodeAndCode("VACATION_TYPE", requestDto.getVacationType())

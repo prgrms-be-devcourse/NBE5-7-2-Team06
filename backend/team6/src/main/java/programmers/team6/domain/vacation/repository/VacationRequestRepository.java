@@ -1,5 +1,6 @@
 package programmers.team6.domain.vacation.repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -13,6 +14,33 @@ import programmers.team6.domain.admin.dto.VacationRequestDetailReadResponse;
 import programmers.team6.domain.vacation.entity.VacationRequest;
 
 public interface VacationRequestRepository extends JpaRepository<VacationRequest, Long> {
+
+	@Query("""
+			select count(vr.id)
+			from VacationRequest vr
+			where vr.member.id = :memberId and (vr.status = 'APPROVED' or vr.status = 'IN_PROGRESS')
+			and ((vr.from <= :from and :from <= vr.to) or (vr.from <= :to and :to <= vr.to) or (:from <= vr.from and vr.to <= :to)) 
+		""")
+	long countInRangeFromBetweenToBy(Long memberId, LocalDateTime from, LocalDateTime to);
+
+	@Query("""
+		   select count(vr.id)
+		   from VacationRequest vr
+		   where vr.member.id = :memberId and (vr.status = 'APPROVED' or vr.status = 'IN_PROGRESS')
+		   and vr.id != :excludeRequestId
+		   and ((vr.from <= :from and :from <= vr.to) or (vr.from <= :to and :to <= vr.to) or (:from <= vr.from and vr.to <= :to)) 
+		""")
+	long countInRangeFromBetweenToByExcludeRequestId(Long memberId, LocalDateTime from, LocalDateTime to,
+		Long excludeRequestId);
+
+	@Query("""
+			select case
+				when :typeCode = '05' then 0.5
+				else (DATEDIFF(:to, :from) + 1)
+			end
+		""")
+	double calculateRequestedVacationDays(LocalDateTime from, LocalDateTime to, String typeCode);
+
 	@Query("SELECT vr.id FROM VacationRequest vr WHERE vr.member.id = :memberId ORDER BY vr.createdAt DESC")
 	Page<Long> findIdsByRequesterIdPaging(@Param("memberId") Long memberId, Pageable pageable);
 

@@ -141,6 +141,16 @@ public class VacationRequest extends BaseEntity {
 		changeStatusToCanceled();
 	}
 
+	public boolean canUseVacation(double availableDays) {
+		double requestedDays = isHalfDay() ? 0.5 : calcVacationDays();
+		return requestedDays <= availableDays;
+	}
+
+	public boolean isOver(LocalDateTime otherFrom, LocalDateTime otherTo) {
+		return (this.from.isBefore(otherTo) || this.from.isEqual(otherTo)) &&
+			(this.to.isAfter(otherFrom) || this.to.isEqual(otherFrom));
+	}
+
 	public void approve() {
 		updateStatus(VacationRequestStatus.APPROVED);
 	}

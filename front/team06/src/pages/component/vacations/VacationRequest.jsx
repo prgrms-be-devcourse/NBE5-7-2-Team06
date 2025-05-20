@@ -169,9 +169,14 @@ const VacationRequest = () => {
         } catch (err) {
             console.error('휴가 신청 실패:', err);
 
-            if (err.response?.data?.errors) {
-                setErrors(err.response.data.errors);
-                alert('입력 정보를 확인해주세요.');
+            if (err.response?.data) {
+                const errorMessage = err.response.data.message || '휴가 신청 중 오류가 발생했습니다.';
+                alert(errorMessage);
+
+                // 폼 에러 상태 업데이트 (필요한 경우)
+                if (err.response.data.errors) {
+                    setErrors(err.response.data.errors);
+                }
             } else {
                 alert('휴가 신청 중 오류가 발생했습니다.');
             }

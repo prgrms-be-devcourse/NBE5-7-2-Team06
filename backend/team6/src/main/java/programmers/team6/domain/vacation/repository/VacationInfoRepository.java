@@ -12,6 +12,34 @@ import programmers.team6.domain.vacation.entity.VacationInfo;
 
 public interface VacationInfoRepository extends JpaRepository<VacationInfo, Integer> {
 
+	@Query("""
+		    SELECT (vi.totalCount - vi.useCount - COALESCE(
+		        (SELECT SUM(CASE WHEN vr.type.code = '05' THEN 0.5 ELSE DATEDIFF(vr.to, vr.from) + 1 END) 
+		         FROM VacationRequest vr 
+		         WHERE vr.member.id = :memberId 
+		         AND vr.type.code = :vacationType 
+		         AND vr.status = 'IN_PROGRESS'), 0))
+		    FROM VacationInfo vi
+		    WHERE vi.memberId = :memberId 
+		    AND vi.vacationType = :vacationType
+		""")
+	Optional<Double> findActualRemainingVacationDays(Long memberId, String vacationType);
+
+	@Query("""
+			SELECT (vi.totalCount - vi.useCount - COALESCE(
+				(SELECT SUM(CASE WHEN vr.type.code = '05' THEN 0.5 ELSE DATEDIFF(vr.to, vr.from) + 1 END) 
+				 FROM VacationRequest vr 
+				 WHERE vr.member.id = :memberId 
+				 AND vr.type.code = :vacationType 
+				 AND vr.status = 'IN_PROGRESS'
+				 AND vr.id != :excludeRequestId), 0))
+			FROM VacationInfo vi
+			WHERE vi.memberId = :memberId 
+			AND vi.vacationType = :vacationType
+		""")
+	Optional<Double> findActualRemainingVacationDaysExcludeRequestId(Long memberId, String vacationType,
+		Long excludeRequestId);
+
 	Optional<VacationInfo> findByMemberIdAndVacationType(Long memberId, String vacationType);
 
 	@Query("SELECT vi "
@@ -41,7 +69,6 @@ public interface VacationInfoRepository extends JpaRepository<VacationInfo, Inte
 		+ "JOIN Member m ON vi.memberId = m.id "
 		+ "WHERE FUNCTION('date', m.joinDate) in :joinDates and vi.vacationType = :type ")
 	List<VacationInfo> findAnnualVacationByJoinDates(String type, List<LocalDate> joinDates);
-
 
 	@Query("SELECT vi "
 		+ "FROM VacationInfo vi "
