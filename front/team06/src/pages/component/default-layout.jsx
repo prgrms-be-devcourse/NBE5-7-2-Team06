@@ -51,7 +51,7 @@ const DefaultLayout = ({ children }) => {
     const getMenuIdsByRole = (role) => {
         switch (role) {
             case 'ADMIN':
-                return ['vacation-calendar', 'my-vacation', 'vacation-history', 'vacation-request', 'vacation-list', 'code-management', 'member-approval', 'approval-first', 'approval-second', 'vacation-statistics', 'vacations'];
+                return ['vacation-calendar', 'vacation-list', 'code-management', 'member-approval', 'vacation-statistics', 'vacations'];
             case 'USER':
                 return ['vacation-calendar', 'my-vacation', 'vacation-history', 'vacation-request', 'approval-first', 'approval-second'];
             default:
@@ -104,16 +104,16 @@ const DefaultLayout = ({ children }) => {
             path: '/admin/vacation-request'
         },
         {
+            id: 'vacation-statistics',
+            label: '휴가 현황',
+            icon: '📝',
+            path: '/admin/vacations/statistics'
+        },
+        {
             id: 'vacations',
             label: '휴가 관리',
             icon: '✅',
             path: '/vacations'
-        },
-        {
-            id: 'member-approval',
-            label: '회원 승인 관리',
-            icon: '👤',
-            path: '/admin/member-approvals'
         },
         {
             id: 'code-management',
@@ -122,11 +122,11 @@ const DefaultLayout = ({ children }) => {
             path: '/admin/code'
         },
         {
-            id: 'vacation-statistics',
-            label: '휴가 현황',
-            icon: '📝',
-            path: '/admin/vacations/statistics'
-        }
+            id: 'member-approval',
+            label: '회원 승인 관리',
+            icon: '👤',
+            path: '/admin/member-approvals'
+        },
     ];
 
     // 사용자 권한에 따른 메뉴 필터링
