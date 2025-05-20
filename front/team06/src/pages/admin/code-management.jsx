@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import api from "../../api/axiosInstance";
 
 export default function CodeManagement() {
   const [codes, setCodes] = useState([]);
@@ -46,15 +47,16 @@ export default function CodeManagement() {
 
       // console.log('API 호출 URL:', `http://localhost:8080/admin/code?${queryParams}`);
       
-      const response = await fetch(`http://localhost:8080/admin/code?${queryParams}`);
-      
+      // const response = await fetch(`http://localhost:8080/admin/code?${queryParams}`);
+      const response = await api.get(`/admin/code?${queryParams}`);
+      const data = response.data;
       // console.log('Response status:', response.status);
       
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
+      // if (!response.ok) {
+      //   throw new Error(`HTTP error! status: ${response.status}`);
+      // }
       
-      const data = await response.json();
+      // const data = await response.json();
       // console.log('API 응답 데이터:', data);
       
       // 응답 구조 확인 및 안전하게 접근

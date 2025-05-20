@@ -1,8 +1,11 @@
 package programmers.team6.domain.member.repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -44,4 +47,15 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 		    WHERE m.id = :memberId
 		""")
 	MemberLoginInfoResponse findLoginMemberInfo(Long memberId);
+
+
+	@Query("""
+		select m 
+		from Member m
+		where m.id in (select vil.memberId from VacationInfoLog vil where vil.logDate < :localDateTime and vil.vacationType = :code group by vil.memberId)
+		and m.name like %:name%
+		""")
+	Page<Member> findAllHasVacationInfoTargetYear(LocalDateTime localDateTime, String code, String name,
+		Pageable pageable);
+
 }

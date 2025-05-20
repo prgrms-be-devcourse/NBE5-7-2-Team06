@@ -29,12 +29,12 @@ public class MemberSearchRepository {
 	private final EntityManager entityManager;
 
 	public Page<Member> searchFrom(String name, Pageable pageable) {
-		TypedQuery<Member> query = createSearchQueryFrom(name);
+		TypedQuery<Member> query = createSearchQueryFrom(name, pageable);
 		long count = createSearCountFrom(name);
 		return QueryUtils.makeQueryToPageable(query, pageable, count);
 	}
 
-	private TypedQuery<Member> createSearchQueryFrom(String name) {
+	private TypedQuery<Member> createSearchQueryFrom(String name, Pageable pageable) {
 		CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
 		CriteriaQuery<Member> criteriaQuery = criteriaBuilder.createQuery(Member.class);
 		Root<Member> from = criteriaQuery.from(Member.class);
@@ -46,6 +46,7 @@ public class MemberSearchRepository {
 
 		return CriteriaCustomQueryBuilder.builder(criteriaQuery, criteriaBuilder)
 			.applyDynamicPredicates(predicates)
+			.orderBy(from, pageable.getSort())
 			.createQuery(entityManager)
 			.build();
 	}

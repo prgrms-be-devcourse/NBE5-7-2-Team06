@@ -10,11 +10,9 @@ import programmers.team6.domain.member.entity.Member;
 import programmers.team6.domain.vacation.entity.VacationInfo;
 import programmers.team6.domain.vacation.entity.VacationInfoLog;
 import programmers.team6.domain.vacation.enums.VacationCode;
-import programmers.team6.global.entity.Positive;
 
 @Component
 public class VacationGrantRuleFinder {
-
 
 	public VacationGrantRule find(String type) {
 		VacationCode vacationCode = VacationCode.findByCode(type).orElseThrow();
@@ -52,7 +50,7 @@ public class VacationGrantRuleFinder {
 		}
 
 		@Override
-		public boolean canUpdate(Positive totalCount) {
+		public boolean canUpdate(double totalCount) {
 			return true;
 		}
 

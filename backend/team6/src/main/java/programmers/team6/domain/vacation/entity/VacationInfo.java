@@ -11,6 +11,8 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import programmers.team6.global.entity.BaseEntity;
+import programmers.team6.global.exception.code.BadRequestErrorCode;
+import programmers.team6.global.exception.customException.BadRequestException;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -70,11 +72,14 @@ public class VacationInfo extends BaseEntity {
 	@CheckReturnValue
 	private VacationInfoLog update(double totalCount, double useCount) {
 		if (useCount > totalCount) {
-			//TODO : 추후 예외 설정 예정
-			throw new RuntimeException();
+			throw new BadRequestException(BadRequestErrorCode.BAD_REQUEST_INVALID_INPUT);
 		}
 		this.totalCount = totalCount;
 		this.useCount = useCount;
+		return toLog();
+	}
+
+	public VacationInfoLog toLog() {
 		return VacationInfoLog.from(this);
 	}
 }

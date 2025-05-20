@@ -7,10 +7,9 @@ import programmers.team6.domain.member.entity.Member;
 import programmers.team6.domain.vacation.entity.VacationInfo;
 import programmers.team6.domain.vacation.entity.VacationInfoLog;
 import programmers.team6.domain.vacation.enums.VacationCode;
-import programmers.team6.global.entity.Positive;
 
 public interface VacationGrantRule {
-	boolean canUpdate(Positive totalCount);
+	boolean canUpdate(double totalCount);
 
 	VacationInfo createVacationInfo(Long memberId);
 

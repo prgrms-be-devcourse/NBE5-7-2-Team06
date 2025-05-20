@@ -75,16 +75,17 @@ public class AdminVacationRequestSearchCustom {
 			.applyEqualFilter(vr, searchCondition.applicant().positionCodeId(), VacationRequest_.member,
 				Member_.position, Code_.id)
 			.applyEqualFilter(vr, searchCondition.vacationRequestStatus(), VacationRequest_.status)
-			.applyLikeFilter(as, searchCondition.approver().name(), ApprovalStep_.member, Member_.name)
 			.build();
 
 		/**
 		 * Predicates들을 기반을 Query 생성
 		 */
-
+		// Long id, String type, LocalDateTime from, LocalDateTime to, String applicantName,
+		// 	String approverNames, String deptName, VacationRequestStatus status
 		TypedQuery<VacationRequestSearchResponse> query = CriteriaCustomQueryBuilder.builder(cq, cb)
 			.applyDynamicPredicates(predicates)
-			.projection(VacationRequestSearchResponse.class, vr.get(VacationRequest_.type).get(Code_.name),
+			.projection(VacationRequestSearchResponse.class, vr.get(VacationRequest_.id),
+				vr.get(VacationRequest_.type).get(Code_.name),
 				vr.get(VacationRequest_.from), vr.get(VacationRequest_.to),
 				vr.get(VacationRequest_.member).get(Member_.name),
 				cb.function("GROUP_CONCAT", String.class, as.get(ApprovalStep_.member).get(Member_.name)),
@@ -94,6 +95,31 @@ public class AdminVacationRequestSearchCustom {
 			.createQuery(entityManager)
 			.build();
 
-		return QueryUtils.makeQueryToPageable(query, pageable, vacationRequestRepository.count());
+		CriteriaQuery<Long> countQuery = cb.createQuery(Long.class);
+		Root<ApprovalStep> countRoot = countQuery.from(ApprovalStep.class);
+		Join<ApprovalStep, VacationRequest> countVr = countRoot.join("vacationRequest", JoinType.INNER);
+
+		// count 쿼리용 predicate를 새로 생성
+		List<Predicate> countPredicates = CriteriaCustomPredicateBuilder.<ApprovalStep>builder(cb)
+			.applyDateRangeFilter(countVr, VacationRequest_.from, VacationRequest_.to, searchCondition.dateRange().start(),
+				searchCondition.dateRange().end())
+			.applyDateRangeFilter(countVr, VacationRequest_.from, VacationRequest_.to, searchCondition.dateRange().year(),
+				searchCondition.dateRange().quarter())
+			.applyLikeFilter(countVr, searchCondition.applicant().name(), VacationRequest_.member, Member_.name)
+			.applyLikeFilter(countVr, searchCondition.applicant().deptName(), VacationRequest_.member, Member_.dept,
+				Dept_.deptName)
+			.applyEqualFilter(countVr, searchCondition.applicant().vacationTypeCodeId(), VacationRequest_.type, Code_.id)
+			.applyEqualFilter(countVr, searchCondition.applicant().positionCodeId(), VacationRequest_.member,
+				Member_.position, Code_.id)
+			.applyEqualFilter(countVr, searchCondition.vacationRequestStatus(), VacationRequest_.status)
+			.build();
+
+		// GROUP BY가 있는 경우 DISTINCT COUNT를 사용
+		countQuery.select(cb.countDistinct(countVr.get(VacationRequest_.id)))
+			.where(countPredicates.toArray(new Predicate[0]));
+
+		Long totalCount = entityManager.createQuery(countQuery).getSingleResult();
+
+		return QueryUtils.makeQueryToPageable(query, pageable, totalCount);
 	}
 }
