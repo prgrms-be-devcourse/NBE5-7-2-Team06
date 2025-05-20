@@ -130,4 +130,8 @@ public class ApprovalStep extends BaseEntity {
 	public boolean isHalfDay() {
 		return this.vacationRequest.isHalfDay();
 	}
+
+	public boolean isHrApprover() {
+		return this.member.isHrMember();
+	}
 }

@@ -89,6 +89,9 @@ public class ApprovalStepService {
 		firstStepApproval.approve();
 		secondStepApproval.pending();
 
+		if (firstStepApproval.isHrApprover()) {
+			approveSecondStep(secondStepApproval.getId(), memberId);
+		}
 	}
 
 	@Transactional
@@ -108,8 +111,9 @@ public class ApprovalStepService {
 
 	@Transactional
 	public boolean approveSecondStep(Long approvalStepId, Long memberId) {
+		log.info("memberId = {}", memberId);
 		ApprovalStep findApprovalStep = findByIdAndMemberIdAndStep(approvalStepId, memberId, STEP2);
-
+		log.info("123213412341234 = {}", memberId);
 		findApprovalStep.validateApprovable();
 
 		VacationInfo findVacationInfo = vacationInfoRepository.findByMemberIdAndVacationType(
