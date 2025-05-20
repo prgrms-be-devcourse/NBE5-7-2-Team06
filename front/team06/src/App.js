@@ -18,6 +18,10 @@ import MemberApprovalList from './pages/component/admin/MemberApprovalList'
 import VacationList from './pages/admin/vacation-list'
 import CodeManagement from "./pages/admin/code-management";
 import VacationDetail from "./pages/admin/vacation-detail";
+import MyVacationStatus from './pages/component/vacations/MyVacationStatus';
+import VacationRequest from './pages/component/vacations/VacationRequest';
+import VacationHistory from './pages/component/vacations/VacationHistory';
+import VacationEdit from './pages/component/vacations/VacationEdit';
 
 function App() {
   return (
@@ -40,6 +44,12 @@ function App() {
               <Route path="/approval/first/:approvalStepId" element={<FirstApprovalDetail />} />
               <Route path="/approval/second/:approvalStepId" element={<SecondApprovalDetail />} />
               <Route path="/admin/member-approvals" element={<MemberApprovalList />} />
+
+              <Route path="/vacations/my" element={<MyVacationStatus />} />
+              <Route path="/vacations/request" element={<VacationRequest />} />
+              <Route path="/vacations/history" element={<VacationHistory />} />
+              <Route path="/vacations/edit/:requestId" element={<VacationEdit />} />
+
           </Routes>
         </DefaultLayout>
       </Router>
