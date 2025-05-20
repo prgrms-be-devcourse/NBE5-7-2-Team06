@@ -33,6 +33,8 @@ const DefaultLayout = ({ children }) => {
             :location.pathname.includes('/approval/first') ? 'approval-first'
                 : location.pathname.includes('/approval/second') ? 'approval-second'
                     : location.pathname.includes('/admin/member-approvals') ? 'member-approval'
+                                : location.pathname.includes('/admin/vacations/statistics') ? 'vacation-statistics'
+                                    : location.pathname.includes('/vacations') ? 'vacations'
             : 'vacation-list';
 
     const [userName, setUserName] = useState('');
@@ -48,7 +50,7 @@ const DefaultLayout = ({ children }) => {
     const getMenuIdsByRole = (role) => {
         switch (role) {
             case 'ADMIN':
-                return ['vacation-calendar', 'vacation-list', 'code-management', 'member-approval', 'approval-first', 'approval-second'];
+                return ['vacation-calendar', 'vacation-list', 'code-management', 'member-approval', 'approval-first', 'approval-second','vacation-statistics','vacations'];
             case 'USER':
                 return ['vacation-calendar', 'vacation-list', 'approval-first', 'approval-second'];
             default:
@@ -101,12 +103,12 @@ const DefaultLayout = ({ children }) => {
         //   icon: '✅',
         //   path: '/approval'
         // }
-        // {
-        //     id: 'vacations',
-        //     label: '휴가 관리',
-        //     icon: '✅',
-        //     path: '/vacations'
-        // },
+        {
+            id: 'vacations',
+            label: '휴가 관리',
+            icon: '✅',
+            path: '/vacations'
+        },
         {
             id: 'member-approval',
             label: '회원 승인 관리',
@@ -118,8 +120,7 @@ const DefaultLayout = ({ children }) => {
             label: '코드 관리',
             icon: '⚙️',
             path: '/admin/code'
-        }
-        ,
+        },
         {
             id: 'vacation-statistics',
             label: '휴가 현황',

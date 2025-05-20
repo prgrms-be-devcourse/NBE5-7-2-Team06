@@ -53,6 +53,13 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 		select m 
 		from Member m
 		where m.id in (select vil.memberId from VacationInfoLog vil where vil.logDate < :localDateTime and vil.vacationType = :code group by vil.memberId)
+		""")
+	Page<Member> findAllHasVacationInfoTargetYear(LocalDateTime localDateTime, String code, Pageable pageable);
+
+	@Query("""
+		select m 
+		from Member m
+		where m.id in (select vil.memberId from VacationInfoLog vil where vil.logDate < :localDateTime and vil.vacationType = :code group by vil.memberId)
 		and m.name like %:name%
 		""")
 	Page<Member> findAllHasVacationInfoTargetYear(LocalDateTime localDateTime, String code, String name,
