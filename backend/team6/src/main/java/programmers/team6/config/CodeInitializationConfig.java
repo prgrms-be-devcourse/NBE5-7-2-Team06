@@ -76,16 +76,17 @@ public class CodeInitializationConfig {
 				Member member2 = memberRepository.findById(3L).get();
 				Member member3 = memberRepository.findById(4L).get();
 				Code vacationType = codeRepository.findByGroupCodeAndCode("VACATION_TYPE", "01").get();
+				Code vacationType1 = codeRepository.findByGroupCodeAndCode("VACATION_TYPE", "05").get();
 
 				VacationRequest vacationRequest = new VacationRequest(member, LocalDateTime.now(),
 					LocalDateTime.of(2025, 5, 22, 0, 0),
 					"사유",
 					vacationType, VacationRequestStatus.APPROVED, 1);
 
-				VacationRequest vacationRequest2 = new VacationRequest(member2, LocalDateTime.of(2025, 5, 18, 0, 0),
-					LocalDateTime.of(2025, 5, 20, 0, 0),
+				VacationRequest vacationRequest2 = new VacationRequest(member2, LocalDateTime.of(2025, 5, 18, 9, 0),
+					LocalDateTime.of(2025, 5, 20, 13, 0),
 					"사유",
-					vacationType, VacationRequestStatus.APPROVED, 1);
+					vacationType1, VacationRequestStatus.APPROVED, 1);
 
 				VacationRequest vacationRequest3 = new VacationRequest(member3, LocalDateTime.of(2025, 5, 30, 0, 0),
 					LocalDateTime.of(2025, 5, 30, 0, 0),
