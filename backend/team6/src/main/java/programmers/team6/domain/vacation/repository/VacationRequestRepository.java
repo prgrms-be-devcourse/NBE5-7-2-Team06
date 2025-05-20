@@ -16,7 +16,7 @@ public interface VacationRequestRepository extends JpaRepository<VacationRequest
 	@Query("SELECT vr.id FROM VacationRequest vr WHERE vr.member.id = :memberId ORDER BY vr.createdAt DESC")
 	Page<Long> findIdsByRequesterIdPaging(@Param("memberId") Long memberId, Pageable pageable);
 
-	@Query("SELECT vr FROM VacationRequest vr JOIN FETCH vr.type JOIN FETCH vr.member WHERE vr.id IN :ids")
+	@Query("SELECT vr FROM VacationRequest vr JOIN FETCH vr.type JOIN FETCH vr.member WHERE vr.id IN :ids ORDER BY vr.createdAt DESC")
 	List<VacationRequest> findByIdsWithFetch(@Param("ids") List<Long> ids);
 
 	@Query(value =

@@ -11,6 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -114,7 +115,7 @@ public class VacationService {
 		getMemberById(memberId);
 
 		// 페이지 요청 객체 생성 (페이지 번호는 0부터 시작)
-		Pageable pageable = PageRequest.of(page, 20);
+		Pageable pageable = PageRequest.of(page, 20, Sort.by(Sort.Direction.DESC, "createdAt"));
 
 		// 1. ID만 페이징해서 가져오기
 		Page<Long> idPage = vacationRequestRepository.findIdsByRequesterIdPaging(memberId, pageable);
