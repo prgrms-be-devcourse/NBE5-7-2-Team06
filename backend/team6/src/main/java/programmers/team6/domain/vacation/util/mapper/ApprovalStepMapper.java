@@ -22,7 +22,8 @@ public class ApprovalStepMapper {
 			approvalStep.getVacationRequest().getFrom(),
 			approvalStep.getVacationRequest().getTo(),
 			approvalStep.getVacationRequest().getReason(),
-			approvalStep.getMember().getName()
+			approvalStep.getMember().getName(),
+			approvalStep.getReason()
 		);
 	}
 
@@ -37,7 +38,8 @@ public class ApprovalStepMapper {
 			approvalStep.getVacationRequest().getFrom(),
 			approvalStep.getVacationRequest().getTo(),
 			approvalStep.getVacationRequest().getReason(),
-			approvalStep.getMember().getName()
+			approvalStep.getMember().getName(),
+			approvalStep.getReason()
 		);
 	}
 

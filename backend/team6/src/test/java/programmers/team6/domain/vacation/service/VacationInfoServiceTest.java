@@ -10,9 +10,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import programmers.team6.domain.vacation.dto.VacationInfoUpdateTotalCountRequest;
-import programmers.team6.domain.vacation.dto.VacationInfoUpdateTotalCountRequests;
-import programmers.team6.domain.vacation.dto.VacationInfoUpdateTotalCountRequestsList;
+import programmers.team6.domain.admin.dto.VacationInfoUpdateTotalCountRequest;
+import programmers.team6.domain.admin.dto.VacationInfoUpdateTotalCountRequests;
+import programmers.team6.domain.admin.dto.VacationInfoUpdateTotalCountRequestsList;
 import programmers.team6.domain.vacation.entity.VacationInfo;
 import programmers.team6.domain.vacation.repository.VacationInfoRepository;
 import programmers.team6.domain.vacation.rule.VacationGrantRuleFinder;
@@ -47,7 +47,7 @@ class VacationInfoServiceTest {
 		return new VacationInfoService(repository, new VacationGrantRuleFinder(), publisher);
 	}
 
-	private VacationInfoUpdateTotalCountRequest createVacationDto(int id, int totalCount, String type, int version) {
+	private VacationInfoUpdateTotalCountRequest createVacationDto(int id, double totalCount, String type, int version) {
 		return new VacationInfoUpdateTotalCountRequest(id, totalCount, type, version);
 	}
 

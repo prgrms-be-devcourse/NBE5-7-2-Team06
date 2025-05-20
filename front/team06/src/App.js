@@ -3,17 +3,22 @@ import {
   BrowserRouter as Router,
   Routes,
   Route,
+  Navigate
 } from 'react-router-dom';
 import DefaultLayout from './pages/component/default-layout';
 import Login from'./pages/component/auth/login';
 import SignUp from'./pages/component/auth/signUp';
 import Calendar from './pages/component/vacations/calendar';
-import VacationManagerPage from './pages/component/vacations/statistics';
-import {Navigate} from "react-router-dom";
-import VacationList from "./pages/admin/vacation-list";
+import Vacations from "./pages/component/vacations/vacations";
+import FirstApprovalList from './pages/component/approval/FirstApprovalList'
+import SecondApprovalList from './pages/component/approval/SecondApprovalList'
+import FirstApprovalDetail from './pages/component/approval/FirstApprovalDetail'
+import SecondApprovalDetail from './pages/component/approval/SecondApprovalDetail'
+import MemberApprovalList from './pages/component/admin/MemberApprovalList'
+import VacationList from './pages/admin/vacation-list'
 import CodeManagement from "./pages/admin/code-management";
 import VacationDetail from "./pages/admin/vacation-detail";
-
+import VacationManagerPage from './pages/component/vacations/statistics';
 
 function App() {
   return (
@@ -21,17 +26,23 @@ function App() {
         <DefaultLayout>
           <Routes>
               <Route path="/" element={<Navigate to="/auth/login" />} />
-
               <Route path="/auth/login" element={<Login />} />
               <Route path="/auth/signup" element={<SignUp />} />
 
               <Route path="/vacations/calendar" element={<Calendar />} />
-              
+
               <Route path="/admin/vacation-request" element={<VacationList />} />
-              <Route path="/admin/statistics" element={<VacationManagerPage />} />
               <Route path="/admin/code" element={<CodeManagement />} />
               <Route path="/admin/vacation-detail/:id" element={<VacationDetail />} />
+              <Route path="/vacations" element={<Vacations />} />
 
+              <Route path="/approval/first" element={<FirstApprovalList />} />
+              <Route path="/approval/second" element={<SecondApprovalList />} />
+              <Route path="/approval/first/:approvalStepId" element={<FirstApprovalDetail />} />
+              <Route path="/approval/second/:approvalStepId" element={<SecondApprovalDetail />} />
+              <Route path="/admin/member-approvals" element={<MemberApprovalList />} />
+
+              <Route path="/admin/statistics" element={<VacationManagerPage />} />
           </Routes>
         </DefaultLayout>
       </Router>

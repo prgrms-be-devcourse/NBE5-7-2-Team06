@@ -2,17 +2,16 @@ package programmers.team6.domain.admin.service;
 
 import java.util.List;
 
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
+import programmers.team6.domain.admin.dto.AdminVacationRequestSearchResponse;
 import programmers.team6.domain.admin.dto.AdminVacationSearchCondition;
 import programmers.team6.domain.admin.dto.ApprovalStepDetailUpdateResponse;
 import programmers.team6.domain.admin.dto.VacationRequestDetailReadResponse;
 import programmers.team6.domain.admin.dto.VacationRequestDetailUpdateRequest;
-import programmers.team6.domain.admin.dto.VacationRequestSearchResponse;
 import programmers.team6.domain.admin.repository.AdminVacationRequestSearchCustom;
 import programmers.team6.domain.member.entity.Code;
 import programmers.team6.domain.member.repository.CodeRepository;
@@ -34,8 +33,11 @@ public class AdminService {
 	private final ApprovalStepRepository approvalStepRepository;
 
 	@Transactional(readOnly = true)
-	public Page<VacationRequestSearchResponse> search(Pageable pageable, AdminVacationSearchCondition searchCondition) {
-		return adminVacationRequestSearchCustom.search(searchCondition, pageable);
+	public AdminVacationRequestSearchResponse search(Pageable pageable, AdminVacationSearchCondition searchCondition) {
+		return new AdminVacationRequestSearchResponse(
+			adminVacationRequestSearchCustom.search(searchCondition, pageable),
+			codeRepository.findCodeInfosByGroupCode("POSITION"),
+			codeRepository.findCodeInfosByGroupCode("VACATION_TYPE"));
 	}
 
 	@Transactional(readOnly = true)
