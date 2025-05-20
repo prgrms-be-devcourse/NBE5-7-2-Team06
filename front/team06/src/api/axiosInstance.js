@@ -69,6 +69,8 @@ api.interceptors.response.use(
                       });
                 }
             });
+        }else if(error.response?.status === 403 && code === 'FORBIDDEN_PENDING'){
+
         }else if (error.response?.status === 403) {
             // ✅ 권한 부족: 알림만 띄우고 끝냄
             alert("해당 기능은 관리자만 접근 가능합니다.");
