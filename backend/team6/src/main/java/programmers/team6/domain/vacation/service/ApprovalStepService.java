@@ -78,7 +78,7 @@ public class ApprovalStepService {
 
 		firstStepApproval.validateApprovable();
 
-		ApprovalStep secondStepApproval = findByVacationRequestIdAndStep(firstStepApproval.getVacationRequest(),
+		ApprovalStep secondStepApproval = findByVacationRequestAndStep(firstStepApproval.getVacationRequest(),
 			STEP2);
 
 		firstStepApproval.approve();
@@ -92,7 +92,7 @@ public class ApprovalStepService {
 
 		firstStepApproval.validateRejectable();
 
-		ApprovalStep secondStepApproval = findByVacationRequestIdAndStep(firstStepApproval.getVacationRequest(),
+		ApprovalStep secondStepApproval = findByVacationRequestAndStep(firstStepApproval.getVacationRequest(),
 			STEP2);
 
 		firstStepApproval.reject(request.reason());
@@ -165,7 +165,7 @@ public class ApprovalStepService {
 			.orElseThrow(() -> new NotFoundException(NotFoundErrorCode.NOT_FOUND_APPROVAL_STEP));
 	}
 
-	private ApprovalStep findByVacationRequestIdAndStep(VacationRequest vacationRequest, int step) {
+	private ApprovalStep findByVacationRequestAndStep(VacationRequest vacationRequest, int step) {
 		return approvalStepRepository.findByVacationRequestAndStep(vacationRequest, step)
 			.orElseThrow(() -> new NotFoundException(NotFoundErrorCode.NOT_FOUND_APPROVAL_STEP));
 	}

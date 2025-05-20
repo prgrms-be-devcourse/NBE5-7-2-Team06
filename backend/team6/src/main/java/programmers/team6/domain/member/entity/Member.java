@@ -79,4 +79,8 @@ public class Member extends BaseEntity {
 		}
 	}
 
+	public boolean isHrMember() {
+		return this.dept != null && this.dept.isHrDept();
+	}
+
 }
