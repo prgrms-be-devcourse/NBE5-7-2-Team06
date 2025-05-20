@@ -33,9 +33,10 @@ import programmers.team6.domain.vacation.dto.VacationUpdateResponseDto;
 import programmers.team6.domain.vacation.entity.ApprovalStep;
 import programmers.team6.domain.vacation.entity.VacationInfo;
 import programmers.team6.domain.vacation.entity.VacationRequest;
+import programmers.team6.domain.vacation.enums.VacationCode;
 import programmers.team6.domain.vacation.enums.VacationRequestStatus;
 import programmers.team6.domain.vacation.repository.ApprovalStepRepository;
-import programmers.team6.domain.vacation.repository.VacationRepository;
+import programmers.team6.domain.vacation.repository.VacationInfoRepository;
 import programmers.team6.domain.vacation.repository.VacationRequestRepository;
 import programmers.team6.domain.vacation.repository.VacationRequestSearchRepository;
 import programmers.team6.domain.vacation.util.mapper.VacationMapper;
@@ -45,7 +46,7 @@ import programmers.team6.domain.vacation.util.mapper.VacationMapper;
 @RequiredArgsConstructor
 public class VacationService {
 
-	private final VacationRepository vacationRepository;
+	private final VacationInfoRepository vacationInfoRepository;
 	private final VacationMapper vacationMapper;
 
 	private final VacationRequestRepository vacationRequestRepository;
@@ -68,8 +69,8 @@ public class VacationService {
 	public VacationInfoSelectResponseDto getMyVacationInfo(Long memberId) {
 		getMemberById(memberId);
 
-		VacationInfo vacationInfo = vacationRepository.findByMemberId(memberId)
-			.orElseThrow(() -> new RuntimeException("휴가 정보를 찾을 수 없습니다."));
+		VacationInfo vacationInfo = vacationInfoRepository.findByMemberIdAndVacationType(memberId,
+			VacationCode.ANNUAL.getCode()).orElseThrow(() -> new RuntimeException("휴가 정보를 찾을 수 없습니다."));
 
 		return vacationMapper.toVacationInfoSelectResponseDto(vacationInfo);
 	}
