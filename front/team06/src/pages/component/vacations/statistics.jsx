@@ -89,44 +89,47 @@ const VacationManagerPage = () => {
         <div className="p-6 bg-gray-50 min-h-screen">
             <div className="max-w-7xl mx-auto">
                 <div className="mb-6">
-                    <h1 className="text-2xl font-bold text-gray-900">연차 관리</h1>
-                    <p className="text-gray-600 mt-2">연차를 관리합니다.</p>
+                    <h1 className="text-2xl font-bold text-gray-900">휴가 현황</h1>
+                    <p className="text-gray-600 mt-2"></p>
                 </div>
             </div>
 
             {/* 필터 영역 */}
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
-                {/* 연도 선택 */}
-                <div className="flex items-center gap-4 mb-4">
-                    <label htmlFor="year" className="text-gray-700">년도</label>
-                    <select
-                        id="year"
-                        value={selectedYear}
-                        onChange={handleYearChange}
-                        className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    >
-                        {[2025, 2024, 2023, 2022, 2021, 2020, 2019, 2018].map(year => (
-                            <option key={year} value={year}>{year}</option>
-                        ))}
-                    </select>
+                {/* 상단 필터: 연도 + 휴가 종류 */}
+                <div className="flex flex-wrap items-center gap-6 mb-4">
+                    {/* 연도 선택 */}
+                    <div className="flex items-center gap-2">
+                        <label htmlFor="year" className="text-gray-700 whitespace-nowrap">년도</label>
+                        <select
+                            id="year"
+                            value={selectedYear}
+                            onChange={handleYearChange}
+                            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        >
+                            {[2025, 2024, 2023, 2022, 2021, 2020, 2019, 2018].map(year => (
+                                <option key={year} value={year}>{year}</option>
+                            ))}
+                        </select>
+                    </div>
+
+                    {/* 휴가 종류 선택 */}
+                    <div className="flex items-center gap-2">
+                        <label htmlFor="vacationType" className="text-gray-700 whitespace-nowrap">휴가 종류</label>
+                        <select
+                            id="vacationType"
+                            value={selectedVacationType}
+                            onChange={(e) => setSelectedVacationType(e.target.value)}
+                            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        >
+                            {vacationTypesList.map((type) => (
+                                <option key={type.code} value={type.code}>{type.name}</option>
+                            ))}
+                        </select>
+                    </div>
                 </div>
 
-                {/* 휴가 종류 선택 */}
-                <div className="flex items-center gap-4 mb-4">
-                    <label htmlFor="vacationType" className="text-gray-700">휴가 종류</label>
-                    <select
-                        id="vacationType"
-                        value={selectedVacationType}
-                        onChange={(e) => setSelectedVacationType(e.target.value)}
-                        className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    >
-                        {vacationTypesList.map((type) => (
-                            <option key={type.code} value={type.code}>{type.name}</option>
-                        ))}
-                    </select>
-                </div>
-
-                {/* 이름 검색 */}
+                {/* 이름 검색 필터 */}
                 <div className="flex items-center gap-2">
                     <input
                         type="text"
@@ -144,6 +147,7 @@ const VacationManagerPage = () => {
                     </button>
                 </div>
             </div>
+
 
             {/* 테이블 */}
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-x-auto">

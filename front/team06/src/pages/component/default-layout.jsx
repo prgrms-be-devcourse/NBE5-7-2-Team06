@@ -108,6 +108,13 @@ const DefaultLayout = ({ children }) => {
             icon: '📝',
             path: '/approval/second'
         }
+        ,
+        {
+            id: 'vacation-statistics',
+            label: '휴가 현황',
+            icon: '📝',
+            path: '/admin/vacations/statistics'
+        }
     ];
 
     const handleMenuClick = (path) => {
