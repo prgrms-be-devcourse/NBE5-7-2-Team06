@@ -2,6 +2,7 @@ package programmers.team6.domain.member.service;
 
 import java.util.List;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -16,7 +17,9 @@ import programmers.team6.domain.member.entity.Code;
 import programmers.team6.domain.member.enums.BasicCodeInfo;
 import programmers.team6.domain.member.repository.CodeRepository;
 import programmers.team6.domain.member.util.mapper.CodeMapper;
+import programmers.team6.global.exception.code.BadRequestErrorCode;
 import programmers.team6.global.exception.code.NotFoundErrorCode;
+import programmers.team6.global.exception.customException.BadRequestException;
 import programmers.team6.global.exception.customException.NotFoundException;
 
 @Service
@@ -26,7 +29,11 @@ public class CodeService {
 	private final CodeRepository codeRepository;
 
 	public void createCode(CodeCreateRequest codeCreateRequest) {
-		codeRepository.save(CodeMapper.toCode(codeCreateRequest));
+		try {
+			codeRepository.save(CodeMapper.toCode(codeCreateRequest));
+		} catch (DataIntegrityViolationException e) {
+			throw new BadRequestException(BadRequestErrorCode.BAD_REQUEST_DUPLICATE_CODE);
+		}
 	}
 
 	@Transactional(readOnly = true)
