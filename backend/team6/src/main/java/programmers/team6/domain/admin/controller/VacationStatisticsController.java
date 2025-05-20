@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
+import programmers.team6.domain.admin.dto.VacationStatisticsRequest;
 import programmers.team6.domain.admin.service.VacationStatisticsService;
 import programmers.team6.domain.vacation.dto.VacationMonthlyStatisticsResponse;
 import programmers.team6.global.paging.PagingConfig;
@@ -23,8 +24,8 @@ public class VacationStatisticsController {
 
 	@GetMapping
 	public Page<VacationMonthlyStatisticsResponse> monthlySummary(
-		@RequestParam @Validated @Positive Integer year, @RequestParam(required = false) String name,
+		@Validated VacationStatisticsRequest request,
 		@PagingConfig Pageable pageable) {
-		return vacationStatisticsService.getMonthlyVacationStatistics(year, name, pageable);
+		return vacationStatisticsService.getMonthlyVacationStatistics(request, pageable);
 	}
 }

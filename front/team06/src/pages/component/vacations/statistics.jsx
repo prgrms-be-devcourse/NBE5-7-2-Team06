@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import axios from '../../../api/axiosInstance';
 
 const VacationManagerPage = () => {
     const [searchName, setSearchName] = useState('');
@@ -8,11 +8,47 @@ const VacationManagerPage = () => {
     const [currentPage, setCurrentPage] = useState(0);
     const [totalPages, setTotalPages] = useState(1);
     const [selectedYear, setSelectedYear] = useState('2025');
+    const [vacationTypesList, setVacationTypesList] = useState([]);
+    const [selectedVacationType, setSelectedVacationType] = useState('');
+
     const vacationTypes = ['january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december'];
 
     useEffect(() => {
-        fetchVacationData();
-    }, [currentPage, selectedYear]);
+        fetchVacationTypes();
+    }, []);
+
+    useEffect(() => {
+        if (selectedVacationType !== '') {
+            fetchVacationData();
+        }
+    }, [currentPage, selectedYear, selectedVacationType]);
+
+    const fetchVacationTypes = async () => {
+        try {
+            const response = await axios.get('/admin/code', {
+                params: { groupCode: 'VACATION_TYPE' },
+            });
+
+            const types = response.data?.codeReadResponse?.content;
+
+            const filteredTypes = Array.isArray(types)
+                ? types.filter(type => type.code !== '05')
+                : [];
+
+            if (filteredTypes.length > 0) {
+                setVacationTypesList(filteredTypes);
+                setSelectedVacationType(filteredTypes[0].code); // ✅ 기본값 설정
+            } else {
+                console.error('휴가 타입 응답 형식이 올바르지 않습니다.', response.data);
+                setVacationTypesList([]);
+                setSelectedVacationType('');
+            }
+        } catch (error) {
+            console.error('휴가 타입 불러오기 실패:', error);
+            setVacationTypesList([]);
+            setSelectedVacationType('');
+        }
+    };
 
     const fetchVacationData = async () => {
         setLoading(true);
@@ -21,13 +57,14 @@ const VacationManagerPage = () => {
                 params: {
                     year: selectedYear,
                     name: searchName || undefined,
+                    vacationCode: selectedVacationType || undefined,
                     page: currentPage,
                 },
             });
             setVacationData(response.data.content);
             setTotalPages(response.data.totalPages);
         } catch (error) {
-            console.error('Error fetching vacation data:', error);
+            console.error('휴가 데이터 불러오기 실패:', error);
         } finally {
             setLoading(false);
         }
@@ -53,52 +90,58 @@ const VacationManagerPage = () => {
             <div className="max-w-7xl mx-auto">
                 <div className="mb-6">
                     <h1 className="text-2xl font-bold text-gray-900">연차 관리</h1>
-                    <p className="text-gray-600 mt-2">
-                        연차를 관리합니다.
-                    </p>
+                    <p className="text-gray-600 mt-2">연차를 관리합니다.</p>
                 </div>
             </div>
 
             {/* 필터 영역 */}
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
-                <div className="flex flex-wrap items-center justify-between gap-4">
-                    {/* 년도 선택 */}
-                    <div className="flex items-center gap-4">
-                        <label htmlFor="year" className="text-gray-700">년도</label>
-                        <select
-                            id="year"
-                            value={selectedYear}
-                            onChange={handleYearChange}
-                            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                        >
-                            <option value="2025">2025</option>
-                            <option value="2024">2024</option>
-                            <option value="2023">2023</option>
-                            <option value="2022">2022</option>
-                            <option value="2021">2021</option>
-                            <option value="2020">2020</option>
-                            <option value="2019">2019</option>
-                            <option value="2018">2018</option>
-                        </select>
-                    </div>
+                {/* 연도 선택 */}
+                <div className="flex items-center gap-4 mb-4">
+                    <label htmlFor="year" className="text-gray-700">년도</label>
+                    <select
+                        id="year"
+                        value={selectedYear}
+                        onChange={handleYearChange}
+                        className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    >
+                        {[2025, 2024, 2023, 2022, 2021, 2020, 2019, 2018].map(year => (
+                            <option key={year} value={year}>{year}</option>
+                        ))}
+                    </select>
+                </div>
 
-                    {/* 이름 검색 */}
-                    <div className="flex items-center gap-2">
-                        <input
-                            type="text"
-                            value={searchName}
-                            placeholder="이름 검색"
-                            onChange={(e) => setSearchName(e.target.value)}
-                            onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 w-64"
-                        />
-                        <button
-                            onClick={handleSearch}
-                            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
-                        >
-                            검색
-                        </button>
-                    </div>
+                {/* 휴가 종류 선택 */}
+                <div className="flex items-center gap-4 mb-4">
+                    <label htmlFor="vacationType" className="text-gray-700">휴가 종류</label>
+                    <select
+                        id="vacationType"
+                        value={selectedVacationType}
+                        onChange={(e) => setSelectedVacationType(e.target.value)}
+                        className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    >
+                        {vacationTypesList.map((type) => (
+                            <option key={type.code} value={type.code}>{type.name}</option>
+                        ))}
+                    </select>
+                </div>
+
+                {/* 이름 검색 */}
+                <div className="flex items-center gap-2">
+                    <input
+                        type="text"
+                        value={searchName}
+                        placeholder="이름 검색"
+                        onChange={(e) => setSearchName(e.target.value)}
+                        onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                        className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 w-64"
+                    />
+                    <button
+                        onClick={handleSearch}
+                        className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
+                    >
+                        검색
+                    </button>
                 </div>
             </div>
 

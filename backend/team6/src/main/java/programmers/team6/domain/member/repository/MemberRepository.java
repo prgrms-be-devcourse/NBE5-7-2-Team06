@@ -36,15 +36,16 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 	@Query("""
 		select m 
 		from Member m
-		where m.id in (select vil.memberId from VacationInfoLog vil where vil.logDate < :localDateTime group by vil.memberId)
+		where m.id in (select vil.memberId from VacationInfoLog vil where vil.logDate < :localDateTime and vil.vacationType = :code group by vil.memberId)
 		""")
-	Page<Member> findAllHasVacationInfoTargetYear(LocalDateTime localDateTime, Pageable pageable);
+	Page<Member> findAllHasVacationInfoTargetYear(LocalDateTime localDateTime, String code, Pageable pageable);
 
 	@Query("""
 		select m 
 		from Member m
-		where m.id in (select vil.memberId from VacationInfoLog vil where vil.logDate < :localDateTime group by vil.memberId)
+		where m.id in (select vil.memberId from VacationInfoLog vil where vil.logDate < :localDateTime and vil.vacationType = :code group by vil.memberId)
 		and m.name like %:name%
 		""")
-	Page<Member> findAllHasVacationInfoTargetYear(LocalDateTime localDateTime, String name, Pageable pageable);
+	Page<Member> findAllHasVacationInfoTargetYear(LocalDateTime localDateTime, String code, String name,
+		Pageable pageable);
 }

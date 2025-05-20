@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
+import programmers.team6.domain.admin.dto.VacationStatisticsRequest;
 import programmers.team6.domain.vacation.entity.VacationInfoLog;
 import programmers.team6.domain.vacation.repository.VacationInfoLogRepository;
 
@@ -18,9 +19,9 @@ public class VacationInfoLogReader {
 
 	private final VacationInfoLogRepository repository;
 
-	public VacationInfoLogs lastedLogsFrom(List<Long> ids, Integer year, String code) {
-		LocalDateTime date = LocalDateTime.of(year, 12, 31, 23, 59);
-		List<VacationInfoLog> lastedByMemberIdInAndYear = repository.findLastedByMemberIdInAndYear(ids, date, code);
+	public VacationInfoLogs lastedLogsFrom(List<Long> ids, VacationStatisticsRequest request) {
+		LocalDateTime date = LocalDateTime.of(request.year(), 12, 31, 23, 59);
+		List<VacationInfoLog> lastedByMemberIdInAndYear = repository.findLastedByMemberIdInAndYear(ids, date, request.vacationCode());
 		return new VacationInfoLogs(toLastedMap(lastedByMemberIdInAndYear));
 	}
 

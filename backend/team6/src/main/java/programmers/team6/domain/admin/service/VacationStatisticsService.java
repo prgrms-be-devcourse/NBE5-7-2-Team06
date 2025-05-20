@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
+import programmers.team6.domain.admin.dto.VacationStatisticsRequest;
 import programmers.team6.domain.member.repository.MemberRepository;
 import programmers.team6.domain.vacation.dto.VacationMonthlyStatisticsResponse;
 import programmers.team6.domain.vacation.enums.VacationCode;
@@ -21,13 +22,11 @@ public class VacationStatisticsService {
 	private final VacationStatisticsMapper mapper;
 
 	@Transactional(readOnly = true)
-	public Page<VacationMonthlyStatisticsResponse> getMonthlyVacationStatistics(Integer year, String name,
+	public Page<VacationMonthlyStatisticsResponse> getMonthlyVacationStatistics(VacationStatisticsRequest request,
 		Pageable pageable) {
-		Members members = memberReader.readHasVacationInfoMemberFrom(year, name, pageable);
-		VacationRequests vacationRequests = vacationRequestsReader.vacationRequestFrom(members.toIds(), year,
-			VacationCode.ANNUAL.getCode());
-		VacationInfoLogs logs = vacationInfoLogReader.lastedLogsFrom(members.toIds(), year,
-			VacationCode.ANNUAL.getCode());
-		return mapper.toDto(members, vacationRequests, logs, year);
+		Members members = memberReader.readHasVacationInfoMemberFrom(request, pageable);
+		VacationRequests vacationRequests = vacationRequestsReader.vacationRequestFrom(members.toIds(), request);
+		VacationInfoLogs logs = vacationInfoLogReader.lastedLogsFrom(members.toIds(), request);
+		return mapper.toDto(members, vacationRequests, logs, request.year());
 	}
 }
