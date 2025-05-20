@@ -30,9 +30,9 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 	Optional<Member> findByEmail(@Param("email") String email);
 
 	@Query("SELECT m FROM Member m " +
-		"JOIN FETCH m.dept d " +
-		"LEFT JOIN FETCH d.deptLeader " +
-		"WHERE m.id = :memberId")
+		   "JOIN FETCH m.dept d " +
+		   "LEFT JOIN FETCH d.deptLeader " +
+		   "WHERE m.id = :memberId")
 	Optional<Member> findByIdWithDeptAndLeader(@Param("memberId") Long memberId);
 
 	@Query("""
@@ -49,6 +49,10 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 		""")
 	MemberLoginInfoResponse findLoginMemberInfo(Long memberId);
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 01cf04922b5ff2fd9326d8b7520f7e77842108f7
 	@Query("""
 		select m 
 		from Member m
