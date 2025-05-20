@@ -91,10 +91,10 @@ class VacationRequestRepositorySearchTest {
 				for (int month = 1; month < 5; month++) {
 					// 1 2 3
 					for (int day = 1; day < 4; day++) {
-						VacationRequest vr = new VacationRequest(member, LocalDate.of(year, month, day).atStartOfDay(),
-							LocalDate.of(year, month, day + 1).atStartOfDay(), null, code,
-							VacationRequestStatus.APPROVED, 1);
-						vacationRequestRepository.save(vr);
+						VacationRequest vr = vacationRequestRepository.save(
+							new VacationRequest(member, LocalDate.of(year, month, day).atStartOfDay(),
+								LocalDate.of(year, month, day + 1).atStartOfDay(), null, code,
+								VacationRequestStatus.APPROVED, 1));
 						List<ApprovalStep> approvalSteps = new ArrayList<>();
 						for (int j = 0; j < 3; j++) {
 							if (day == 1) {
@@ -121,13 +121,11 @@ class VacationRequestRepositorySearchTest {
 		// given
 		AdminVacationSearchCondition defaultCondition = new AdminVacationSearchCondition(
 			new AdminVacationSearchCondition.DateRangeCondition(null, null, null, null),
-			new AdminVacationSearchCondition.ApplicantCondition(null, null, null, null),
-			new AdminVacationSearchCondition.ApproverCondition(null), null);
+			new AdminVacationSearchCondition.ApplicantCondition(null, null, null, null), null);
 
 		AdminVacationSearchCondition latestCondition = new AdminVacationSearchCondition(
 			new AdminVacationSearchCondition.DateRangeCondition(null, null, null, null),
-			new AdminVacationSearchCondition.ApplicantCondition("member 0", null, null, null),
-			new AdminVacationSearchCondition.ApproverCondition(null), null);
+			new AdminVacationSearchCondition.ApplicantCondition("member 0", null, null, null), null);
 
 		// when
 		Page<VacationRequestSearchResponse> defaultResult = adminVacationRequestSearchCustom.search(defaultCondition,
@@ -165,16 +163,13 @@ class VacationRequestRepositorySearchTest {
 		AdminVacationSearchCondition dateCondition = new AdminVacationSearchCondition(
 			new AdminVacationSearchCondition.DateRangeCondition(LocalDate.of(2025, 1, 1).atStartOfDay(),
 				LocalDate.of(2026, 1, 1).atStartOfDay(), null, null),
-			new AdminVacationSearchCondition.ApplicantCondition(null, null, null, null),
-			new AdminVacationSearchCondition.ApproverCondition(null), null);
+			new AdminVacationSearchCondition.ApplicantCondition(null, null, null, null), null);
 		AdminVacationSearchCondition yearCondition = new AdminVacationSearchCondition(
 			new AdminVacationSearchCondition.DateRangeCondition(null, null, 2025, null),
-			new AdminVacationSearchCondition.ApplicantCondition(null, null, null, null),
-			new AdminVacationSearchCondition.ApproverCondition(null), null);
+			new AdminVacationSearchCondition.ApplicantCondition(null, null, null, null), null);
 		AdminVacationSearchCondition yearAndQuarterCondition = new AdminVacationSearchCondition(
 			new AdminVacationSearchCondition.DateRangeCondition(null, null, 2025, Quarter.Q1),
-			new AdminVacationSearchCondition.ApplicantCondition(null, null, null, null),
-			new AdminVacationSearchCondition.ApproverCondition(null), null);
+			new AdminVacationSearchCondition.ApplicantCondition(null, null, null, null), null);
 
 		// when
 		Page<VacationRequestSearchResponse> dateResult = adminVacationRequestSearchCustom.search(dateCondition,
@@ -195,8 +190,7 @@ class VacationRequestRepositorySearchTest {
 		// given
 		AdminVacationSearchCondition applicantNameCondition = new AdminVacationSearchCondition(
 			new AdminVacationSearchCondition.DateRangeCondition(null, null, null, null),
-			new AdminVacationSearchCondition.ApplicantCondition("0", null, null, null),
-			new AdminVacationSearchCondition.ApproverCondition(null), null);
+			new AdminVacationSearchCondition.ApplicantCondition("0", null, null, null), null);
 
 		// when
 		Page<VacationRequestSearchResponse> result = adminVacationRequestSearchCustom.search(applicantNameCondition,
@@ -214,8 +208,7 @@ class VacationRequestRepositorySearchTest {
 		// given
 		AdminVacationSearchCondition deptNameCondition = new AdminVacationSearchCondition(
 			new AdminVacationSearchCondition.DateRangeCondition(null, null, null, null),
-			new AdminVacationSearchCondition.ApplicantCondition(null, "0", null, null),
-			new AdminVacationSearchCondition.ApproverCondition(null), null);
+			new AdminVacationSearchCondition.ApplicantCondition(null, "0", null, null), null);
 
 		Page<VacationRequestSearchResponse> result = adminVacationRequestSearchCustom.search(deptNameCondition,
 			PageRequest.of(0, Integer.MAX_VALUE));
@@ -231,12 +224,10 @@ class VacationRequestRepositorySearchTest {
 		// given
 		AdminVacationSearchCondition applicantVacationTypeCodeIdCondition = new AdminVacationSearchCondition(
 			new AdminVacationSearchCondition.DateRangeCondition(null, null, null, null),
-			new AdminVacationSearchCondition.ApplicantCondition(null, null, null, 7L),
-			new AdminVacationSearchCondition.ApproverCondition(null), null);
+			new AdminVacationSearchCondition.ApplicantCondition(null, null, null, 7L), null);
 		AdminVacationSearchCondition applicantPositionCodeIdCondition = new AdminVacationSearchCondition(
 			new AdminVacationSearchCondition.DateRangeCondition(null, null, null, null),
-			new AdminVacationSearchCondition.ApplicantCondition(null, null, 1L, null),
-			new AdminVacationSearchCondition.ApproverCondition(null), null);
+			new AdminVacationSearchCondition.ApplicantCondition(null, null, 1L, null), null);
 
 		// when
 		Page<VacationRequestSearchResponse> applicantVacationTypeCodeIdResult = adminVacationRequestSearchCustom.search(
@@ -261,7 +252,7 @@ class VacationRequestRepositorySearchTest {
 		AdminVacationSearchCondition vacationRequestStatusCondition = new AdminVacationSearchCondition(
 			new AdminVacationSearchCondition.DateRangeCondition(null, null, null, null),
 			new AdminVacationSearchCondition.ApplicantCondition(null, null, null, null),
-			new AdminVacationSearchCondition.ApproverCondition(null), VacationRequestStatus.APPROVED);
+			VacationRequestStatus.APPROVED);
 
 		// when
 		Page<VacationRequestSearchResponse> vacationRequestStatusResult = adminVacationRequestSearchCustom.search(
@@ -279,8 +270,7 @@ class VacationRequestRepositorySearchTest {
 		// given
 		AdminVacationSearchCondition approverNameCondition = new AdminVacationSearchCondition(
 			new AdminVacationSearchCondition.DateRangeCondition(null, null, null, null),
-			new AdminVacationSearchCondition.ApplicantCondition(null, null, null, null),
-			new AdminVacationSearchCondition.ApproverCondition("approver 0"), null);
+			new AdminVacationSearchCondition.ApplicantCondition(null, null, null, null), null);
 
 		// when
 		Page<VacationRequestSearchResponse> approverNameResult = adminVacationRequestSearchCustom.search(

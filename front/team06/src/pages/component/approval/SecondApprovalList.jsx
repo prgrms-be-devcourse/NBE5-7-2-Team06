@@ -15,13 +15,13 @@ const SecondApprovalList = () => {
     const [itemsPerPage, setItemsPerPage] = useState(0);
     // const itemsPerPage = 20;
 
-    // 필터 상태 - 사용자 입력용
+    // 필터 상태
     const [filters, setFilters] = useState({
         type: "",
         name: "",
         from: "",
         to: "",
-        status: ""
+        status: "PENDING"
     });
 
     // 실제 API 요청에 사용될 필터 상태
@@ -30,16 +30,17 @@ const SecondApprovalList = () => {
         name: "",
         from: "",
         to: "",
-        status: ""
+        status: "PENDING"
     });
 
-    // 휴가 종류 옵션
+    // 휴가 종류 옵션 - 반차 옵션 분리
     const vacationTypes = [
         { value: "연차", label: "연차" },
         { value: "포상 휴가", label: "포상 휴가" },
         { value: "공가", label: "공가" },
         { value: "경조사 휴가", label: "경조사 휴가" },
-        { value: "반차", label: "반차" }
+        { value: "반차(오전)", label: "반차(오전)" },
+        { value: "반차(오후)", label: "반차(오후)" }
     ];
 
     // 부서 옵션
@@ -62,7 +63,7 @@ const SecondApprovalList = () => {
         { value: "PENDING", label: "결재 대기" },
         { value: "WAITING", label: "1차 결재 대기" },
         { value: "APPROVED", label: "승인" },
-        { value: "REJECTED", label: "거절" },
+        { value: "REJECTED", label: "반려" },
         { value: "CANCELED", label: "취소" }
     ];
 
@@ -70,7 +71,7 @@ const SecondApprovalList = () => {
     const fetchApprovals = async () => {
         setLoading(true);
         try {
-            let url = `/approval-steps/second?page=${currentPage}&size=${itemsPerPage}`;
+            let url = `/approval-steps/second?page=${currentPage}`;
             const queryParams = new URLSearchParams();
 
             if (appliedFilters.type) queryParams.append("type", appliedFilters.type);
@@ -84,11 +85,33 @@ const SecondApprovalList = () => {
                 url += `&${queryString}`;
             }
 
-            // ✅ Axios 인스턴스 사용
+            // ✅ 공통 axios 인스턴스로 GET 요청
             const response = await api.get(url);
             const data = response.data;
 
-            setApprovals(data.content);
+            // 휴가 종류를 백엔드 데이터에 맞게 처리
+            const processedApprovals = data.content.map(approval => {
+                // 반차의 경우 오전/오후 구분 추가
+                if (approval.type.includes("반차")) {
+                    const isAM = new Date(approval.from).getHours() < 12;
+                    return {
+                        ...approval,
+                        displayType: isAM ? "반차(오전)" : "반차(오후)",
+                        // 반차는 0.5일로 계산
+                        vacationDays: 0.5
+                    };
+                } else {
+                    // 일반 휴가의 경우 일수 계산
+                    const days = calculateDays(approval.from, approval.to);
+                    return {
+                        ...approval,
+                        displayType: approval.type,
+                        vacationDays: days
+                    };
+                }
+            });
+
+            setApprovals(processedApprovals);
             setTotalPages(data.totalPages);
             setTotalElements(data.totalElements);
             setCurrentPage(data.number);
@@ -128,19 +151,20 @@ const SecondApprovalList = () => {
         console.log(`상세 정보 보기: ${approvalStepId}`);
         navigate(`/approval/second/${approvalStepId}`);
     };
-    // 필터 초기화
+
     const handleReset = () => {
         const emptyFilters = {
             type: "",
             name: "",
             from: "",
             to: "",
-            status: ""
+            status: "PENDING"
         };
         setFilters(emptyFilters);
         setAppliedFilters(emptyFilters);
         setCurrentPage(0);
     };
+
 
     // 날짜 형식 변환 함수
     const formatDate = (dateString) => {
@@ -151,6 +175,24 @@ const SecondApprovalList = () => {
             month: "2-digit",
             day: "2-digit"
         });
+    };
+
+    // 두 날짜 사이의 일수 계산 함수
+    const calculateDays = (fromDate, toDate) => {
+        if (!fromDate || !toDate) return 0;
+
+        const start = new Date(fromDate);
+        const end = new Date(toDate);
+
+        // 시간 부분을 제외하고 날짜만 비교하기 위해 시간을 00:00:00으로 설정
+        start.setHours(0, 0, 0, 0);
+        end.setHours(0, 0, 0, 0);
+
+        // ms -> days 변환 후 +1 (시작일과 종료일 모두 포함)
+        const diffTime = Math.abs(end - start);
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+
+        return diffDays;
     };
 
     // 상태별 뱃지 스타일
@@ -171,7 +213,7 @@ const SecondApprovalList = () => {
             PENDING: "결재 대기",
             WAITING: "1차 결재 대기",
             APPROVED: "승인",
-            REJECTED: "거절",
+            REJECTED: "반려",
             CANCELED: "취소"
         };
         return statusNames[status] || status;
@@ -364,6 +406,9 @@ const SecondApprovalList = () => {
                                         기간
                                     </th>
                                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        신청 일수
+                                    </th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                         신청자
                                     </th>
                                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -394,11 +439,14 @@ const SecondApprovalList = () => {
                                                         approval.type
                                                     )}`}
                                                 >
-                                                    {approval.type}
+                                                    {approval.displayType || approval.type}
                                                 </span>
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                                 {formatDate(approval.from)} ~ {formatDate(approval.to)}
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                                {approval.vacationDays}일
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap">
                                                 <div className="text-sm font-medium text-gray-900">
@@ -427,17 +475,17 @@ const SecondApprovalList = () => {
                                             <td className="px-6 py-4 whitespace-nowrap">
                                                 <span
                                                     className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${getStatusBadge(
-                                                        approval.secondApprovalStatus
+                                                        approval.secondApprovalStatus || approval.status
                                                     )}`}
                                                 >
-                                                    {getStatusDisplayName(approval.secondApprovalStatus)}
+                                                    {getStatusDisplayName(approval.secondApprovalStatus || approval.status)}
                                                 </span>
                                             </td>
                                         </tr>
                                     ))
                                 ) : (
                                     <tr>
-                                        <td colSpan="7" className="px-6 py-4 text-center text-gray-500">
+                                        <td colSpan="8" className="px-6 py-4 text-center text-gray-500">
                                             결재 요청 목록이 없습니다.
                                         </td>
                                     </tr>

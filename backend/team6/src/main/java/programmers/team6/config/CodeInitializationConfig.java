@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import programmers.team6.domain.auth.dto.request.MemberSignUpRequest;
 import programmers.team6.domain.auth.service.AuthService;
@@ -22,12 +23,16 @@ import programmers.team6.domain.member.repository.CodeRepository;
 import programmers.team6.domain.member.repository.DeptRepository;
 import programmers.team6.domain.member.repository.MemberRepository;
 import programmers.team6.domain.member.util.mapper.CodeMapper;
+import programmers.team6.domain.vacation.entity.ApprovalStep;
 import programmers.team6.domain.vacation.entity.VacationRequest;
+import programmers.team6.domain.vacation.enums.ApprovalStatus;
 import programmers.team6.domain.vacation.enums.VacationRequestStatus;
+import programmers.team6.domain.vacation.repository.ApprovalStepRepository;
 import programmers.team6.domain.vacation.repository.VacationRequestRepository;
 
 @Configuration
 @RequiredArgsConstructor
+@Transactional
 public class CodeInitializationConfig {
 	private final CodeRepository codeRepository;
 	private final DeptRepository deptRepository;
@@ -35,6 +40,7 @@ public class CodeInitializationConfig {
 	private final AuthService authService;
 	private final PasswordEncoder passwordEncoder;
 	private final VacationRequestRepository vacationRequestRepository;
+	private final ApprovalStepRepository approvalStepRepository;
 
 	/**
 	 * 현재 개발환경이고 다른 엔티티의 변수 수정 가능성이 있는 상황에서 우선적으로 CommandLineRunner를 활용하여 개발하였음, 그럼으로 yml의 profile은 dev로 작성 필요
@@ -70,26 +76,33 @@ public class CodeInitializationConfig {
 				Member member2 = memberRepository.findById(3L).get();
 				Member member3 = memberRepository.findById(4L).get();
 				Code vacationType = codeRepository.findByGroupCodeAndCode("VACATION_TYPE", "01").get();
+				Code vacationType1 = codeRepository.findByGroupCodeAndCode("VACATION_TYPE", "05").get();
 
 				VacationRequest vacationRequest = new VacationRequest(member, LocalDateTime.now(),
 					LocalDateTime.of(2025, 5, 22, 0, 0),
 					"사유",
 					vacationType, VacationRequestStatus.APPROVED, 1);
 
-				VacationRequest vacationRequest2 = new VacationRequest(member2, LocalDateTime.of(2025, 5, 18, 0, 0),
-					LocalDateTime.of(2025, 5, 20, 0, 0),
+				VacationRequest vacationRequest2 = new VacationRequest(member2, LocalDateTime.of(2025, 5, 18, 9, 0),
+					LocalDateTime.of(2025, 5, 20, 13, 0),
 					"사유",
-					vacationType, VacationRequestStatus.APPROVED, 1);
+					vacationType1, VacationRequestStatus.APPROVED, 1);
 
 				VacationRequest vacationRequest3 = new VacationRequest(member3, LocalDateTime.of(2025, 5, 30, 0, 0),
 					LocalDateTime.of(2025, 5, 30, 0, 0),
 					"사유",
 					vacationType, VacationRequestStatus.APPROVED, 1);
 
-				insertVacation(vacationRequest);
-				insertVacation(vacationRequest2);
-				insertVacation(vacationRequest3);
+				vacationRequest = insertVacation(vacationRequest);
+				vacationRequest2 = insertVacation(vacationRequest2);
+				vacationRequest3 = insertVacation(vacationRequest3);
 
+				approvalStepRepository.save(new ApprovalStep(0, ApprovalStatus.PENDING, member2, vacationRequest));
+				approvalStepRepository.save(new ApprovalStep(1, ApprovalStatus.PENDING, member3, vacationRequest));
+				approvalStepRepository.save(new ApprovalStep(0, ApprovalStatus.PENDING, member, vacationRequest2));
+				approvalStepRepository.save(new ApprovalStep(1, ApprovalStatus.PENDING, member3, vacationRequest2));
+				approvalStepRepository.save(new ApprovalStep(0, ApprovalStatus.PENDING, member, vacationRequest3));
+				approvalStepRepository.save(new ApprovalStep(1, ApprovalStatus.PENDING, member2, vacationRequest3));
 			}
 
 		};
@@ -162,8 +175,8 @@ public class CodeInitializationConfig {
 
 	}
 
-	private void insertVacation(VacationRequest request) {
-		vacationRequestRepository.save(request);
+	private VacationRequest insertVacation(VacationRequest request) {
+		return vacationRequestRepository.save(request);
 	}
 
 }

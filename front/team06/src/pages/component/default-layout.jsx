@@ -24,18 +24,19 @@ const DefaultLayout = ({ children }) => {
 
     const [sidebarCollapsed, setSidebarCollapsed] = useState(true);
 
-    // activeMenu 결정 로직 수정 - 정확한 경로 매칭 및 새로운 URL 구조 반영
     const activeMenu =
         location.pathname === '/vacations/my' ? 'my-vacation' :
-            location.pathname === '/vacations/history' ? 'vacation-history' :
-                location.pathname === '/vacations/request' ? 'vacation-request' :
-                    location.pathname.includes('/vacations/calendar') ? 'vacation-calendar' :
-                        location.pathname.includes('/admin/vacation-request') ? 'vacation-list' :
-                            location.pathname.includes('/admin/code') ? 'code-management' :
-                                location.pathname.includes('/approval/first') ? 'approval-first' :
-                                    location.pathname.includes('/approval/second') ? 'approval-second' :
-                                        location.pathname.includes('/admin/member-approvals') ? 'member-approval' :
-                                            'vacation-list';
+        location.pathname === '/vacations/history' ? 'vacation-history' :
+        location.pathname === '/vacations/request' ? 'vacation-request' :
+        location.pathname.includes('/vacations/calendar') ? 'vacation-calendar' :
+        location.pathname.includes('/admin/vacation-request') ? 'vacation-list' :
+        location.pathname.includes('/admin/code') ? 'code-management' :
+        location.pathname.includes('/approval/first') ? 'approval-first' :
+        location.pathname.includes('/approval/second') ? 'approval-second' :
+        location.pathname.includes('/admin/member-approvals') ? 'member-approval' :
+        location.pathname.includes('/admin/vacations/statistics') ? 'vacation-statistics' :
+        location.pathname.includes('/vacations') ? 'vacations' :
+        'vacation-list';
 
     const [userName, setUserName] = useState('');
     const [firstLetter, setFirstLetter] = useState('');
@@ -47,7 +48,18 @@ const DefaultLayout = ({ children }) => {
         }
     }, []);
 
-    // 메뉴 아이템 정의 - 새로운 메뉴 아이템 추가
+    const getMenuIdsByRole = (role) => {
+        switch (role) {
+            case 'ADMIN':
+                return ['vacation-calendar', 'my-vacation', 'vacation-history', 'vacation-request', 'vacation-list', 'code-management', 'member-approval', 'approval-first', 'approval-second', 'vacation-statistics', 'vacations'];
+            case 'USER':
+                return ['vacation-calendar', 'my-vacation', 'vacation-history', 'vacation-request', 'approval-first', 'approval-second'];
+            default:
+                return ['vacation-calendar'];
+        }
+    };
+
+    // 메뉴 아이템 정의
     const menuItems = [
         {
             id: 'vacation-calendar',
@@ -73,24 +85,6 @@ const DefaultLayout = ({ children }) => {
             icon: '✏️',
             path: '/vacations/request'
         },
-        // {
-        //     id: 'vacation-list',
-        //     label: '휴가 신청 목록',
-        //     icon: '📋',
-        //     path: '/admin/vacation-request'
-        // },
-        {
-            id: 'code-management',
-            label: '코드 관리',
-            icon: '⚙️',
-            path: '/admin/code'
-        },
-        {
-            id: 'member-approval',
-            label: '회원 승인 관리',
-            icon: '👤',
-            path: '/admin/member-approvals'
-        },
         {
             id: 'approval-first',
             label: '1차 결재 목록',
@@ -102,8 +96,43 @@ const DefaultLayout = ({ children }) => {
             label: '2차 결재 목록',
             icon: '📝',
             path: '/approval/second'
+        },
+        {
+            id: 'vacation-list',
+            label: '휴가 신청 목록',
+            icon: '📋',
+            path: '/admin/vacation-request'
+        },
+        {
+            id: 'vacations',
+            label: '휴가 관리',
+            icon: '✅',
+            path: '/vacations'
+        },
+        {
+            id: 'member-approval',
+            label: '회원 승인 관리',
+            icon: '👤',
+            path: '/admin/member-approvals'
+        },
+        {
+            id: 'code-management',
+            label: '코드 관리',
+            icon: '⚙️',
+            path: '/admin/code'
+        },
+        {
+            id: 'vacation-statistics',
+            label: '휴가 현황',
+            icon: '📝',
+            path: '/admin/vacations/statistics'
         }
     ];
+
+    // 사용자 권한에 따른 메뉴 필터링
+    const userRole = localStorage.getItem('userRole'); // 예: 'ADMIN'
+    const allowedMenuIds = getMenuIdsByRole(userRole);
+    const filteredMenuItems = menuItems.filter(item => allowedMenuIds.includes(item.id));
 
     const handleMenuClick = (path) => {
         navigate(path);
@@ -163,16 +192,16 @@ const DefaultLayout = ({ children }) => {
                             onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
                             className="w-6 h-6 bg-white rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-50"
                         >
-            <span className={`text-xs transition-transform ${sidebarCollapsed ? 'rotate-180' : ''}`}>
-              ◀
-            </span>
+                            <span className={`text-xs transition-transform ${sidebarCollapsed ? 'rotate-180' : ''}`}>
+                              ◀
+                            </span>
                         </button>
                     </div>
 
-                    {/* Navigation */}
+                    {/* Navigation - 필터링된 메뉴 항목 사용 */}
                     <nav className="p-4">
                         <ul className="space-y-2">
-                            {menuItems.map((item) => (
+                            {filteredMenuItems.map((item) => (
                                 <li key={item.id}>
                                     <button
                                         onClick={() => handleMenuClick(item.path)}

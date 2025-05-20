@@ -80,7 +80,8 @@ public class AdminVacationRequestSearchCustom {
 		/**
 		 * Predicates들을 기반을 Query 생성
 		 */
-
+		// Long id, String type, LocalDateTime from, LocalDateTime to, String applicantName,
+		// 	String approverNames, String deptName, VacationRequestStatus status
 		TypedQuery<VacationRequestSearchResponse> query = CriteriaCustomQueryBuilder.builder(cq, cb)
 			.applyDynamicPredicates(predicates)
 			.projection(VacationRequestSearchResponse.class, vr.get(VacationRequest_.id),

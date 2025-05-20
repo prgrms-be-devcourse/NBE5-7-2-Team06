@@ -12,6 +12,9 @@ const Calendar = () => {
     const [depts, setDepts] = useState([1]);
     const [selectedDeptId, setSelectedDeptId] = useState(1);
 
+    const [user, setUser] = useState(null);
+    const [error, setError] = useState("");
+
     useEffect(() => {
         api
             .get("/depts")
@@ -20,8 +23,32 @@ const Calendar = () => {
             })
             .catch((err) => {
                 console.error("부서 조회 실패", err);
+                setError("부서 정보를 불러오는 데 실패했습니다.");
             });
     }, []);
+
+
+    useEffect(() => {
+        const fetchUserInfo = async () => {
+            try {
+                const response = await api.get("/members/me");
+                const userData = response.data;
+                setUser(userData);
+
+                // 👉 사용자 부서 코드로 기본 선택값 설정
+                if (userData.deptId) {
+
+                    setSelectedDeptId(userData.deptId);
+                }
+            } catch (err) {
+                console.error("사용자 정보 불러오기 실패:", err);
+                setError("사용자 정보를 불러오는 데 실패했습니다.");
+            }
+        };
+
+        fetchUserInfo();
+    }, []);
+
 
     const colorPalette = [
         "#60a5fa", // 파랑
@@ -66,15 +93,45 @@ const Calendar = () => {
             })
             .then((res) => {
                 const formatted = res.data.map((vacation) => {
-                    const from = vacation.from.slice(0, 10);
-                    const to = vacation.to.slice(0, 10);
+                    const from = vacation.from;
+                    const to = vacation.to;
 
-                    const [start, endRaw] = new Date(from) <= new Date(to)
-                        ? [from, to]
-                        : [to, from];
+                    const formatDate = (date) => {
+                        const yyyy = date.getFullYear();
+                        const mm = String(date.getMonth() + 1).padStart(2, "0");
+                        const dd = String(date.getDate()).padStart(2, "0");
+                        return `${yyyy}-${mm}-${dd}`;
+                    };
+
+                    const startDate = new Date(from);
+                    const endDate = new Date(to);
+
+                    const startDateStr = formatDate(startDate); // ✅ Date 객체로 넘겨야 함
+                    const endDateStr = formatDate(endDate);
+                    // 시각만 뽑기
+                    const getTimeString = (date) => {
+                        const hour = String(date.getHours()).padStart(2, "0");
+                        const minute = String(date.getMinutes()).padStart(2, "0");
+                        return `${hour}시${minute !== "00" ? ` ${minute}분` : ""}`;
+                    };
+
+                    // ✅ 오전/오후 판별 (반차일 때만)
+                    let prefixText = "";
+                    if (vacation.typeName === "반차") {
+                        const hour = startDate.getHours();
+                        if (hour <= 13) {
+                            prefixText = "오전 ";
+                        } else {
+                            prefixText = "오후 ";
+                        }
+                    }
+
+                    const [start, endRaw] = startDate <= endDate
+                        ? [startDateStr, endDateStr]
+                        : [endDateStr, startDateStr];
 
                     return {
-                        title: `${vacation.name} - ${vacation.positionName} (${vacation.typeName})`,
+                        title: `${vacation.name} ${vacation.positionName} (${prefixText}${vacation.typeName})`,
                         start,
                         end: plusOneDay(endRaw), // ✅ 하루 더해서 inclusive하게 표시되도록
                         allDay: true,

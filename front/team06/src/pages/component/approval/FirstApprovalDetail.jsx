@@ -21,7 +21,24 @@ const FirstApprovalDetail = () => {
         setLoading(true);
         try {
             const response = await api.get(`/approval-steps/first/${approvalStepId}`);
-            setApprovalDetail(response.data);
+
+            // 데이터 처리 - 반차 구분과 휴가 일수 계산
+            const data = response.data;
+            let processedData = { ...data };
+
+            // 반차의 경우 오전/오후 구분 추가
+            if (data.type.includes("반차")) {
+                const isAM = new Date(data.from).getHours() < 12;
+                processedData.displayType = isAM ? "반차(오전)" : "반차(오후)";
+                processedData.vacationDays = 0.5;
+            } else {
+                // 일반 휴가의 경우 일수 계산
+                const days = calculateDays(data.from, data.to);
+                processedData.displayType = data.type;
+                processedData.vacationDays = days;
+            }
+
+            setApprovalDetail(processedData);
         } catch (err) {
             console.error("Error fetching approval detail:", err);
             setError(err.response?.data?.message || "데이터를 불러오는데 실패했습니다.");
@@ -102,6 +119,24 @@ const FirstApprovalDetail = () => {
         });
     };
 
+    // 두 날짜 사이의 일수 계산 함수 추가
+    const calculateDays = (fromDate, toDate) => {
+        if (!fromDate || !toDate) return 0;
+
+        const start = new Date(fromDate);
+        const end = new Date(toDate);
+
+        // 시간 부분을 제외하고 날짜만 비교하기 위해 시간을 00:00:00으로 설정
+        start.setHours(0, 0, 0, 0);
+        end.setHours(0, 0, 0, 0);
+
+        // ms -> days 변환 후 +1 (시작일과 종료일 모두 포함)
+        const diffTime = Math.abs(end - start);
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+
+        return diffDays;
+    };
+
     // 휴가 종류별 뱃지 스타일
     const getVacationTypeBadge = (type) => {
         if (!type) return "bg-gray-100 text-gray-800";
@@ -137,7 +172,7 @@ const FirstApprovalDetail = () => {
         const statusNames = {
             PENDING: "결재 대기",
             APPROVED: "승인",
-            REJECTED: "거절",
+            REJECTED: "반려",
             CANCELED: "취소"
         };
         return statusNames[status] || status;
@@ -193,7 +228,7 @@ const FirstApprovalDetail = () => {
                             <div className="flex justify-between items-center">
                                 <div>
                                     <span className={`inline-flex px-3 py-1 text-sm font-medium rounded-full ${getVacationTypeBadge(approvalDetail.type)}`}>
-                                        {approvalDetail.type}
+                                        {approvalDetail.displayType || approvalDetail.type}
                                     </span>
                                     <span className="ml-3 text-gray-700">
                                         {formatDate(approvalDetail.from)} ~ {formatDate(approvalDetail.to)}
@@ -240,7 +275,19 @@ const FirstApprovalDetail = () => {
                                     <div>
                                         <p className="text-sm text-gray-500">휴가 기간</p>
                                         <p className="text-gray-900">
-                                            {formatDate(approvalDetail.from)} ~ {formatDate(approvalDetail.to)}
+                                            {approvalDetail.type.includes("반차") ? (
+                                                formatDate(approvalDetail.from)
+                                            ) : (
+                                                <>
+                                                    {formatDate(approvalDetail.from)} ~ {formatDate(approvalDetail.to)}
+                                                </>
+                                            )}
+                                        </p>
+                                    </div>
+                                    <div>
+                                        <p className="text-sm text-gray-500">신청 일수</p>
+                                        <p className="text-gray-900">
+                                            {approvalDetail.vacationDays}일
                                         </p>
                                     </div>
                                     <div>
