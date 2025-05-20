@@ -8,5 +8,5 @@ import programmers.team6.domain.vacation.entity.VacationInfo;
 
 public interface VacationRepository extends JpaRepository<VacationInfo, Integer> {
 
-	Optional<VacationInfo> findByMemberId(Long memberId);
+	Optional<VacationInfo> findByMemberIdAndVacationType(Long memberId, String vacationType);
 }
