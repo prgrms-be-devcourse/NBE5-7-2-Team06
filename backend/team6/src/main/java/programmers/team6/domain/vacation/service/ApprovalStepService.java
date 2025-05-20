@@ -31,7 +31,6 @@ import programmers.team6.global.exception.customException.NotFoundException;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
 public class ApprovalStepService {
 
 	private static final int STEP1 = 1;
@@ -42,31 +41,37 @@ public class ApprovalStepService {
 	private final VacationInfoLogPublisher vacationInfoLogPublisher;
 	private final DeptService deptService;
 
+	@Transactional(readOnly = true)
 	public Page<ApprovalFirstStepSelectResponse> findFirstStepByMemberId(Long memberId, Pageable pageable) {
 		return approvalStepRepository.findFirstStepByMemberId(memberId, STEP1, pageable);
 	}
 
+	@Transactional(readOnly = true)
 	public Page<ApprovalFirstStepSelectResponse> findFirstStepByFilter(
 		ApprovalStepSelectRequest request, Long memberId, Pageable pageable) {
 		return approvalStepRepository.findFirstStepByFilter(memberId, request.type(),
 			request.name(), request.from(), request.to(), request.status(), STEP1, pageable);
 	}
 
+	@Transactional(readOnly = true)
 	public Page<ApprovalSecondStepSelectResponse> findSecondStepByMemberId(Long memberId, Pageable pageable) {
 		return approvalStepRepository.findSecondStepByMemberId(memberId, STEP2, pageable);
 	}
 
+	@Transactional(readOnly = true)
 	public Page<ApprovalSecondStepSelectResponse> findSecondStepByFilter(
 		ApprovalStepSelectRequest request, Long memberId, Pageable pageable) {
 		return approvalStepRepository.findSecondStepByFilter(memberId, request.type(),
 			request.name(), request.from(), request.to(), request.status(), STEP2, pageable);
 	}
 
+	@Transactional(readOnly = true)
 	public ApprovalFirstStepDetailResponse findFirstStepDetailById(Long approvalStepId, Long memberId) {
 		ApprovalStep findApprovalStep = findByIdAndMemberIdAndStep(approvalStepId, memberId, STEP1);
 		return ApprovalStepMapper.fromFirstStepEntity(findApprovalStep);
 	}
 
+	@Transactional(readOnly = true)
 	public ApprovalSecondStepDetailResponse findSecondStepDetailById(Long approvalStepId, Long memberId) {
 		ApprovalStep findApprovalStep = findByIdAndMemberIdAndStep(approvalStepId, memberId, STEP2);
 		return ApprovalStepMapper.fromSecondStepEntity(findApprovalStep);
@@ -96,7 +101,7 @@ public class ApprovalStepService {
 			STEP2);
 
 		firstStepApproval.reject(request.reason());
-		secondStepApproval.reject();
+		secondStepApproval.reject("1차 결재 단계에서 반려되어 자동 반려 처리되었습니다.");
 		firstStepApproval.rejectVacation();
 
 	}
