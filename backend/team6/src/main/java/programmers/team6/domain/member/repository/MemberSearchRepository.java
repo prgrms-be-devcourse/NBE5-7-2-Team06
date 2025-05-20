@@ -41,7 +41,7 @@ public class MemberSearchRepository {
 
 		List<Predicate> predicates = CriteriaCustomPredicateBuilder.<Member>builder(criteriaBuilder)
 			.applyLikeFilter(from, name, Member_.name)
-			.applyNonEqualFilter(from, Role.PENDING, Member_.role)
+			.applyEqualFilter(from, Role.USER, Member_.role)
 			.build();
 
 		return CriteriaCustomQueryBuilder.builder(criteriaQuery, criteriaBuilder)
