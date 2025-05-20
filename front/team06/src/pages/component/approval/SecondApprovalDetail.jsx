@@ -21,7 +21,24 @@ const SecondApprovalDetail = () => {
         setLoading(true);
         try {
             const response = await api.get(`/approval-steps/second/${approvalStepId}`);
-            setApprovalDetail(response.data);
+
+            // 데이터 처리 - 반차 구분과 휴가 일수 계산
+            const data = response.data;
+            let processedData = { ...data };
+
+            // 반차의 경우 오전/오후 구분 추가
+            if (data.type.includes("반차")) {
+                const isAM = new Date(data.from).getHours() < 12;
+                processedData.displayType = isAM ? "반차(오전)" : "반차(오후)";
+                processedData.vacationDays = 0.5;
+            } else {
+                // 일반 휴가의 경우 일수 계산
+                const days = calculateDays(data.from, data.to);
+                processedData.displayType = data.type;
+                processedData.vacationDays = days;
+            }
+
+            setApprovalDetail(processedData);
         } catch (err) {
             console.error("Error fetching approval detail:", err);
             setError(err.response?.data?.message || "데이터를 불러오는데 실패했습니다.");
@@ -82,7 +99,7 @@ const SecondApprovalDetail = () => {
 
             alert("휴가 신청이 반려되었습니다.");
             setShowRejectModal(false);
-            setRejectReason("");
+            setRejectReason(""); // 입력 초기화
             fetchApprovalDetail(); // 데이터 새로고침
         } catch (err) {
             console.error("Error rejecting vacation:", err);
@@ -219,27 +236,10 @@ const SecondApprovalDetail = () => {
                             <div className="flex justify-between items-center">
                                 <div>
                                     <span className={`inline-flex px-3 py-1 text-sm font-medium rounded-full ${getVacationTypeBadge(approvalDetail.type)}`}>
-                                        {approvalDetail.type}
+                                        {approvalDetail.displayType || approvalDetail.type}
                                     </span>
                                     <span className="ml-3 text-gray-700">
-                                        {approvalDetail.type.includes("반차") ? (
-                                            <>
-                                                {formatDate(approvalDetail.from)}
-                                                <span className="text-sm ml-2 text-gray-500">
-                                                    ({new Date(approvalDetail.from).getHours() < 12 ? "오전 반차" : "오후 반차"})
-                                                </span>
-                                            </>
-                                        ) : (
-                                            <>
-                                                {formatDate(approvalDetail.from)}
-                                                {formatDate(approvalDetail.from) !== formatDate(approvalDetail.to) && (
-                                                    <> ~ {formatDate(approvalDetail.to)}</>
-                                                )}
-                                                <span className="text-sm ml-2 text-gray-500">
-                                                        ({calculateDays(approvalDetail.from, approvalDetail.to)}일)
-                                                    </span>
-                                            </>
-                                        )}
+                                        {formatDate(approvalDetail.from)} ~ {formatDate(approvalDetail.to)}
                                     </span>
                                 </div>
                                 <span className={`inline-flex px-3 py-1 text-sm font-medium rounded-full ${getStatusBadge(approvalDetail.status)}`}>
@@ -284,23 +284,18 @@ const SecondApprovalDetail = () => {
                                         <p className="text-sm text-gray-500">휴가 기간</p>
                                         <p className="text-gray-900">
                                             {approvalDetail.type.includes("반차") ? (
-                                                <>
-                                                    {formatDate(approvalDetail.from)}
-                                                    <span className="text-sm ml-2 text-gray-500">
-                                                    ({new Date(approvalDetail.from).getHours() < 12 ? "오전 반차" : "오후 반차"})
-                                                </span>
-                                                </>
+                                                formatDate(approvalDetail.from)
                                             ) : (
                                                 <>
-                                                    {formatDate(approvalDetail.from)}
-                                                    {formatDate(approvalDetail.from) !== formatDate(approvalDetail.to) && (
-                                                        <> ~ {formatDate(approvalDetail.to)}</>
-                                                    )}
-                                                    <span className="text-sm ml-2 text-gray-500">
-                                                        ({calculateDays(approvalDetail.from, approvalDetail.to)}일)
-                                                    </span>
+                                                    {formatDate(approvalDetail.from)} ~ {formatDate(approvalDetail.to)}
                                                 </>
                                             )}
+                                        </p>
+                                    </div>
+                                    <div>
+                                        <p className="text-sm text-gray-500">신청 일수</p>
+                                        <p className="text-gray-900">
+                                            {approvalDetail.vacationDays}일
                                         </p>
                                     </div>
                                     <div>
