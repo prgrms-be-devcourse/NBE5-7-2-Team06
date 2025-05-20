@@ -33,13 +33,14 @@ const FirstApprovalList = () => {
         status: "PENDING"
     });
 
-    // 휴가 종류 옵션
+    // 휴가 종류 옵션 - 반차 옵션 분리
     const vacationTypes = [
         { value: "연차", label: "연차" },
         { value: "포상 휴가", label: "포상 휴가" },
         { value: "공가", label: "공가" },
         { value: "경조사 휴가", label: "경조사 휴가" },
-        { value: "반차", label: "반차" }
+        { value: "반차(오전)", label: "반차(오전)" },
+        { value: "반차(오후)", label: "반차(오후)" }
     ];
 
     // 부서 옵션
@@ -87,7 +88,29 @@ const FirstApprovalList = () => {
             const response = await api.get(url);
             const data = response.data;
 
-            setApprovals(data.content);
+            // 휴가 종류를 백엔드 데이터에 맞게 처리
+            const processedApprovals = data.content.map(approval => {
+                // 반차의 경우 오전/오후 구분 추가
+                if (approval.type.includes("반차")) {
+                    const isAM = new Date(approval.from).getHours() < 12;
+                    return {
+                        ...approval,
+                        displayType: isAM ? "반차(오전)" : "반차(오후)",
+                        // 반차는 0.5일로 계산
+                        vacationDays: 0.5
+                    };
+                } else {
+                    // 일반 휴가의 경우 일수 계산
+                    const days = calculateDays(approval.from, approval.to);
+                    return {
+                        ...approval,
+                        displayType: approval.type,
+                        vacationDays: days
+                    };
+                }
+            });
+
+            setApprovals(processedApprovals);
             setTotalPages(data.totalPages);
             setTotalElements(data.totalElements);
             setCurrentPage(data.number);
@@ -153,7 +176,7 @@ const FirstApprovalList = () => {
         });
     };
 
-    // 두 날짜 사이의 일수 계산 함수 추가
+    // 두 날짜 사이의 일수 계산 함수
     const calculateDays = (fromDate, toDate) => {
         if (!fromDate || !toDate) return 0;
 
@@ -366,8 +389,8 @@ const FirstApprovalList = () => {
                             <div className="flex justify-center items-center h-64">
                                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
                                 <span className="ml-3 text-gray-600">
-                  데이터를 불러오는 중...
-                </span>
+                                    데이터를 불러오는 중...
+                                </span>
                             </div>
                         ) : (
                             <table className="w-full">
@@ -378,6 +401,9 @@ const FirstApprovalList = () => {
                                     </th>
                                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                         기간
+                                    </th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        신청 일수
                                     </th>
                                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                         신청자
@@ -402,33 +428,19 @@ const FirstApprovalList = () => {
                                             onClick={() => handleRowClick(approval.approvalStepId)}
                                         >
                                             <td className="px-6 py-4 whitespace-nowrap">
-                          <span
-                              className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${getVacationTypeBadge(
-                                  approval.type
-                              )}`}
-                          >
-                            {approval.type}
-                          </span>
+                                                <span
+                                                    className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${getVacationTypeBadge(
+                                                        approval.type
+                                                    )}`}
+                                                >
+                                                    {approval.displayType || approval.type}
+                                                </span>
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                                {approval.type.includes("반차") ? (
-                                                    <>
-                                                        {formatDate(approval.from)}
-                                                        <span className="text-sm ml-2 text-gray-500">
-                                                    ({new Date(approval.from).getHours() < 12 ? "오전 반차" : "오후 반차"})
-                                                </span>
-                                                    </>
-                                                ) : (
-                                                    <>
-                                                        {formatDate(approval.from)}
-                                                        {formatDate(approval.from) !== formatDate(approval.to) && (
-                                                            <> ~ {formatDate(approval.to)}</>
-                                                        )}
-                                                        <span className="text-sm ml-2 text-gray-500">
-                                                        ({calculateDays(approval.from, approval.to)}일)
-                                                    </span>
-                                                    </>
-                                                )}
+                                                {formatDate(approval.from)} ~ {formatDate(approval.to)}
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                                {approval.vacationDays}일
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap">
                                                 <div className="text-sm font-medium text-gray-900">
@@ -446,19 +458,19 @@ const FirstApprovalList = () => {
                                                 </div>
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap">
-                          <span
-                              className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${getStatusBadge(
-                                  approval.status
-                              )}`}
-                          >
-                            {getStatusDisplayName(approval.status)}
-                          </span>
+                                                <span
+                                                    className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${getStatusBadge(
+                                                        approval.status
+                                                    )}`}
+                                                >
+                                                    {getStatusDisplayName(approval.status)}
+                                                </span>
                                             </td>
                                         </tr>
                                     ))
                                 ) : (
                                     <tr>
-                                        <td colSpan="6" className="px-6 py-4 text-center text-gray-500">
+                                        <td colSpan="7" className="px-6 py-4 text-center text-gray-500">
                                             결재 요청 목록이 없습니다.
                                         </td>
                                     </tr>
