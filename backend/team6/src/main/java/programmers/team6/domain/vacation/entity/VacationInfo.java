@@ -76,6 +76,10 @@ public class VacationInfo extends BaseEntity {
 		}
 		this.totalCount = totalCount;
 		this.useCount = useCount;
+		return toLog();
+	}
+
+	public VacationInfoLog toLog() {
 		return VacationInfoLog.from(this);
 	}
 }
