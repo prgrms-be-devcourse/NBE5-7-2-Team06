@@ -13,7 +13,6 @@ public enum BadRequestErrorCode implements ErrorCode {
 	BAD_REQUEST_VACATION_OVERLAP("해당 기간에 이미 신청된 휴가가 있습니다."),
 	BAD_REQUEST_INSUFFICIENT_VACATION_DAYS("신청한 휴가 일수가 잔여 휴가 일수를 초과했습니다."),
 	BAD_REQUEST_DUPLICATE_CODE("중복된 분류 코드입니다."),
-	BAD_REQUEST_DUPLICATE_CODE("중복된 분류 코드입니다."),
 	BAD_REQUEST_MEMBER_ROLE("해당 멤버의 권한을 변경할 수 없습니다.");
 
 	private final String message;

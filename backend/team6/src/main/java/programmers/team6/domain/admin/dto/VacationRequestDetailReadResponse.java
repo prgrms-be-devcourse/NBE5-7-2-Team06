@@ -6,15 +6,17 @@ import java.util.List;
 
 import programmers.team6.domain.vacation.enums.VacationRequestStatus;
 
-public record VacationRequestDetailReadResponse(Long id, LocalDateTime from, LocalDateTime to, String name,
+public record VacationRequestDetailReadResponse(Long id, LocalDateTime from, LocalDateTime to, Long memberId,
+												String name,
 												String deptName,
 												String position, String reason, String vacationType,
 												VacationRequestStatus vacationRequestStatus,
 												List<ApprovalStepDetailUpdateResponse> approvalStepDetailUpdateResponses) {
-	public VacationRequestDetailReadResponse(Long id, LocalDateTime from, LocalDateTime to, String name,
+	public VacationRequestDetailReadResponse(Long id, LocalDateTime from, LocalDateTime to, Long memberId, String name,
 		String deptName,
 		String position, String reason, String vacationType, VacationRequestStatus vacationRequestStatus) {
-		this(id, from, to, name, deptName, position, reason, vacationType, vacationRequestStatus, new ArrayList<>());
+		this(id, from, to, memberId, name, deptName, position, reason, vacationType, vacationRequestStatus,
+			new ArrayList<>());
 	}
 
 	public VacationRequestDetailReadResponse injectApprovalStepDetails(
