@@ -62,12 +62,6 @@ public class VacationService {
 	private final ApprovalStepService approvalStepService;
 	private final VacationRequestSearchRepository vacationRequestSearchRepository;
 
-	// 멤버 ID로 멤버를 조회, 멤버가 존재하지 않으면 예외 발생
-	private Member getMemberById(Long memberId) {
-		return memberRepository.findById(memberId)
-			.orElseThrow(() -> new RuntimeException("멤버 정보를 찾을 수 없습니다."));
-	}
-
 	// 본인 연차 조회
 	@Transactional
 	public VacationInfoSelectResponseDto getMyVacationInfo(Long memberId) {
@@ -82,6 +76,7 @@ public class VacationService {
 	// 휴가 신청
 	@Transactional
 	public VacationCreateResponseDto requestVacation(Long memberId, VacationCreateRequestDto requestDto) {
+
 		// 신청자 정보 조회
 		Member member = memberRepository.findByIdWithDeptAndLeader(memberId)
 			.orElseThrow(() -> new RuntimeException("멤버 정보를 찾을 수 없습니다."));
@@ -96,7 +91,7 @@ public class VacationService {
 			requestDto.getTo(), requestDto.getVacationType());
 
 		double actualRemainCount = vacationInfoRepository
-			.findActualRemainingVacationDays(memberId, requestDto.getVacationType())
+			.findActualRemainingVacationDays(memberId, getVacationInfoType(requestDto.getVacationType()))
 			.orElseThrow(() -> new NotFoundException(NotFoundErrorCode.NOT_FOUND_VACATION_INFO));
 
 		// 잔여 일수 초과 검증
@@ -219,7 +214,8 @@ public class VacationService {
 
 		// 실제 사용 가능한 잔여 휴가 일수를 한 번에 조회
 		double actualRemainCount = vacationInfoRepository
-			.findActualRemainingVacationDaysExcludeRequestId(memberId, requestDto.getVacationType(), requestId)
+			.findActualRemainingVacationDaysExcludeRequestId(memberId,
+				getVacationInfoType(requestDto.getVacationType()), requestId)
 			.orElseThrow(() -> new NotFoundException(NotFoundErrorCode.NOT_FOUND_VACATION_INFO));
 
 		// 잔여 일수 초과 검증
@@ -285,6 +281,20 @@ public class VacationService {
 		LocalDateTime end = yearMonth.plusMonths(1).atDay(1).atStartOfDay();
 
 		return new MonthRange(start, end);
+	}
+
+	// 멤버 ID로 멤버를 조회, 멤버가 존재하지 않으면 예외 발생
+	private Member getMemberById(Long memberId) {
+		return memberRepository.findById(memberId)
+			.orElseThrow(() -> new RuntimeException("멤버 정보를 찾을 수 없습니다."));
+	}
+
+	// 반차 코드(05)를 01로 변환
+	private String getVacationInfoType(String type) {
+		if (type.equals("05")) {
+			return "01";
+		}
+		return type;
 	}
 
 }

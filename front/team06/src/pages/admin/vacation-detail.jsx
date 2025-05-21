@@ -14,8 +14,15 @@ export default function VacationDetail() {
         const fetchVacationDetail = async () => {
             setLoading(true);
             try {
+                const userRole = localStorage.getItem('userRole');
+                let response;
+                if(userRole === 'USER'){
+                    response = await api.get(`/members/vacation-request/${vacationId}`);
+                }else{
+                    response = await api.get(`/admin/vacation-request/${vacationId}`);
+                }
                 // const response = await fetch(`http://localhost:8080/admin/vacation-request/${vacationId}`);
-                const response = await api.get(`/admin/vacation-request/${vacationId}`);
+
                 console.log(response);
                 const data = response.data;
 

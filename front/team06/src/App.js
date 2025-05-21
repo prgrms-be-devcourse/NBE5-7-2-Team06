@@ -46,6 +46,7 @@ function App() {
                     <Route path="/approval/second/:approvalStepId" element={<SecondApprovalDetail />} />
                     <Route path="/admin/member-approvals" element={<MemberApprovalList />} />
 
+                    <Route path="/vacation-detail/:id" element={<VacationDetail />} />
                     <Route path="/vacations/my" element={<MyVacationStatus />} />
                     <Route path="/vacations/request" element={<VacationRequest />} />
                     <Route path="/vacations/history" element={<VacationHistory />} />
