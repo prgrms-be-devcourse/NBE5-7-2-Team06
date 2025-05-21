@@ -26,8 +26,11 @@ public interface CodeRepository extends JpaRepository<Code, Long> {
 		""")
 	List<CodeDropdownResponse> findByGroupCode(@Param("groupCode") String groupCode);
 
-	@Query(value = "select new programmers.team6.domain.member.dto.CodeReadResponse(c.id,c.groupCode,c.code,c.name) "
-		+ "from Code c where (:groupCode is null or c.groupCode = :groupCode)")
+	@Query("""
+			SELECT new programmers.team6.domain.member.dto.CodeReadResponse(c.id,c.groupCode,c.code,c.name)
+			FROM Code c
+			WHERE (:groupCode IS NULL OR c.groupCode = :groupCode)
+		""")
 	Page<CodeReadResponse> findCodePage(Pageable pageable, @Param("groupCode") String groupCode);
 
 	@Query(value = "select new programmers.team6.domain.admin.dto.CodeInfo(c.id,c.name) from Code c where c.groupCode = :groupCode")
