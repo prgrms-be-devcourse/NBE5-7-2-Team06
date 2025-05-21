@@ -5,6 +5,10 @@
 
 ## 🏗️ 프로젝트 구조
 
+## 시스템 구성도 
+
+[시스템 구성도.pdf](https://github.com/user-attachments/files/20358583/default.pdf)
+
 
 ## 🛠️ 기술 스택
 
