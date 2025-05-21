@@ -141,25 +141,30 @@ const VacationRequest = () => {
             // 날짜와 시간 합치기
             let fromDateTime, toDateTime;
 
+            const [fromYear, fromMonth, fromDay] = form.from.split('-').map(Number);
+            const [toYear, toMonth, toDay] = form.to.split('-').map(Number);
             if (form.vacationType === '05') { // 반차인 경우
                 if (form.halfDayType === 'AM') { // 오전반차
-                    fromDateTime = new Date(`${form.from}T09:00:00`);
-                    toDateTime = new Date(`${form.from}T13:00:00`);
+                    fromDateTime = new Date(Date.UTC(fromYear, fromMonth - 1, fromDay, 9));
+                    toDateTime = new Date(Date.UTC(fromYear, fromMonth - 1, fromDay, 13));
                 } else { // 오후반차
-                    fromDateTime = new Date(`${form.from}T14:00:00`);
-                    toDateTime = new Date(`${form.from}T18:00:00`);
+                    fromDateTime = new Date(Date.UTC(fromYear, fromMonth - 1, fromDay, 14));
+                    toDateTime = new Date(Date.UTC(fromYear, fromMonth - 1, fromDay, 18));
                 }
             } else { // 다른 휴가 유형
-                fromDateTime = new Date(`${form.from}T09:00:00`);
-                toDateTime = new Date(`${form.to}T18:00:00`);
+                fromDateTime = new Date(Date.UTC(fromYear, fromMonth - 1, fromDay, 9));
+                toDateTime = new Date(Date.UTC(toYear, toMonth - 1, toDay, 18));
             }
 
+            console.log(fromDateTime);
+            console.log(toDateTime);
             const requestData = {
-                from: fromDateTime,
-                to: toDateTime,
+                from: fromDateTime.toISOString(),
+                to: toDateTime.toISOString(),
                 reason: form.reason,
                 vacationType: form.vacationType
             };
+            console.log(requestData);
 
             // 휴가 신청 API 호출
             await api.post('/vacations', requestData);
