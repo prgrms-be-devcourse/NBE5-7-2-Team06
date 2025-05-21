@@ -157,30 +157,32 @@ export default function CodeManagement() {
     
     try {
       let response;
-      
-      if (modalMode === 'create') {
-        // POST 요청으로 새 코드 생성
-        response = await fetch('http://localhost:8080/admin/code', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(formData)
-        });
-      } else if (modalMode === 'edit') {
-        // PUT 요청으로 코드 수정
-        response = await fetch(`http://localhost:8080/admin/code/${selectedCode.id}`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(formData)
-        });
+
+      try {
+        if (modalMode === 'create') {
+          // POST 요청으로 새 코드 생성
+          const response = await api.post(`/admin/code`,JSON.stringify(formData),{
+            headers: {
+              'Content-Type': 'application/json'
+            }
+          });
+        } else if (modalMode === 'edit') {
+          // PUT 요청으로 코드 수정
+          const response = await api.put(`/admin/code/${selectedCode.id}`,JSON.stringify(formData),{
+            headers: {
+              'Content-Type': 'application/json'
+            }
+          });
+        }
+      } catch (error){
+        console.error('코드 중복 발생', error);
+        alert('이미 존재하는 그룹코드와 코드 조합입니다.');
+        closeModal();
       }
-      
-      if (!response.ok) {
-        throw new Error(`코드 ${modalMode === 'create' ? '생성' : '수정'}에 실패했습니다.`);
-      }
+      console.log(response);
+      // if (!response.ok) {
+      //   throw new Error(`코드 ${modalMode === 'create' ? '생성' : '수정'}에 실패했습니다.`);
+      // }
       
       // 성공 시 목록 새로고침
       fetchCodes();

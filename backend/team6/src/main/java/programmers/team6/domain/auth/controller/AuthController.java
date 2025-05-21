@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.servlet.http.HttpServletResponse;
@@ -33,11 +34,10 @@ public class AuthController {
 	private final AuthService authService;
 
 	@PostMapping("/signup")
-	public ResponseEntity<Void> signUp(@RequestBody @Valid MemberSignUpRequest memberSignUpRequest) {
+	@ResponseStatus(HttpStatus.CREATED)
+	public void signUp(@RequestBody @Valid MemberSignUpRequest memberSignUpRequest) {
 
 		authService.signUp(memberSignUpRequest);
-
-		return ResponseEntity.status(HttpStatus.CREATED).build();
 	}
 
 	@GetMapping("/email-duplicate-check")
@@ -71,7 +71,7 @@ public class AuthController {
 	}
 
 	@PostMapping("/logout")
-	public ResponseEntity<?> logout(@CookieValue("refreshToken") String refreshToken) {
+	public ResponseEntity<Void> logout(@CookieValue("refreshToken") String refreshToken) {
 
 		authService.addBlackList(refreshToken);
 
