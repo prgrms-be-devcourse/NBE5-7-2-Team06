@@ -1,5 +1,5 @@
-import React, {useState, useEffect} from 'react';
-import {useParams, useNavigate} from 'react-router-dom';
+import React, {useEffect, useState} from 'react';
+import {useNavigate, useParams} from 'react-router-dom';
 import api from "../../api/axiosInstance";
 
 export default function VacationDetail() {
@@ -84,18 +84,27 @@ export default function VacationDetail() {
 
     // 일수 계산 함수
     const calculateDays = (from, to, type) => {
-        const fromDate = new Date(from);
-        const toDate = new Date(to);
+        if (!from || !to) return 0;
 
-        // 반차의 경우 0.5일로 계산
-        if (toDate - fromDate < 1.0) {
+        // 반차인 경우 0.5일 반환
+        if (type.includes('반차')) {
             return 0.5;
         }
 
+        // 날짜만 추출하여 비교 (시간 정보 제거)
+        const fromDate = new Date(from.split('T')[0]);
+        const toDate = new Date(to.split('T')[0]);
+
+        // 날짜 차이 계산 (밀리초 단위)
         const diffTime = Math.abs(toDate - fromDate);
-        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
-        return diffDays;
+
+        // 일 단위로 변환
+        const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+        // 시작일도 포함하므로 +1
+        return diffDays + 1;
     };
+
     // approvalStep status 뱃지 스타일
     const getApprovalStepStatusBadge = (approvalStatus) => {
         if (approvalStatus.includes('PENDING')) {
@@ -247,7 +256,8 @@ export default function VacationDetail() {
                                   {index + 1}차 결재자: {approver.name}
                                 </span>
                                                 {/* 뱃지를 여기로 이동하여 항상 표시되도록 함 */}
-                                                <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${getApprovalStepStatusBadge(approver.approvalStatus)}`}>
+                                                <span
+                                                    className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${getApprovalStepStatusBadge(approver.approvalStatus)}`}>
                                   {approver.approvalStatus}
                                 </span>
                                             </div>
