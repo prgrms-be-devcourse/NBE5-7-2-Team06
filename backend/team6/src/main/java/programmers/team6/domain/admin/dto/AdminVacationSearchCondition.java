@@ -1,6 +1,8 @@
 package programmers.team6.domain.admin.dto;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.FutureOrPresent;
@@ -19,7 +21,7 @@ public record AdminVacationSearchCondition(
 ) {
 	public AdminVacationSearchCondition {
 		if (dateRange == null) {
-			dateRange = new DateRangeCondition(null, null, null, null);
+			dateRange = new DateRangeCondition((LocalDate)null, null, null, null);
 		}
 		if (applicant == null) {
 			applicant = new ApplicantCondition(null, null, null, null);
@@ -40,10 +42,14 @@ public record AdminVacationSearchCondition(
 		// 분기
 		Quarter quarter
 	) {
-		public DateRangeCondition {
-			if (quarter == null) {
-				quarter = Quarter.NONE;
-			}
+		public DateRangeCondition(LocalDate start, LocalDate end, Integer year, Quarter quarter) {
+			this(
+				start != null ? start.atStartOfDay() : null,
+				end != null ? end.atTime(LocalTime.MAX) : null,
+				year,
+				quarter == null ? Quarter.NONE : quarter
+			);
+
 		}
 	}
 

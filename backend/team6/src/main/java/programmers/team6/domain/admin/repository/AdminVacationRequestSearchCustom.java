@@ -41,9 +41,9 @@ public class AdminVacationRequestSearchCustom {
 	 * From<A,B> = 'from 엔티티'에서 엔티티 부분 , A타입의 객체부터 B타입의 속성을 탐색 (그래서 Root<A,A>이고 Join<A,B>임, Root와 Join 둘다 From 상속)
 	 * SingularAttribute<C,D> = 메타모델에서 사용하는 단일 속성 타입 정보 , C = 특정 엔티티, D = C 엔티티의 필드 타입
 	 * Path<X> = 메타모델 경로 혹은 루트로부터 탐색된 속성(특정 속성의 경로) , X = 속성 타입, 해당 path가 가르키는 최종 필드 타입
-	 * @param searchCondition
-	 * @param pageable
-	 * @return
+	 * @param searchCondition 검색 필터
+	 * @param pageable 페이징 정보
+	 * @return 검색 결과 페이지
 	 */
 	public Page<VacationRequestSearchResponse> search(AdminVacationSearchCondition searchCondition, Pageable pageable) {
 		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
@@ -60,7 +60,6 @@ public class AdminVacationRequestSearchCustom {
 		 * 5. 휴가 종류
 		 * 6. 휴가 신청자 포지션
 		 * 7. 휴가 신청 상태
-		 * 8. 휴가 결재자이름
 		 */
 
 		List<Predicate> predicates = CriteriaCustomPredicateBuilder.<ApprovalStep>builder(cb)
@@ -80,8 +79,6 @@ public class AdminVacationRequestSearchCustom {
 		/**
 		 * Predicates들을 기반을 Query 생성
 		 */
-		// Long id, String type, LocalDateTime from, LocalDateTime to, String applicantName,
-		// 	String approverNames, String deptName, VacationRequestStatus status
 		TypedQuery<VacationRequestSearchResponse> query = CriteriaCustomQueryBuilder.builder(cq, cb)
 			.applyDynamicPredicates(predicates)
 			.projection(VacationRequestSearchResponse.class, vr.get(VacationRequest_.id),
@@ -101,14 +98,17 @@ public class AdminVacationRequestSearchCustom {
 
 		// count 쿼리용 predicate를 새로 생성
 		List<Predicate> countPredicates = CriteriaCustomPredicateBuilder.<ApprovalStep>builder(cb)
-			.applyDateRangeFilter(countVr, VacationRequest_.from, VacationRequest_.to, searchCondition.dateRange().start(),
+			.applyDateRangeFilter(countVr, VacationRequest_.from, VacationRequest_.to,
+				searchCondition.dateRange().start(),
 				searchCondition.dateRange().end())
-			.applyDateRangeFilter(countVr, VacationRequest_.from, VacationRequest_.to, searchCondition.dateRange().year(),
+			.applyDateRangeFilter(countVr, VacationRequest_.from, VacationRequest_.to,
+				searchCondition.dateRange().year(),
 				searchCondition.dateRange().quarter())
 			.applyLikeFilter(countVr, searchCondition.applicant().name(), VacationRequest_.member, Member_.name)
 			.applyLikeFilter(countVr, searchCondition.applicant().deptName(), VacationRequest_.member, Member_.dept,
 				Dept_.deptName)
-			.applyEqualFilter(countVr, searchCondition.applicant().vacationTypeCodeId(), VacationRequest_.type, Code_.id)
+			.applyEqualFilter(countVr, searchCondition.applicant().vacationTypeCodeId(), VacationRequest_.type,
+				Code_.id)
 			.applyEqualFilter(countVr, searchCondition.applicant().positionCodeId(), VacationRequest_.member,
 				Member_.position, Code_.id)
 			.applyEqualFilter(countVr, searchCondition.vacationRequestStatus(), VacationRequest_.status)
