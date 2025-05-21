@@ -111,10 +111,6 @@ public class ApprovalStep extends BaseEntity {
 		return this.vacationRequest.getCode();
 	}
 
-	public Long getVacationRequestId() {
-		return this.vacationRequest.getId();
-	}
-
 	public int calcVacationDays() {
 		return this.vacationRequest.calcVacationDays();
 	}
@@ -133,5 +129,9 @@ public class ApprovalStep extends BaseEntity {
 
 	public boolean isHalfDay() {
 		return this.vacationRequest.isHalfDay();
+	}
+
+	public boolean isHrApprover() {
+		return this.member.isHrMember();
 	}
 }

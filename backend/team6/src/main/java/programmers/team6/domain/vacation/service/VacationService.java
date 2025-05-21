@@ -262,7 +262,7 @@ public class VacationService {
 		vacationRequest.validateAndCancel(memberId);
 
 		// 1,2차 결재 취소
-		approvalStepService.cancelApprovalStep(vacationRequest.getId());
+		approvalStepService.cancelApprovalStep(vacationRequest);
 
 		return true;
 	}
