@@ -122,7 +122,7 @@ public class ApprovalStepService {
 		VacationInfo findVacationInfo = vacationInfoRepository.findByMemberIdAndVacationType(
 				findApprovalStep.getVacationMemberId(),
 				findApprovalStep.isHalfDay() ? "01" : findApprovalStep.getVacationCode())
-			.orElseThrow(() -> new NotFoundException(NotFoundErrorCode.NOT_FOUND_REMAIN_VACATION));
+			.orElseThrow(() -> new NotFoundException(NotFoundErrorCode.NOT_FOUND_VACATION_INFO));
 
 		double count = findApprovalStep.isHalfDay() ? 0.5 : findApprovalStep.calcVacationDays();
 		if (findVacationInfo.canUseVacation(count)) {
