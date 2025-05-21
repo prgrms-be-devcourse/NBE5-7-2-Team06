@@ -3,27 +3,28 @@ package programmers.team6.domain.admin.service;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
 import programmers.team6.domain.admin.dto.VacationStatisticsRequest;
-import programmers.team6.domain.member.repository.MemberRepository;
+import programmers.team6.domain.member.entity.Member;
+import programmers.team6.domain.member.repository.MemberSearchRepository;
 
 @Component
 @RequiredArgsConstructor
 public class MemberReader {
 
-	private final MemberRepository memberRepository;
+	private final MemberSearchRepository memberRepository;
+	private final VacationInfoLogSearchRepository vacationInfoLogSearchRepository;
 
 	public Members readHasVacationInfoMemberFrom(VacationStatisticsRequest request, Pageable pageable) {
 		LocalDateTime date = LocalDateTime.of(request.year(), 12, 31, 23, 59);
-		if (request.name() == null) {
-			return new Members(
-				memberRepository.findAllHasVacationInfoTargetYear(date, request.vacationCode(), pageable));
-		}
-		return new Members(
-			memberRepository.findAllHasVacationInfoTargetYear(date,  request.vacationCode(), request.name(), pageable));
-	}
 
+		List<Long> ids = vacationInfoLogSearchRepository.queryContainVacationInfoMemberIds(date,
+			request.vacationCode());
+		Page<Member> members = memberRepository.searchFrom(request.deptId(), request.name(), ids, pageable);
+		return new Members(members);
+	}
 }

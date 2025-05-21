@@ -10,18 +10,21 @@ const VacationManagerPage = () => {
     const [selectedYear, setSelectedYear] = useState('2025');
     const [vacationTypesList, setVacationTypesList] = useState([]);
     const [selectedVacationType, setSelectedVacationType] = useState('');
+    const [departments, setDepartments] = useState([]);
+    const [selectedDepartment, setSelectedDepartment] = useState('');
 
     const vacationTypes = ['january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december'];
 
     useEffect(() => {
         fetchVacationTypes();
+        fetchDepartments();
     }, []);
 
     useEffect(() => {
         if (selectedVacationType !== '') {
             fetchVacationData();
         }
-    }, [currentPage, selectedYear, selectedVacationType]);
+    }, [currentPage, selectedYear, selectedVacationType, selectedDepartment]);
 
     const fetchVacationTypes = async () => {
         try {
@@ -37,7 +40,7 @@ const VacationManagerPage = () => {
 
             if (filteredTypes.length > 0) {
                 setVacationTypesList(filteredTypes);
-                setSelectedVacationType(filteredTypes[0].code); // ✅ 기본값 설정
+                setSelectedVacationType(filteredTypes[0].code);
             } else {
                 console.error('휴가 타입 응답 형식이 올바르지 않습니다.', response.data);
                 setVacationTypesList([]);
@@ -50,6 +53,16 @@ const VacationManagerPage = () => {
         }
     };
 
+    const fetchDepartments = async () => {
+        try {
+            const res = await axios.get('http://localhost:8080/depts');
+            setDepartments(res.data);
+        } catch {
+            alert('부서 목록을 불러오는 데 실패했습니다.');
+            setDepartments([]);
+        }
+    };
+
     const fetchVacationData = async () => {
         setLoading(true);
         try {
@@ -58,6 +71,7 @@ const VacationManagerPage = () => {
                     year: selectedYear,
                     name: searchName || undefined,
                     vacationCode: selectedVacationType || undefined,
+                    deptId: selectedDepartment || undefined,
                     page: currentPage,
                 },
             });
@@ -90,13 +104,11 @@ const VacationManagerPage = () => {
             <div className="max-w-7xl mx-auto">
                 <div className="mb-6">
                     <h1 className="text-2xl font-bold text-gray-900">휴가 현황</h1>
-                    <p className="text-gray-600 mt-2"></p>
                 </div>
             </div>
 
             {/* 필터 영역 */}
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
-                {/* 상단 필터: 연도 + 휴가 종류 */}
                 <div className="flex flex-wrap items-center gap-6 mb-4">
                     {/* 연도 선택 */}
                     <div className="flex items-center gap-2">
@@ -127,6 +139,22 @@ const VacationManagerPage = () => {
                             ))}
                         </select>
                     </div>
+
+                    {/* 부서 선택 */}
+                    <div className="flex items-center gap-2">
+                        <label htmlFor="department" className="text-gray-700 whitespace-nowrap">부서</label>
+                        <select
+                            id="department"
+                            value={selectedDepartment}
+                            onChange={(e) => setSelectedDepartment(e.target.value)}
+                            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        >
+                            <option value="">전체</option>
+                            {departments.map((dept) => (
+                                <option key={dept.id} value={dept.id}>{dept.name}</option>
+                            ))}
+                        </select>
+                    </div>
                 </div>
 
                 {/* 이름 검색 필터 */}
@@ -147,7 +175,6 @@ const VacationManagerPage = () => {
                     </button>
                 </div>
             </div>
-
 
             {/* 테이블 */}
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-x-auto">

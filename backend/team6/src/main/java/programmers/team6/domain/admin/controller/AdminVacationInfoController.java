@@ -38,8 +38,8 @@ public class AdminVacationInfoController {
 	@GetMapping
 	@ResponseStatus(value = HttpStatus.OK)
 	public Page<MemberVacationInfoSelectResponse> selectVacationInfos(@PagingConfig(sort = "id") Pageable pageable,
-		@RequestParam(required = false) String name) {
-		Page<Member> members = memberSearchRepository.searchFrom(name, pageable);
+		@RequestParam(required = false) Long deptId, @RequestParam(required = false) String name) {
+		Page<Member> members = memberSearchRepository.searchFrom(name, deptId, pageable);
 		List<VacationInfo> vacationInfos = vacationInfoRepository.findByMemberIdIn(toIds(members));
 		return vacationInfoMapper.toMemberVacationInfoSelectResponsePageFrom(members, vacationInfos);
 	}
