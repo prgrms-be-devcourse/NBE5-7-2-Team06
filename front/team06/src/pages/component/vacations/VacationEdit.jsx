@@ -156,26 +156,31 @@ const VacationEdit = () => {
         try {
             setSubmitting(true);
 
+            // 날짜와 시간 합치기 (UTC 기준으로 설정)
+            let fromDateTime, toDateTime;
+
+            const [fromYear, fromMonth, fromDay] = form.from.split('-').map(Number);
+
+            if (form.vacationType === '05') { // 반차인 경우
+                if (form.halfDayType === 'AM') { // 오전반차
+                    fromDateTime = new Date(Date.UTC(fromYear, fromMonth - 1, fromDay, 9));
+                    toDateTime = new Date(Date.UTC(fromYear, fromMonth - 1, fromDay, 13));
+                } else { // 오후반차
+                    fromDateTime = new Date(Date.UTC(fromYear, fromMonth - 1, fromDay, 14));
+                    toDateTime = new Date(Date.UTC(fromYear, fromMonth - 1, fromDay, 18));
+                }
+            } else { // 다른 휴가 유형
+                const [toYear, toMonth, toDay] = form.to.split('-').map(Number);
+                fromDateTime = new Date(Date.UTC(fromYear, fromMonth - 1, fromDay, 9));
+                toDateTime = new Date(Date.UTC(toYear, toMonth - 1, toDay, 18));
+            }
+
             const requestData = {
+                from: fromDateTime.toISOString(),
+                to: toDateTime.toISOString(),
                 reason: form.reason,
                 vacationType: form.vacationType
             };
-
-            // 반차인 경우와 다른 휴가 유형 구분하여 처리
-            if (form.vacationType === '05') {
-                // 반차 처리
-                if (form.halfDayType === 'AM') { // 오전반차
-                    requestData.from = new Date(`${form.from}T09:00:00`);
-                    requestData.to = new Date(`${form.from}T13:00:00`);
-                } else { // 오후반차
-                    requestData.from = new Date(`${form.from}T14:00:00`);
-                    requestData.to = new Date(`${form.from}T18:00:00`);
-                }
-            } else {
-                // 일반 휴가 처리
-                requestData.from = new Date(`${form.from}T09:00:00`);
-                requestData.to = new Date(`${form.to}T18:00:00`);
-            }
 
             // 수정 요청
             await api.put(`/vacations/${requestId}`, requestData);
