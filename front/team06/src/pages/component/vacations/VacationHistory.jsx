@@ -52,6 +52,11 @@ const VacationHistory = () => {
         navigate('/vacations/my');
     };
 
+    // 휴가 상세 정보 페이지로 이동
+    const handleViewDetail = (requestId) => {
+        navigate(`/vacation-detail/${requestId}`);
+    };
+
     // 휴가 신청 수정 페이지로 이동
     const handleEditRequest = (requestId) => {
         navigate(`/vacations/edit/${requestId}`);
@@ -266,7 +271,11 @@ const VacationHistory = () => {
                                             </thead>
                                             <tbody className="bg-white divide-y divide-gray-200">
                                             {vacations.map((vacation, index) => (
-                                                <tr key={vacation.requestId} className="hover:bg-gray-50">
+                                                <tr
+                                                    key={vacation.requestId}
+                                                    className="hover:bg-gray-50 cursor-pointer"
+                                                    onClick={() => handleViewDetail(vacation.requestId)}
+                                                >
                                                     <td className="px-6 py-4 whitespace-nowrap">
                                                         <div className="text-sm text-gray-900">
                                                             {/* 순서대로 번호 매기기 */}
@@ -301,22 +310,42 @@ const VacationHistory = () => {
                                                         {getStatusBadge(vacation.approvalStatus)}
                                                     </td>
                                                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                                        {canEditOrCancel(vacation.approvalStatus) && (
-                                                            <div className="flex justify-end space-x-2">
-                                                                <button
-                                                                    onClick={() => handleEditRequest(vacation.requestId)}
-                                                                    className="text-blue-600 hover:text-blue-900 bg-blue-50 px-2 py-1 rounded"
-                                                                >
-                                                                    수정
-                                                                </button>
-                                                                <button
-                                                                    onClick={() => handleCancelRequest(vacation.requestId)}
-                                                                    className="text-red-600 hover:text-red-900 bg-red-50 px-2 py-1 rounded"
-                                                                >
-                                                                    취소
-                                                                </button>
-                                                            </div>
-                                                        )}
+                                                        <div className="flex justify-end space-x-2">
+                                                            {/* 상세 보기 버튼 추가 */}
+                                                            <button
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation(); // 행 클릭 이벤트 전파 방지
+                                                                    handleViewDetail(vacation.requestId);
+                                                                }}
+                                                                className="text-blue-600 hover:text-blue-900 bg-blue-50 px-2 py-1 rounded"
+                                                            >
+                                                                상세
+                                                            </button>
+
+                                                            {/* 기존 수정/취소 버튼 (대기 상태일 때만 표시) */}
+                                                            {canEditOrCancel(vacation.approvalStatus) && (
+                                                                <>
+                                                                    <button
+                                                                        onClick={(e) => {
+                                                                            e.stopPropagation(); // 행 클릭 이벤트 전파 방지
+                                                                            handleEditRequest(vacation.requestId);
+                                                                        }}
+                                                                        className="text-blue-600 hover:text-blue-900 bg-blue-50 px-2 py-1 rounded"
+                                                                    >
+                                                                        수정
+                                                                    </button>
+                                                                    <button
+                                                                        onClick={(e) => {
+                                                                            e.stopPropagation(); // 행 클릭 이벤트 전파 방지
+                                                                            handleCancelRequest(vacation.requestId);
+                                                                        }}
+                                                                        className="text-red-600 hover:text-red-900 bg-red-50 px-2 py-1 rounded"
+                                                                    >
+                                                                        취소
+                                                                    </button>
+                                                                </>
+                                                            )}
+                                                        </div>
                                                     </td>
                                                 </tr>
                                             ))}
@@ -396,6 +425,7 @@ const VacationHistory = () => {
                 <div className="bg-blue-50 border border-blue-100 rounded-lg p-4">
                     <h3 className="text-sm font-medium text-blue-800 mb-2">안내사항</h3>
                     <ul className="text-sm text-blue-700 space-y-1 pl-5 list-disc">
+                        <li>휴가 행을 클릭하거나 '상세' 버튼을 클릭하여 상세 정보를 확인할 수 있습니다.</li>
                         <li>'대기' 상태인 휴가만 수정 및 취소가 가능합니다.</li>
                         <li>이미 승인된 휴가를 취소하려면 관리자에게 문의하세요.</li>
                         <li>휴가 승인은 보통 1-2일 내에 처리됩니다.</li>

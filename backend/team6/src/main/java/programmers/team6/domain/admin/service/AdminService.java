@@ -9,7 +9,6 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import programmers.team6.domain.admin.dto.AdminVacationRequestSearchResponse;
 import programmers.team6.domain.admin.dto.AdminVacationSearchCondition;
-import programmers.team6.domain.admin.dto.ApprovalStepDetailUpdateResponse;
 import programmers.team6.domain.admin.dto.VacationRequestDetailReadResponse;
 import programmers.team6.domain.admin.dto.VacationRequestDetailUpdateRequest;
 import programmers.team6.domain.admin.repository.AdminVacationRequestSearchCustom;
@@ -19,6 +18,7 @@ import programmers.team6.domain.vacation.entity.ApprovalStep;
 import programmers.team6.domain.vacation.entity.VacationRequest;
 import programmers.team6.domain.vacation.repository.ApprovalStepRepository;
 import programmers.team6.domain.vacation.repository.VacationRequestRepository;
+import programmers.team6.domain.vacation.service.VacationRequestReader;
 import programmers.team6.global.exception.code.ConflictErrorCode;
 import programmers.team6.global.exception.code.NotFoundErrorCode;
 import programmers.team6.global.exception.customException.ConflictException;
@@ -31,6 +31,7 @@ public class AdminService {
 	private final VacationRequestRepository vacationRequestRepository;
 	private final CodeRepository codeRepository;
 	private final ApprovalStepRepository approvalStepRepository;
+	private final VacationRequestReader vacationRequestReader;
 
 	@Transactional(readOnly = true)
 	public AdminVacationRequestSearchResponse search(Pageable pageable, AdminVacationSearchCondition searchCondition) {
@@ -42,14 +43,7 @@ public class AdminService {
 
 	@Transactional(readOnly = true)
 	public VacationRequestDetailReadResponse selectVacationRequestDetailById(Long id) {
-		List<ApprovalStepDetailUpdateResponse> approvalStepDetailUpdateResponses =
-			approvalStepRepository.findApprovalStepDetailById(id);
-		if (approvalStepDetailUpdateResponses.isEmpty()) {
-			throw new NotFoundException(NotFoundErrorCode.NOT_FOUND_APPROVAL_STEP);
-		}
-		return vacationRequestRepository.findVacationRequestDetailById(id)
-			.orElseThrow(() -> new NotFoundException(NotFoundErrorCode.NOT_FOUND_VACATION_REQUEST))
-			.injectApprovalStepDetails(approvalStepDetailUpdateResponses);
+		return vacationRequestReader.readDetailFrom(id);
 	}
 
 	@Transactional

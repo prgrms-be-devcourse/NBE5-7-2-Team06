@@ -167,6 +167,6 @@ public class VacationRequest extends BaseEntity {
 
 	// todo : code 번호 확정 시 변경 고려
 	public boolean isHalfDay() {
-		return this.type.getName().equals("반차");
+		return this.type.getCode().equals("반차");
 	}
 }
