@@ -12,7 +12,6 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import lombok.RequiredArgsConstructor;
@@ -55,7 +54,7 @@ public class MemberSearchRepository {
 		predicates.add(inClause); // inClause가 별도로 존재한다고 가정
 
 		criteriaQuery.where(criteriaBuilder.and(predicates.toArray(new Predicate[0])));
-		TypedQuery<Member> query =  CriteriaCustomQueryBuilder.builder(
+		TypedQuery<Member> query = CriteriaCustomQueryBuilder.builder(
 				criteriaQuery, criteriaBuilder)
 			.orderBy(from, pageable.getSort())
 			.createQuery(entityManager)

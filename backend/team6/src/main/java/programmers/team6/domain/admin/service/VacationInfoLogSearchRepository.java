@@ -38,7 +38,6 @@ public class VacationInfoLogSearchRepository {
 			.projection(Long.class, from.get(VacationInfoLog_.memberId))
 			.createQuery(entityManager)
 			.build();
-		List<Long> resultList = build.getResultList();
-		return resultList;
+		return  build.getResultList();
 	}
 }
