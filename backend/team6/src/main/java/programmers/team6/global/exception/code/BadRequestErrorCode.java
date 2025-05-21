@@ -10,8 +10,9 @@ public enum BadRequestErrorCode implements ErrorCode {
 	BAD_REQUEST_REJECT("해당 결재를 반려할 수 없습니다"),
 	BAD_REQUEST_VALIDATION("필수 입력 항목을 확인해주세요."),
 	BAD_REQUEST_INVALID_INPUT("잘못된 입력입니다."),
-	BAD_REQUEST_DUPLICATE_CODE("중복된 분류 코드입니다.");
-
+	BAD_REQUEST_DUPLICATE_CODE("중복된 분류 코드입니다."),
+	BAD_REQUEST_MEMBER_ROLE("해당 멤버의 권한을 변경할 수 없습니다.");
+	
 	private final String message;
 	private final HttpStatus httpStatus = HttpStatus.BAD_REQUEST;
 

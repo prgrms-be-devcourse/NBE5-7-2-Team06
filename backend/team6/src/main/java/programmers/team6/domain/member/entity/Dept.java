@@ -48,4 +48,8 @@ public class Dept extends BaseEntity {
 		return this.deptLeader;
 	}
 
+	public boolean isHrDept() {
+		return this.deptName.equals("인사팀");
+	}
+
 }
