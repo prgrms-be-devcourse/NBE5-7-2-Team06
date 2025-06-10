@@ -1,20 +1,12 @@
 package programmers.team6.domain.admin.repository;
 
-import java.util.List;
-
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.*;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
-
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.TypedQuery;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Join;
-import jakarta.persistence.criteria.JoinType;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
-import lombok.RequiredArgsConstructor;
 import programmers.team6.domain.admin.dto.AdminVacationSearchCondition;
 import programmers.team6.domain.admin.dto.VacationRequestSearchResponse;
 import programmers.team6.domain.admin.utils.CriteriaCustomPredicateBuilder;
@@ -27,13 +19,13 @@ import programmers.team6.domain.vacation.entity.ApprovalStep;
 import programmers.team6.domain.vacation.entity.ApprovalStep_;
 import programmers.team6.domain.vacation.entity.VacationRequest;
 import programmers.team6.domain.vacation.entity.VacationRequest_;
-import programmers.team6.domain.vacation.repository.VacationRequestRepository;
 import programmers.team6.global.entity.BaseEntity_;
+
+import java.util.List;
 
 @Repository
 @RequiredArgsConstructor
 public class AdminVacationRequestSearchCustom {
-	private final VacationRequestRepository vacationRequestRepository;
 	private final EntityManager entityManager;
 
 	/**

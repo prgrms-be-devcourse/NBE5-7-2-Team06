@@ -45,6 +45,9 @@ public class CriteriaCustomPredicateBuilder<T> {
 		if (year == null) {
 			return this;
 		}
+		if (quarter == null) {
+			quarter = Quarter.NONE;
+		}
 		return applyDateRangeFilter(root, mappedFromField, mappedToField, quarter.getStart(year), quarter.getEnd(year));
 	}
 
@@ -61,13 +64,6 @@ public class CriteriaCustomPredicateBuilder<T> {
 		if (isProvided(conditionValue)) {
 			this.predicates.add(cb.notEqual(CriteriaUtils.searchPath(root, mappedFields), conditionValue));
 		}
-		return this;
-	}
-
-	public <X, A, B> CriteriaCustomPredicateBuilder<T> applyEqualFilter(From<X, A> root,
-		SingularAttribute<? super A, ?> mappedField,
-		From<X, B> anotherRoot, SingularAttribute<? super B, ?> mappedAnotherField) {
-		this.predicates.add(cb.equal(root.get(mappedField), anotherRoot.get(mappedAnotherField)));
 		return this;
 	}
 
