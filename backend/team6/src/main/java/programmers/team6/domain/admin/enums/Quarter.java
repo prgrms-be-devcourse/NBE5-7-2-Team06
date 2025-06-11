@@ -33,7 +33,7 @@ public enum Quarter {
 			case H2, NONE -> LocalDate.of(year, Month.DECEMBER, 31);
 		};
 
-		return endDate.atTime(LocalTime.MAX);
+		return endDate.atTime(23, 59, 59);
 	}
 
 	private LocalDate applyQuarterAdjuster(int year, TemporalAdjuster temporalAdjuster) {

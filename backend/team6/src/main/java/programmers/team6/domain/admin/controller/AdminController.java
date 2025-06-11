@@ -49,8 +49,8 @@ public class AdminController {
 		// 휴가 신청 상태
 		@RequestParam(value = "vacationRequestStatus", required = false) VacationRequestStatus status) {
 		return adminService.search(pageable, new AdminVacationSearchCondition(
-			new AdminVacationSearchCondition.DateRangeCondition(startDate, endDate, year, quarter),
-			new AdminVacationSearchCondition.ApplicantCondition(name, deptName, positionCodeId, vacationTypeCodeId),
+			AdminVacationSearchCondition.bindingDateRangeCondition(startDate, endDate, year, quarter),
+			AdminVacationSearchCondition.bindingApplicantCondition(name, deptName, positionCodeId, vacationTypeCodeId),
 			status
 		));
 	}

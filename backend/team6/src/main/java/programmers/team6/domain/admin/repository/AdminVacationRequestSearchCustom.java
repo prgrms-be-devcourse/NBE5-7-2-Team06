@@ -42,7 +42,7 @@ public class AdminVacationRequestSearchCustom {
 		CriteriaQuery<VacationRequestSearchResponse> cq = cb.createQuery(VacationRequestSearchResponse.class);
 
 		Root<ApprovalStep> as = cq.from(ApprovalStep.class);
-		Join<ApprovalStep, VacationRequest> vr = as.join("vacationRequest", JoinType.INNER);
+		Join<ApprovalStep, VacationRequest> vr = as.join("vacationRequest");
 
 		/** 필터링
 		 * 1. 휴가 신청 범위
