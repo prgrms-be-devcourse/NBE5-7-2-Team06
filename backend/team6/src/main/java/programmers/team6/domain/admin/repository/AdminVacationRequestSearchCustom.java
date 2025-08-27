@@ -1,32 +1,32 @@
 package programmers.team6.domain.admin.repository;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.TypedQuery;
-import jakarta.persistence.criteria.*;
-import lombok.RequiredArgsConstructor;
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
+
+import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.jpa.JPAExpressions;
+import com.querydsl.jpa.impl.JPAQueryFactory;
+
+import lombok.RequiredArgsConstructor;
 import programmers.team6.domain.admin.dto.AdminVacationSearchCondition;
 import programmers.team6.domain.admin.dto.VacationRequestSearchResponse;
-import programmers.team6.domain.admin.utils.CriteriaCustomPredicateBuilder;
-import programmers.team6.domain.admin.utils.CriteriaCustomQueryBuilder;
-import programmers.team6.domain.admin.utils.QueryUtils;
-import programmers.team6.domain.member.entity.Code_;
-import programmers.team6.domain.member.entity.Dept_;
-import programmers.team6.domain.member.entity.Member_;
-import programmers.team6.domain.vacation.entity.ApprovalStep;
-import programmers.team6.domain.vacation.entity.ApprovalStep_;
-import programmers.team6.domain.vacation.entity.VacationRequest;
-import programmers.team6.domain.vacation.entity.VacationRequest_;
-import programmers.team6.global.entity.BaseEntity_;
-
-import java.util.List;
+import programmers.team6.domain.admin.utils.QueryDSLUtils;
+import programmers.team6.domain.member.entity.QCode;
+import programmers.team6.domain.member.entity.QDept;
+import programmers.team6.domain.member.entity.QMember;
+import programmers.team6.domain.vacation.entity.QApprovalStep;
+import programmers.team6.domain.vacation.entity.QVacationRequest;
 
 @Repository
 @RequiredArgsConstructor
 public class AdminVacationRequestSearchCustom {
-	private final EntityManager entityManager;
+	private final JPAQueryFactory queryFactory;
 
 	/**
 	 * ApprovalStep와 VacationRequest를 join하고 AdminVacationSearchCondition의 변수들을 통해 다중 필터 구현
@@ -38,11 +38,12 @@ public class AdminVacationRequestSearchCustom {
 	 * @return 검색 결과 페이지
 	 */
 	public Page<VacationRequestSearchResponse> search(AdminVacationSearchCondition searchCondition, Pageable pageable) {
-		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-		CriteriaQuery<VacationRequestSearchResponse> cq = cb.createQuery(VacationRequestSearchResponse.class);
 
-		Root<ApprovalStep> as = cq.from(ApprovalStep.class);
-		Join<ApprovalStep, VacationRequest> vr = as.join("vacationRequest");
+		QApprovalStep approvalStep = QApprovalStep.approvalStep;
+		QVacationRequest vacationRequest = QVacationRequest.vacationRequest;
+		QMember member = QMember.member;
+		QCode code = QCode.code1;
+		QDept dept = QDept.dept;
 
 		/** 필터링
 		 * 1. 휴가 신청 범위
@@ -53,65 +54,71 @@ public class AdminVacationRequestSearchCustom {
 		 * 6. 휴가 신청자 포지션
 		 * 7. 휴가 신청 상태
 		 */
+		BooleanBuilder builder = QueryDSLUtils.createEmptyCondition();
+		if (searchCondition.dateRange() != null) {
+			if (searchCondition.dateRange().start() != null && searchCondition.dateRange().end() != null) {
+				QueryDSLUtils.dataRange(builder, vacationRequest.from, vacationRequest.to,
+					searchCondition.dateRange().start(), searchCondition.dateRange().end());
+			}
+			if (searchCondition.dateRange().year() != null && searchCondition.dateRange().quarter() != null) {
+				QueryDSLUtils.dataRange(builder, vacationRequest.from, vacationRequest.to,
+					searchCondition.dateRange().quarter().getStart(searchCondition.dateRange().year()),
+					searchCondition.dateRange().quarter().getEnd(searchCondition.dateRange().year()));
+			}
+		}
 
-		List<Predicate> predicates = CriteriaCustomPredicateBuilder.<ApprovalStep>builder(cb)
-			.applyDateRangeFilter(vr, VacationRequest_.from, VacationRequest_.to, searchCondition.dateRange().start(),
-				searchCondition.dateRange().end())
-			.applyDateRangeFilter(vr, VacationRequest_.from, VacationRequest_.to, searchCondition.dateRange().year(),
-				searchCondition.dateRange().quarter())
-			.applyLikeFilter(vr, searchCondition.applicant().name(), VacationRequest_.member, Member_.name)
-			.applyLikeFilter(vr, searchCondition.applicant().deptName(), VacationRequest_.member, Member_.dept,
-				Dept_.deptName)
-			.applyEqualFilter(vr, searchCondition.applicant().vacationTypeCodeId(), VacationRequest_.type, Code_.id)
-			.applyEqualFilter(vr, searchCondition.applicant().positionCodeId(), VacationRequest_.member,
-				Member_.position, Code_.id)
-			.applyEqualFilter(vr, searchCondition.vacationRequestStatus(), VacationRequest_.status)
-			.build();
+		if (searchCondition.applicant().name() != null) {
+			QueryDSLUtils.containsIgnoreCase(builder, member.name, searchCondition.applicant().name());
+		}
 
-		/**
-		 * Predicates들을 기반을 Query 생성
-		 */
-		TypedQuery<VacationRequestSearchResponse> query = CriteriaCustomQueryBuilder.builder(cq, cb)
-			.applyDynamicPredicates(predicates)
-			.projection(VacationRequestSearchResponse.class, vr.get(VacationRequest_.id),
-				vr.get(VacationRequest_.type).get(Code_.name),
-				vr.get(VacationRequest_.from), vr.get(VacationRequest_.to),
-				vr.get(VacationRequest_.member).get(Member_.name),
-				cb.function("GROUP_CONCAT", String.class, as.get(ApprovalStep_.member).get(Member_.name)),
-				vr.get(VacationRequest_.member).get(Member_.dept).get(Dept_.deptName), vr.get(VacationRequest_.status))
-			.groupBy(vr.get(VacationRequest_.id))
-			.orderByLatest(vr, BaseEntity_.createdAt)
-			.createQuery(entityManager)
-			.build();
+		if (searchCondition.applicant().deptName() != null) {
+			QueryDSLUtils.containsIgnoreCase(builder, dept.deptName, searchCondition.applicant().deptName());
+		}
+		if (searchCondition.applicant().vacationTypeCodeId() != null) {
+			QueryDSLUtils.equal(builder, code.id, searchCondition.applicant().vacationTypeCodeId());
+		}
+		if (searchCondition.applicant().positionCodeId() != null) {
+			QueryDSLUtils.equal(builder, member.position.id, searchCondition.applicant().positionCodeId());
+		}
+		if (searchCondition.vacationRequestStatus() != null) {
+			QueryDSLUtils.equal(builder, vacationRequest.status, searchCondition.vacationRequestStatus());
+		}
 
-		CriteriaQuery<Long> countQuery = cb.createQuery(Long.class);
-		Root<ApprovalStep> countRoot = countQuery.from(ApprovalStep.class);
-		Join<ApprovalStep, VacationRequest> countVr = countRoot.join("vacationRequest", JoinType.INNER);
+		//⃣ pageable 적용을 위한 vacationRequest ID 먼저 조회
+		List<Long> vacationRequestIds = queryFactory
+			.select(vacationRequest.id)
+			.from(vacationRequest)
+			.join(vacationRequest.member, member)
+			.join(member.dept, dept)
+			.join(vacationRequest.type, code)
+			.where(builder)
+			.orderBy(vacationRequest.createdAt.desc())
+			.offset(pageable.getOffset())
+			.limit(pageable.getPageSize())
+			.fetch();
 
-		// count 쿼리용 predicate를 새로 생성
-		List<Predicate> countPredicates = CriteriaCustomPredicateBuilder.<ApprovalStep>builder(cb)
-			.applyDateRangeFilter(countVr, VacationRequest_.from, VacationRequest_.to,
-				searchCondition.dateRange().start(),
-				searchCondition.dateRange().end())
-			.applyDateRangeFilter(countVr, VacationRequest_.from, VacationRequest_.to,
-				searchCondition.dateRange().year(),
-				searchCondition.dateRange().quarter())
-			.applyLikeFilter(countVr, searchCondition.applicant().name(), VacationRequest_.member, Member_.name)
-			.applyLikeFilter(countVr, searchCondition.applicant().deptName(), VacationRequest_.member, Member_.dept,
-				Dept_.deptName)
-			.applyEqualFilter(countVr, searchCondition.applicant().vacationTypeCodeId(), VacationRequest_.type,
-				Code_.id)
-			.applyEqualFilter(countVr, searchCondition.applicant().positionCodeId(), VacationRequest_.member,
-				Member_.position, Code_.id)
-			.applyEqualFilter(countVr, searchCondition.vacationRequestStatus(), VacationRequest_.status)
-			.build();
+		//⃣ ID 기준으로 join fetch 하여 최종 결과 생성
+		List<VacationRequestSearchResponse> content = queryFactory
+			.select(Projections.constructor(VacationRequestSearchResponse.class,
+				vacationRequest.id,
+				code.name,
+				vacationRequest.from,
+				vacationRequest.to,
+				member.name,
+				JPAExpressions.select(
+						Expressions.stringTemplate("group_concat({0})", approvalStep.member.name))
+					.from(approvalStep)
+					.where(approvalStep.vacationRequest.eq(vacationRequest)),
+				dept.deptName,
+				vacationRequest.status))
+			.from(vacationRequest)
+			.join(vacationRequest.member, member)
+			.join(member.dept, dept)
+			.join(vacationRequest.type, code)
+			.where(vacationRequest.id.in(vacationRequestIds))
+			.orderBy(vacationRequest.createdAt.desc())
+			.fetch();
 
-		// GROUP BY가 있는 경우 DISTINCT COUNT를 사용
-		countQuery.select(cb.countDistinct(countVr.get(VacationRequest_.id)))
-			.where(countPredicates.toArray(new Predicate[0]));
-
-		Long totalCount = entityManager.createQuery(countQuery).getSingleResult();
-
-		return QueryUtils.makeQueryToPageable(query, pageable, totalCount);
+		return PageableExecutionUtils.getPage(content, pageable, () -> vacationRequestIds.size());
 	}
 }

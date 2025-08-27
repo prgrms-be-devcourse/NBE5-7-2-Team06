@@ -5,39 +5,30 @@ import java.util.List;
 
 import org.springframework.stereotype.Repository;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.TypedQuery;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
+import com.querydsl.core.BooleanBuilder;
+import com.querydsl.jpa.impl.JPAQueryFactory;
+
 import lombok.RequiredArgsConstructor;
-import programmers.team6.domain.admin.utils.CriteriaCustomPredicateBuilder;
-import programmers.team6.domain.admin.utils.CriteriaCustomQueryBuilder;
-import programmers.team6.domain.vacation.entity.VacationInfoLog;
-import programmers.team6.domain.vacation.entity.VacationInfoLog_;
+import programmers.team6.domain.admin.utils.QueryDSLUtils;
+import programmers.team6.domain.vacation.entity.QVacationInfoLog;
 
 @Repository
 @RequiredArgsConstructor
 public class VacationInfoLogSearchRepository {
 
-	private final EntityManager entityManager;
+	private final JPAQueryFactory queryFactory;
 
 	public List<Long> queryContainVacationInfoMemberIds(LocalDateTime localDateTime, String code) {
-		CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-		CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
-		Root<VacationInfoLog> from = criteriaQuery.from(VacationInfoLog.class);
+		QVacationInfoLog vacationInfoLog = QVacationInfoLog.vacationInfoLog;
 
-		List<Predicate> predicates = CriteriaCustomPredicateBuilder.<VacationInfoLog>builder(criteriaBuilder)
-			.applyEqualFilter(from, code, VacationInfoLog_.vacationType)
-			.build();
-		predicates.add(criteriaBuilder.lessThanOrEqualTo(from.get(VacationInfoLog_.logDate), localDateTime));
+		BooleanBuilder builder = QueryDSLUtils.createEmptyCondition();
+		QueryDSLUtils.equal(builder, vacationInfoLog.vacationType, code);
+		QueryDSLUtils.lessThanOrEqualTo(builder, vacationInfoLog.logDate, localDateTime);
 
-		TypedQuery<Long> build = CriteriaCustomQueryBuilder.builder(criteriaQuery, criteriaBuilder)
-			.applyDynamicPredicates(predicates)
-			.projection(Long.class, from.get(VacationInfoLog_.memberId))
-			.createQuery(entityManager)
-			.build();
-		return  build.getResultList();
+		return queryFactory
+			.select(vacationInfoLog.memberId)
+			.from(vacationInfoLog)
+			.where(builder)
+			.fetch();
 	}
 }

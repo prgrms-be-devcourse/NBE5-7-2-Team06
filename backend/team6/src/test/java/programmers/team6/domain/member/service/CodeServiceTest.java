@@ -8,7 +8,7 @@ import java.util.Optional;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -25,7 +25,9 @@ import programmers.team6.global.exception.customException.NotFoundException;
 @RequiredArgsConstructor
 @Import(CodeService.class)
 class CodeServiceTest {
-	private final CodeRepository codeRepository;
+	@Autowired
+	private CodeRepository codeRepository;
+	@Autowired
 	private final CodeService codeService;
 
 	@BeforeEach

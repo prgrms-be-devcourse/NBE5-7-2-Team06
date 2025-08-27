@@ -42,11 +42,12 @@ import programmers.team6.domain.vacation.enums.ApprovalStatus;
 import programmers.team6.domain.vacation.enums.VacationRequestStatus;
 import programmers.team6.domain.vacation.repository.ApprovalStepRepository;
 import programmers.team6.domain.vacation.repository.VacationRequestRepository;
+import programmers.team6.global.config.QueryDslConfig;
 import programmers.team6.global.exception.customException.BadRequestException;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@Import(AdminVacationRequestSearchCustom.class)
+@Import({AdminVacationRequestSearchCustom.class, QueryDslConfig.class})
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @Slf4j
 class AdminVacationRequestSearchCustomTest {
